@@ -11,7 +11,7 @@ Usage: scripts/unreal.sh <command> [Unreal arguments...]
   setup          Validate bundled C++ tools, or initialize a source-tree toolchain
   build          Build RoninEditor (Development, Linux)
   bootstrap      Generate/import audio, material, and empty arena map; no GPU needed
-  play           Run the arena in a game window
+  play           Run the arena fullscreen at 1920x1200
   editor         Open the project in Unreal Editor
   package-linux  Build, cook, and package to Builds/Linux
 
@@ -125,9 +125,9 @@ PY
             done
             launch_args+=(-game)
             # Unreal uses the first matching value, so omit defaults when supplied.
-            if ! "$has_window_mode"; then launch_args+=(-windowed); fi
-            if ! "$has_res_x"; then launch_args+=(-ResX=1600); fi
-            if ! "$has_res_y"; then launch_args+=(-ResY=1000); fi
+            if ! "$has_window_mode"; then launch_args+=(-fullscreen); fi
+            if ! "$has_res_x"; then launch_args+=(-ResX=1920); fi
+            if ! "$has_res_y"; then launch_args+=(-ResY=1200); fi
         fi
         exec "$EDITOR" "${launch_args[@]}" "$@"
         ;;

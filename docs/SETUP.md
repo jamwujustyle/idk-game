@@ -76,7 +76,7 @@ A completion marker and on-disk asset checks guard against a commandlet returnin
 
 Uncooked editor-game launches set `r.ShaderCompiler.JobCacheDDC=0` at startup to compile complete material shader maps. The first rendered launch can spend several minutes compiling shaders; subsequent launches reuse the compiled shader cache. Allow that work to finish before judging missing materials or startup performance. Visual validation is tracked separately in the [verification report](../reports/2026-10-16-verification.md).
 
-`play` launches a 1600 × 1000 window by default, matching a 16:10 display. Explicit `-windowed`/`-fullscreen`, `-ResX=...`, and `-ResY=...` replace their corresponding defaults; each resolution dimension can be supplied independently. Additional arguments are passed as distinct arguments to Unreal, including quoted paths or console commands:
+`play` launches fullscreen at 1920 × 1200 by default, matching a 16:10 display. Explicit `-windowed`/`-fullscreen`, `-ResX=...`, and `-ResY=...` replace their corresponding defaults; each resolution dimension can be supplied independently. Additional arguments are passed as distinct arguments to Unreal, including quoted paths or console commands:
 
 ```sh
 ./scripts/unreal.sh play -windowed -ResX=1920 -ResY=1200
@@ -86,6 +86,14 @@ Uncooked editor-game launches set `r.ShaderCompiler.JobCacheDDC=0` at startup to
 Unreal can clamp the requested resolution to display bounds. For an offscreen capture that requires an exact size, pass `-RenderOffscreen -ForceRes` alongside the resolution arguments.
 
 Interactive commands check NVIDIA/Vulkan first and set NVIDIA's offload environment variables. Verify the GPU selected in Unreal's log after the first launch. Both commands require the generated assets; neither silently rebuilds code. Find the controls in the [README](../README.md#controls).
+
+To add **RONIN** to Ubuntu's applications search, run this explicitly as your normal user:
+
+```sh
+./scripts/install-launcher.sh
+```
+
+It creates `~/.local/share/applications/ronin.desktop`, launching this checkout fullscreen without a terminal window. It records `UE_ROOT` if set when installed; otherwise the launcher uses `.tools/unreal`. The checkout and engine must remain available. Rerun the installer after moving either location. It does not install Unreal or rebuild the game.
 
 ## 5. Package and verify
 
@@ -98,7 +106,7 @@ This invokes `RunUAT.sh BuildCookRun` for a Linux Development build, cooks `/Gam
 For this command, UE 5.7 writes the launcher directly to `Builds/Linux/Ronin.sh`; it starts `Ronin/Binaries/Linux/Ronin` inside that folder. Launch it independently of the editor:
 
 ```sh
-./Builds/Linux/Ronin.sh -windowed -ResX=1600 -ResY=1000
+./Builds/Linux/Ronin.sh -fullscreen -ResX=1920 -ResY=1200
 ```
 
 The [packaged run guide](LINUX-PACKAGE.md) covers runtime requirements and NVIDIA hybrid graphics. After packaging, an optional portable archive can be created with `./scripts/archive-linux.sh`. This adds a README containing the run guide and the control table from the project README, preserves executable modes, and writes `Builds/Ronin-Linux-x86_64.tar.gz` plus its SHA-256 checksum. It verifies that launcher, executable, and cooked content exist; it does not build or launch Unreal. Repeating the command replaces the archive. Source development and editor-game play do not require packaging.
