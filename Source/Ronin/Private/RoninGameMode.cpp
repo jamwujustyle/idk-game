@@ -4,6 +4,7 @@
 #include "RoninHUD.h"
 #include "RoninPlayerController.h"
 #include "Components/InputComponent.h"
+#include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "Engine/GameInstance.h"
 #include "GameFramework/GameUserSettings.h"
@@ -29,6 +30,11 @@ namespace
 {
 constexpr float ContactSparkLifetime = .35f;
 constexpr int32 MaxContactSparkBursts = 4;
+constexpr float ParryContactBeat = .07f;
+constexpr float ParrySlowHold = .3f;
+constexpr float ParryReturn = .15f;
+constexpr float DodgeSlowHold = .1f;
+constexpr float DodgeReturn = .2f;
 void PulseFeedback(UObject* Context, ronin::HapticEvent Event)
 {
     if (auto* PC=Cast<ARoninPlayerController>(UGameplayStatics::GetPlayerController(Context,0))) PC->Pulse(Event);
@@ -89,8 +95,11 @@ void ARoninGameMode::StartPlay()
     {
         const FString Path=FString::Printf(TEXT("/Game/Audio/%s.%s"),Name,Name);
         if (auto* Sound=LoadObject<USoundBase>(nullptr,*Path)) Sounds.Add(FName(Name),Sound);
+        else UE_LOG(LogTemp, Error, TEXT("Required combat sound is missing: %s"), *Path);
     }
-    float SavedRumble=.7f;
+    UE_LOG(LogTemp, Display, TEXT("Combat audio loaded: %d/5 cues; engine sound is %s."),
+        Sounds.Num(), GEngine && GEngine->UseSound() ? TEXT("enabled") : TEXT("disabled by this run"));
+    float SavedRumble=1.f;
     GConfig->GetFloat(TEXT("Ronin.Input"),TEXT("RumbleIntensity"),SavedRumble,GGameUserSettingsIni);
     const float Strengths[]={0.f,.35f,.7f,1.f};
     const TCHAR* StrengthNames[]={TEXT("OFF"),TEXT("35%"),TEXT("70%"),TEXT("100%")};
@@ -102,6 +111,8 @@ void ARoninGameMode::StartPlay()
 
 void ARoninGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+    ClearDefenseCinematic();
+    StopFeedback(this);
     ClearContactSparks();
     Super::EndPlay(EndPlayReason);
 }
@@ -176,15 +187,15 @@ void ARoninGameMode::UpdateContactSparks(float Dt)
         auto& Burst = ContactSparkBursts[Index];
         auto* Effect = Burst.Component.Get();
         if (!Effect) { ContactSparkBursts.RemoveAt(Index); continue; }
-        if (!bCombatPaused) Burst.Age += Dt;
+        if (!bCombatPaused) Burst.Age += Dt * CombatTimeScale;
         if (Burst.Age >= ContactSparkLifetime)
         {
             Effect->DestroyComponent();
             ContactSparkBursts.RemoveAt(Index);
             continue;
         }
-        Effect->CustomTimeDilation = bCombatPaused ? 0.f : 1.f;
-        Effect->SetComponentTickEnabled(!bCombatPaused && Effect->IsActive());
+        Effect->CustomTimeDilation = bCombatPaused ? 0.f : CombatTimeScale;
+        Effect->SetComponentTickEnabled(!bCombatPaused && CombatTimeScale > 0.f && Effect->IsActive());
     }
 }
 
@@ -195,51 +206,115 @@ void ARoninGameMode::ClearContactSparks()
     ContactSparkBursts.Reset();
 }
 
+bool ARoninGameMode::CanTraverse() const
+{
+    return bDuelStarted && !bCombatPaused && PlayerFighter &&
+        Combat.Get(FighterId::Player).action != Action::Dead;
+}
+
 bool ARoninGameMode::CanControl() const
 {
     return bDuelStarted && !bCombatPaused && PlayerFighter && EnemyFighter &&
         Combat.Get(FighterId::Player).action != Action::Dead && Combat.Get(FighterId::Enemy).action != Action::Dead;
 }
 
+void ARoninGameMode::BeginDefenseCinematic(bool bPerfectDodge)
+{
+    if (!CanControl() || !GetWorld()) return;
+    bPerfectDodgeCue = bPerfectDodge;
+    DefenseCueStartedAt = GetWorld()->GetRealTimeSeconds();
+    ++DefenseCueSerial;
+    HitStop = bPerfectDodge ? 0.f : ParryContactBeat;
+    CombatTimeScale = bPerfectDodge ? .25f : 0.f;
+    PlayerFighter->PlayDefenseReaction(bPerfectDodge);
+    if (auto* PC = Cast<ARoninPlayerController>(UGameplayStatics::GetPlayerController(this, 0)))
+        PC->PlayDefenseCue(bPerfectDodge);
+}
+
+float ARoninGameMode::SampleDefenseTimeScale() const
+{
+    if (DefenseCueStartedAt < 0.0 || !GetWorld()) return 1.f;
+    // This clock is not combat time. A slow frame or interrupted window cannot
+    // strand the game in slow motion, and input/UI/feedback are never dilated.
+    const float Age = static_cast<float>(FMath::Max(0.0, GetWorld()->GetRealTimeSeconds() - DefenseCueStartedAt));
+    const float HoldEnd = bPerfectDodgeCue ? DodgeSlowHold : ParryContactBeat + ParrySlowHold;
+    const float ReturnDuration = bPerfectDodgeCue ? DodgeReturn : ParryReturn;
+    const float Minimum = bPerfectDodgeCue ? .25f : .18f;
+    const float T = FMath::Clamp((Age - HoldEnd) / ReturnDuration, 0.f, 1.f);
+    const float Ease = T * T * (3.f - 2.f * T);
+    return FMath::Lerp(Minimum, 1.f, Ease);
+}
+
+void ARoninGameMode::ClearDefenseCinematic()
+{
+    DefenseCueStartedAt = -1.0;
+    bPerfectDodgeCue = false;
+    HitStop = 0.f;
+    Accumulator = 0.f;
+    CombatFrameDelta = 0.f;
+    CombatTimeScale = bCombatPaused ? 0.f : 1.f;
+    if (PlayerFighter) PlayerFighter->CancelDefenseReaction();
+}
+
 void ARoninGameMode::Tick(float Dt)
 {
     Super::Tick(Dt);
-    UpdateContactSparks(Dt);
+    CombatFrameDelta = 0.f;
     SmoothedFrameTime=FMath::FInterpTo(SmoothedFrameTime,FMath::Max(Dt,.0001f),Dt,3.f);
     DisplayedFPS=1.f/SmoothedFrameTime;
     if (auto* PC=Cast<ARoninPlayerController>(UGameplayStatics::GetPlayerController(this,0))) bUsingGamepad=PC->bUsingGamepad;
     // Asset/shader startup may take arbitrarily long. No combat clock, AI
     // decision, held guard, hit resolution or dodge advances before confirmation.
-    if (!bDuelStarted || bCombatPaused || !PlayerFighter || !EnemyFighter) return;
+    if (!bDuelStarted || bCombatPaused || !PlayerFighter || !EnemyFighter)
+    {
+        CombatTimeScale = bCombatPaused ? 0.f : 1.f;
+        UpdateContactSparks(Dt);
+        return;
+    }
+    ObservePlayerAttackStart();
     FeedbackTime=FMath::Max(0.f,FeedbackTime-Dt);
     ImpactFlash=FMath::Max(0.f,ImpactFlash-Dt);
-    if (HitStop>0.f)
+    const float RealDelta = FMath::Max(Dt, 0.f);
+    const float ContactDelta = FMath::Min(HitStop, RealDelta);
+    HitStop = FMath::Max(0.f, HitStop - RealDelta);
+    // Consume only the portion of this frame occupied by contact hit-stop.
+    // Its final partial frame can already resume the slowed combat clock.
+    const float AvailableFraction = RealDelta > 0.f ? (RealDelta - ContactDelta) / RealDelta : (HitStop > 0.f ? 0.f : 1.f);
+    CombatTimeScale = AvailableFraction * SampleDefenseTimeScale();
+    if (CombatTimeScale <= 0.f)
     {
-        HitStop-=Dt;
         PlayerFighter->SetFrozen(true); EnemyFighter->SetFrozen(true);
+        UpdateContactSparks(Dt);
         return;
     }
     PlayerFighter->SetFrozen(false); EnemyFighter->SetFrozen(false);
-    Accumulator+=FMath::Min(Dt,.1f);
+    Accumulator+=FMath::Min(RealDelta,.1f) * CombatTimeScale;
     constexpr float FixedStep=1.f/120.f;
     while (Accumulator>=FixedStep)
     {
+        const uint32 PreviousCue = DefenseCueSerial;
         Step(FixedStep);
+        CombatFrameDelta += FixedStep;
         Accumulator-=FixedStep;
-        if (HitStop>0.f)
+        if (HitStop>0.f || PreviousCue != DefenseCueSerial)
         {
             Accumulator=0.f;
-            PlayerFighter->SetFrozen(true); EnemyFighter->SetFrozen(true);
+            CombatTimeScale = HitStop > 0.f ? 0.f : SampleDefenseTimeScale();
+            PlayerFighter->SetFrozen(HitStop > 0.f); EnemyFighter->SetFrozen(HitStop > 0.f);
             break;
         }
     }
+    UpdateContactSparks(Dt);
 }
 
 void ARoninGameMode::Step(float Dt)
 {
     Combat.Tick(Dt);
+    ObservePlayerAttackStart();
     PlayerFighter->AdvanceDodge(Dt);
     EnemyFighter->AdvanceDodge(Dt);
+    PlayerFighter->AdvanceCombatMovement(Dt);
+    EnemyFighter->AdvanceCombatMovement(Dt);
     if (bGuardHeld && Combat.Get(FighterId::Player).action==Action::Idle && !Combat.Get(FighterId::Player).guarding)
         Combat.SetGuard(FighterId::Player,true,false);
     RoundTime+=Dt;
@@ -255,10 +330,23 @@ void ARoninGameMode::Step(float Dt)
             if (Kind==AttackKind::Unblockable) Notify(TEXT("UNBLOCKABLE  /  DODGE"),FLinearColor(1.f,.2f,.1f),.9f);
         }
     }
-    else if (CanControl() && Combat.Get(FighterId::Enemy).action==Action::Idle && !Combat.EnemyReady())
+    else if (CanControl() && Combat.Get(FighterId::Enemy).action==Action::Idle)
     {
-        // Only the opening of the recovery interval raises guard; it cannot parry every frame.
-        Combat.SetGuard(FighterId::Enemy,Combat.Get(FighterId::Enemy).decisionTime>.35f);
+        const auto& Incoming = Combat.Get(FighterId::Player);
+        const auto& Defender = Combat.Get(FighterId::Enemy);
+        const FVector TowardPlayer = (PlayerFighter->GetActorLocation() - EnemyFighter->GetActorLocation()).GetSafeNormal2D();
+        const bool bFacingThreat = FVector::DotProduct(EnemyFighter->GetActorForwardVector(), TowardPlayer) > .25f;
+        const bool bPressure = Incoming.action == Action::Active ||
+            (Incoming.action == Action::Windup && (Incoming.actionTime >= .08f || Defender.guarding)) ||
+            (Incoming.action == Action::Recovery && Defender.guarding);
+        const bool bBrace = bPressure && bFacingThreat && Distance <= Incoming.spec.range;
+        const bool bRecoveryGuard = !Combat.EnemyReady() && Defender.decisionTime > .35f;
+        // React to a visible commitment without interrupting an enemy attack or
+        // granting a fresh parry. Maintain the brace through incoming contact.
+        const bool bEarnedCounter = Incoming.isCounterAttack &&
+            Incoming.attackCounterSource != ronin::CounterSource::None &&
+            (Incoming.action == Action::Windup || Incoming.action == Action::Active);
+        Combat.SetGuard(FighterId::Enemy, !bEarnedCounter && (bBrace || bRecoveryGuard), false);
     }
     // Earlier active contact wins. Ties use commitment order, never a fixed player priority.
     const auto& PlayerState=Combat.Get(FighterId::Player);
@@ -287,25 +375,49 @@ void ARoninGameMode::ResolveAttack(FighterId Id)
     auto* Source=Id==FighterId::Player ? PlayerFighter.Get() : EnemyFighter.Get();
     auto* Target=Id==FighterId::Player ? EnemyFighter.Get() : PlayerFighter.Get();
     FVector Delta=Target->GetActorLocation()-Source->GetActorLocation();
+    if (FMath::Abs(Delta.Z) > 140.f) return;
+    const float ContactDistance = Delta.Size();
     Delta.Z=0;
     const bool Facing=FVector::DotProduct(Source->GetActorForwardVector(),Delta.GetSafeNormal())>.25f;
     const bool bGuardContact=Combat.Get(Id==FighterId::Player ? FighterId::Enemy : FighterId::Player).guarding;
-    const auto Result=Combat.ResolveHit(Id,Delta.Size(),Facing);
+    const auto Result=Combat.ResolveHit(Id,ContactDistance,Facing);
     if (Result==HitResult::None || Result==HitResult::Miss) return;
     const FVector Contact=(Source->GetActorLocation()+Target->GetActorLocation())*.5f+FVector(0,0,25);
     if (Result==HitResult::Dodged)
     {
-        Notify(TEXT("CLEAN EVADE"),FLinearColor(.48f,.85f,.83f));
-        if (Id==FighterId::Enemy) PulseFeedback(this,ronin::HapticEvent::PerfectDodge);
+        Notify(Id==FighterId::Enemy ? TEXT("PERFECT DODGE  /  COUNTER READY") : TEXT("EVADED"),FLinearColor(.48f,.85f,.83f));
+        if (Id==FighterId::Enemy)
+        {
+            BeginDefenseCinematic(true);
+            PulseFeedback(this,ronin::HapticEvent::PerfectDodge);
+        }
         return;
+    }
+    const FVector ImpactDirection = Source->GetActorForwardVector();
+    const bool bAttackerDeflected = Result == HitResult::Parried ||
+        (Result == HitResult::GuardBreak && Combat.Get(Id).action == Action::Broken);
+    if (bAttackerDeflected)
+    {
+        Source->ReceiveImpact(-ImpactDirection, false, true);
+    }
+    else if (Result == HitResult::Hit || Result == HitResult::Blocked || Result == HitResult::GuardBreak)
+    {
+        const bool bStrong = State.isCounterAttack || State.comboStep == 4 ||
+            State.currentAttack == AttackKind::Heavy || Result == HitResult::GuardBreak;
+        Target->ReceiveImpact(ImpactDirection, Result == HitResult::Blocked, bStrong);
     }
     FLinearColor Color(.95f,.49f,.16f);
     if (Result==HitResult::Parried)
     {
         Color=FLinearColor(.7f,.9f,1.f);
-        if (Id==FighterId::Enemy) { ++PerfectParries; Notify(TEXT("PERFECT PARRY  /  COUNTER"),Color); }
-        else Notify(TEXT("PARRIED"),Color);
-        PlayCue(TEXT("Clash"),Contact); HitStop=.065f;
+        if (Id==FighterId::Enemy)
+        {
+            ++PerfectParries;
+            Notify(TEXT("PERFECT PARRY  /  COUNTER READY"),Color);
+            BeginDefenseCinematic(false);
+        }
+        else { Notify(TEXT("PARRIED"),Color); HitStop=.045f; }
+        PlayCue(TEXT("Clash"),Contact,1.15f);
         Source->HitFlash(Color);
         PulseFeedback(this,Id==FighterId::Enemy ? ronin::HapticEvent::Parry : ronin::HapticEvent::Block);
     }
@@ -316,10 +428,11 @@ void ARoninGameMode::ResolveAttack(FighterId Id)
         if (Combat.Get(Id).action==Action::Broken)
         {
             Source->HitFlash(Color);
-            if (Id==FighterId::Enemy) ++PerfectParries;
+            if (Id==FighterId::Enemy) { ++PerfectParries; BeginDefenseCinematic(false); }
         }
         else Target->HitFlash(Color);
-        PulseFeedback(this,ronin::HapticEvent::GuardBreak);
+        PulseFeedback(this,Id==FighterId::Player && State.isCounterAttack && !bAttackerDeflected ?
+            ronin::HapticEvent::Counter : ronin::HapticEvent::GuardBreak);
     }
     else if (Result==HitResult::Blocked)
     {
@@ -329,10 +442,13 @@ void ARoninGameMode::ResolveAttack(FighterId Id)
     }
     else
     {
-        PlayCue(TEXT("Hit"),Contact); HitStop=.045f;
+        PlayCue(TEXT("Hit"),Contact,State.isCounterAttack ? 1.15f : 1.f); HitStop=.045f;
         Target->HitFlash(FLinearColor(.9f,.12f,.06f));
         if (Id==FighterId::Enemy) ImpactFlash=.22f;
-        PulseFeedback(this,Id==FighterId::Enemy ? ronin::HapticEvent::Damage : ronin::HapticEvent::Hit);
+        PulseFeedback(this,Id==FighterId::Enemy ? ronin::HapticEvent::Damage :
+            State.isCounterAttack ? ronin::HapticEvent::Counter : ronin::HapticEvent::Hit);
+        if (Id==FighterId::Player && State.isCounterAttack)
+            Notify(TEXT("CRITICAL COUNTER"),FLinearColor(1.f,.81f,.42f));
     }
     if (Result==HitResult::Parried || Result==HitResult::Blocked ||
         (Result==HitResult::GuardBreak && bGuardContact))
@@ -351,8 +467,9 @@ void ARoninGameMode::RestartDuel()
 {
     ClearContactSparks();
     StopFeedback(this);
-    Combat.Reset(); Accumulator=0; HitStop=0; RoundTime=0; PerfectParries=0; bRoundScored=false;
+    Combat.Reset(); Accumulator=0; HitStop=0; RoundTime=0; PerfectParries=0; bRoundScored=false; LastPlayerAttackId=0;
     bCombatPaused=false; ImpactFlash=0; bGuardHeld=false;
+    ClearDefenseCinematic();
     if (PlayerFighter) PlayerFighter->ResetPose(FVector(-300,0,100),FRotator(0,0,0));
     if (EnemyFighter) EnemyFighter->ResetPose(FVector(300,0,100),FRotator(0,180,0));
     FeedbackTime=0.f;
@@ -360,11 +477,24 @@ void ARoninGameMode::RestartDuel()
 }
 void ARoninGameMode::LightAttack()
 {
-    if (CanControl() && Combat.TryAttack(FighterId::Player,AttackKind::Light)) { PlayCue(TEXT("Slash"),PlayerFighter->GetActorLocation()); PulseFeedback(this,ronin::HapticEvent::Swing); }
+    if (CanControl()) Combat.TryAttack(FighterId::Player,AttackKind::Light);
 }
 void ARoninGameMode::HeavyAttack()
 {
-    if (CanControl() && Combat.TryAttack(FighterId::Player,AttackKind::Heavy)) { PlayCue(TEXT("Slash"),PlayerFighter->GetActorLocation(),1.15f); PulseFeedback(this,ronin::HapticEvent::HeavySwing); }
+    if (CanControl()) Combat.TryAttack(FighterId::Player,AttackKind::Heavy);
+}
+void ARoninGameMode::ObservePlayerAttackStart()
+{
+    const auto& State = Combat.Get(FighterId::Player);
+    if (!PlayerFighter || State.attackId == 0 || State.attackId == LastPlayerAttackId) return;
+    LastPlayerAttackId = State.attackId;
+    // Consume a canceled start as well, so a guard/dodge pressed in the same
+    // input frame cannot produce a delayed swing sound or controller pulse.
+    if (State.action != Action::Windup && State.action != Action::Active && State.action != Action::Recovery)
+        return;
+    const bool bHeavy = State.currentAttack == AttackKind::Heavy || State.isCounterAttack || State.comboStep == 4;
+    PlayCue(TEXT("Slash"),PlayerFighter->GetActorLocation(),bHeavy ? 1.15f : 1.f);
+    PulseFeedback(this,bHeavy ? ronin::HapticEvent::HeavySwing : ronin::HapticEvent::Swing);
 }
 void ARoninGameMode::Guard(bool bHeld)
 {
@@ -379,7 +509,7 @@ void ARoninGameMode::Execute()
 {
     if (!CanControl()) return;
     const FVector Delta=EnemyFighter->GetActorLocation()-PlayerFighter->GetActorLocation();
-    if (Combat.TryExecute(FighterId::Player,Delta.Size2D(),FVector::DotProduct(PlayerFighter->GetActorForwardVector(),Delta.GetSafeNormal2D())>.25f))
+    if (FMath::Abs(Delta.Z) <= 120.f && Combat.TryExecute(FighterId::Player,Delta.Size(),FVector::DotProduct(PlayerFighter->GetActorForwardVector(),Delta.GetSafeNormal2D())>.25f))
     {
         PlayCue(TEXT("Execute"),EnemyFighter->GetActorLocation()); HitStop=.13f;
         EnemyFighter->HitFlash(FLinearColor(1.f,.5f,.1f));
@@ -399,6 +529,7 @@ void ARoninGameMode::TogglePause()
 {
     if (!bDuelStarted) return;
     bCombatPaused=!bCombatPaused;
+    ClearDefenseCinematic();
     UpdateContactSparks(0.f);
     StopFeedback(this);
     Combat.SetGuard(FighterId::Player,false);
@@ -446,6 +577,7 @@ void ARoninGameMode::CycleHaptics()
     if (auto* PC=Cast<ARoninPlayerController>(UGameplayStatics::GetPlayerController(this,0)))
     {
         PC->StopRumble(); PC->SetRumbleIntensity(Values[HapticsIndex]);
+        PC->PreviewRumble();
     }
     Notify(TEXT("RUMBLE: ")+HapticsName,FLinearColor(.87f,.8f,.6f));
 }

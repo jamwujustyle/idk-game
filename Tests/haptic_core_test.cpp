@@ -13,7 +13,7 @@ namespace
 int checks = 0;
 constexpr HapticEvent Events[]{HapticEvent::Swing, HapticEvent::HeavySwing, HapticEvent::Dodge,
     HapticEvent::PerfectDodge, HapticEvent::Hit, HapticEvent::Block, HapticEvent::Parry,
-    HapticEvent::Damage, HapticEvent::GuardBreak, HapticEvent::Execute};
+    HapticEvent::Damage, HapticEvent::GuardBreak, HapticEvent::Execute, HapticEvent::Counter};
 
 void Check(bool condition, const char* expression, int line)
 {
@@ -90,16 +90,16 @@ void DistinctionSurvivesTwoMotorMapping()
     const auto parry = At(HapticEvent::Parry, 0.f);
     const auto evade = At(HapticEvent::PerfectDodge, 0.f);
     CHECK(Bass(heavy) > 2.f * Bass(swing));
-    CHECK(Treble(parry) > 3.f * Bass(parry));
+    CHECK(Bass(parry) >= .85f && Treble(parry) >= .95f);
     CHECK(Treble(block) > Bass(block));
-    CHECK(Bass(hit) > 3.f * Treble(hit));
+    CHECK(Bass(hit) > 2.f * Treble(hit));
     CHECK(Bass(damage) > Bass(hit));
     CHECK(Treble(evade) > 5.f * Treble(dodge));
     // A contact's treble dies before its bass; this is not one scaled waveform.
     const auto hitTail = At(HapticEvent::Hit, .06f);
     CHECK(Treble(hitTail) / Treble(hit) < Bass(hitTail) / Bass(hit));
     CHECK(Energy(HapticEvent::Dodge) < .2f * Energy(HapticEvent::Hit));
-    CHECK(Energy(HapticEvent::Swing) < .4f * Energy(HapticEvent::Block));
+    CHECK(Energy(HapticEvent::Swing) < Energy(HapticEvent::Block));
     CHECK(Energy(HapticEvent::Damage) > Energy(HapticEvent::Hit));
     CHECK(Silent(At(HapticEvent::Dodge, .08f)));
     CHECK(Silent(At(HapticEvent::Swing, .1f)));
@@ -141,11 +141,48 @@ void ParryGapSurvivesFrameRatesAndCompetingEvents()
     CHECK(Silent(core.GetOutput()));
     core.Tick(.025f);
     CHECK(Treble(core.GetOutput()) > .75f);
-    core.Tick(.1f);
+    core.Tick(.12f);
     CHECK(!core.IsActive());
     CHECK(Silent(core.GetOutput()));
     core.Tick(.5f);
     CHECK(Silent(core.GetOutput())); // No discarded movement feedback replays.
+}
+
+void StrongContactsRemainDistinctAndBounded()
+{
+    // Test the signals after Linux's max-per-frequency mapping. These limits
+    // establish meaningful actuator demand, not a claim about perceived feel.
+    const auto swing = At(HapticEvent::Swing, 0.f);
+    const auto heavy = At(HapticEvent::HeavySwing, 0.f);
+    CHECK(Bass(swing) >= .3f && Treble(swing) >= .55f);
+    CHECK(Bass(heavy) >= .65f);
+    CHECK(Energy(HapticEvent::Parry) > 1.3f * Energy(HapticEvent::Hit));
+    CHECK(Energy(HapticEvent::Counter) > 1.5f * Energy(HapticEvent::Hit));
+    CHECK(Energy(HapticEvent::HeavySwing) < Energy(HapticEvent::Parry));
+    CHECK(Energy(HapticEvent::HeavySwing) < Energy(HapticEvent::Counter));
+
+    HapticCore core;
+    CHECK(core.Trigger(HapticEvent::Hit));
+    CHECK(core.Trigger(HapticEvent::Counter));
+    CHECK(Bass(core.GetOutput()) == 1.f && Treble(core.GetOutput()) >= .85f);
+    core.Tick(.11f);
+    const auto valley = core.GetOutput();
+    CHECK(Bass(valley) > 0.f); // Counter has a continuous body; parry has silence.
+    for (auto event : {HapticEvent::Swing, HapticEvent::Hit, HapticEvent::Block,
+        HapticEvent::Damage, HapticEvent::Parry, HapticEvent::Counter})
+    {
+        CHECK(!core.Trigger(event));
+        CHECK(Same(core.GetOutput(), valley));
+    }
+    core.Tick(.025f);
+    CHECK(Bass(core.GetOutput()) > Bass(valley) + .4f);
+    CHECK(Bass(core.GetOutput()) > Bass(At(HapticEvent::Hit, .135f)) * 3.f);
+    core.Tick(.13f);
+    CHECK(!core.IsActive() && Silent(core.GetOutput()));
+    CHECK(Silent(At(HapticEvent::Counter, .3f)));
+    CHECK(core.Trigger(HapticEvent::Counter));
+    CHECK(core.Trigger(HapticEvent::GuardBreak));
+    CHECK(core.Trigger(HapticEvent::Execute));
 }
 
 void PrioritiesAndDuplicateCallbacks()
@@ -158,6 +195,7 @@ void PrioritiesAndDuplicateCallbacks()
     CHECK(core.Trigger(HapticEvent::PerfectDodge));
     CHECK(core.Trigger(HapticEvent::Damage));
     CHECK(core.Trigger(HapticEvent::Parry));
+    CHECK(core.Trigger(HapticEvent::Counter));
     CHECK(core.Trigger(HapticEvent::GuardBreak));
     CHECK(core.Trigger(HapticEvent::Execute));
     core.Tick(.2f);
@@ -192,7 +230,7 @@ void PrioritiesAndDuplicateCallbacks()
 void StrengthIntensityAndBounds()
 {
     HapticCore core;
-    CHECK(Near(core.GetIntensity(), .7f));
+    CHECK(Near(core.GetIntensity(), 1.f));
     core.SetIntensity(.5f);
     CHECK(core.Trigger(HapticEvent::Execute, .4f));
     CHECK(Near(Bass(core.GetOutput()), .2f));
@@ -288,6 +326,7 @@ int main()
 {
     DistinctionSurvivesTwoMotorMapping();
     ParryGapSurvivesFrameRatesAndCompetingEvents();
+    StrongContactsRemainDistinctAndBounded();
     PrioritiesAndDuplicateCallbacks();
     StrengthIntensityAndBounds();
     MutingDisablingAndStoppingCannotResumeStaleRumble();

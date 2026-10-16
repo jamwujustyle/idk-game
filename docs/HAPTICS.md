@@ -9,21 +9,22 @@ Adaptive triggers, trigger motors, and advanced DualSense haptics are not used.
 ## Event feel and interruption
 
 Large-motor pulses emphasize weight; small-motor pulses emphasize a sharper
-contact. Each motor has its own piecewise-linear envelope. Movement feedback is
-brief and quiet so confirmed contacts stand out.
+contact. Each motor has its own piecewise-linear envelope. Swings have a firm,
+short pulse; confirmed parries and counters have greater total motor demand.
 
 | Event | Duration, seconds | Priority | Pattern |
 | --- | ---: | ---: | --- |
-| Swing | 0.065 | 1 | Light, short treble pulse |
-| Heavy swing | 0.095 | 1 | Heavier bass-led preparation |
-| Dodge | 0.055 | 1 | Restrained movement tick |
-| Hit | 0.14 | 2 | Landed hit: bass thud with a rapidly fading sharp edge |
-| Block | 0.105 | 3 | Brief treble-led steel contact |
-| Perfect dodge | 0.12 | 4 | Light, crisp confirmation of an incoming attack evaded in range |
+| Swing | 0.095 | 1 | Firm, short treble pulse |
+| Heavy swing | 0.13 | 1 | Heavier bass-led preparation |
+| Dodge | 0.065 | 1 | Restrained movement tick |
+| Hit | 0.18 | 2 | Landed hit: strong bass thud with a rapidly fading sharp edge |
+| Block | 0.13 | 3 | Strong treble-led steel contact |
+| Perfect dodge | 0.16 | 4 | Crisp confirmation of an incoming attack evaded in range |
 | Damage | 0.24 | 5 | Received hit: stronger bass onset and a single decaying body |
-| Parry | 0.18 | 6 | Sharp double tap with 35 ms of full silence between strikes |
-| Guard break | 0.29 | 7 | Heavy initial crunch with a smaller rebound |
-| Execute | 0.4 | 8 | Strong initial contact, separation, and a second impact |
+| Parry | 0.2 | 6 | Strong double tap in both motors with 35 ms of full silence between strikes |
+| Counter | 0.26 | 7 | Critical contact: sustained heavy onset and a distinct bass rebound |
+| Guard break | 0.29 | 8 | Heavy initial crunch with a smaller rebound |
+| Execute | 0.4 | 9 | Strong initial contact, separation, and a second impact |
 
 One envelope plays at a time. A higher-priority event interrupts the current one;
 a different equal-priority event replaces it. Lower-priority events and repeated
@@ -33,18 +34,39 @@ a continuous buzz. A new instance of the same event can start after it finishes.
 
 ## Delivery, camera, and lifecycle
 
-The player controller submits feedback after action bindings and before Unreal's
-force-feedback processing in the same frame, then advances the envelope. Dynamic
+The player controller submits the current envelope before Unreal's
+force-feedback processing, then advances it on real time. Dynamic
 feedback uses a short renewed lease that also covers the current frame duration.
 A stalled delivery loop therefore does not deliberately request endless rumble.
+Delivery requires real gamepad input received by the local controller, a focused
+interactive viewport, and a valid Unreal controller input index. Explicit
+disconnects stop feedback; unknown legacy mapper metadata does not block an
+otherwise valid delivered input event. Unattended captures never drive motors.
+The controller logs the first physical input and first UE submission per device
+connection. These logs confirm software routing, not physical motor response.
 
 Confirmed contacts also produce a small additive camera impulse for either input
 method. It affects the final view, leaving control rotation and lock-on intact.
-The strongest event is bounded to 2.4 cm of displacement and 0.675 degrees of
-pitch/FOV change. Swings and ordinary dodges do not shake the camera. Contact
+The contact impulse alone is bounded to 2.4 cm of displacement and 0.675 degrees
+of pitch/FOV change. Swings and ordinary dodges do not shake the camera. Contact
 impulses use the same priority rules and do not stack their amplitudes.
 
-Global rumble intensity defaults to 0.7 and accepts values from 0 to 1. Each
+A confirmed player parry or perfect dodge also starts a separate lens push:
+parry reaches at most 60 cm forward, an 8-degree FOV reduction, 2 degrees of yaw,
+and 1 degree of downward pitch. Perfect dodge uses 24 cm, 4 degrees of FOV,
+0.8 degrees of yaw, and 0.4 degrees of downward pitch. The push eases in over
+0.035 seconds, holds briefly, and returns over the end of the 0.52-second parry
+or 0.3-second dodge cue. It follows the existing view instead of orbiting the
+fighters and never changes control rotation. It can combine with the contact impulse;
+the contact-only limits above do not describe that combined view. Both camera
+effects and rumble run in real time during the [combat slowdown](COMBAT.md#successful-defense-presentation).
+Queued light-combo inputs produce swing feedback only when the next cut begins.
+Actual critical-counter hits, including a counter that breaks the defender's
+guard, use the distinct Counter pattern. A canceled start produces no delayed
+swing feedback. Changing the rumble strength with D-pad Down previews the parry
+pattern at the chosen strength without moving the camera.
+
+Global rumble intensity defaults to 1 and accepts values from 0 to 1. Each
 trigger also accepts a strength multiplier from 0 to 1. Values are clamped;
 negative and non-finite strengths produce no event. Non-finite global intensity
 becomes zero. A positive intensity adjustment scales the current event without
@@ -88,3 +110,8 @@ g++ -std=c++17 -O2 -Wall -Wextra -Wpedantic -Werror scripts/controller-rumble.cp
 Use `--device /dev/input/eventN` if multiple Xbox controllers are connected.
 A successful driver pulse does not establish Unreal gameplay delivery; check that
 separately in the game.
+
+The bundled UE 5.7 Linux backend converts normalized large/small channels to
+SDL haptic magnitudes with a 32767 multiplier. A setting of 100% means the full
+game envelope sent through that backend; it does not establish maximum physical
+motor output or equal strength across controller drivers.

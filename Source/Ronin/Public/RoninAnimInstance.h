@@ -24,7 +24,16 @@ struct FRoninAnimationState
     FVector LocalVelocity = FVector::ZeroVector;
     FVector LocalDodgeDirection = -FVector::ForwardVector;
     uint32 ResetSerial = 0;
+    uint32 DefenseSerial = 0;
+    float TimeScale = 1.f;
+    float SimulationDelta = 0.f;
+    uint32 ImpactSerial = 0;
+    bool bImpactBlocked = false, bImpactStrong = false;
+    bool bDefenseActive = false;
+    bool bPerfectDodge = false;
     bool bFrozen = false;
+    bool bAirborne = false;
+    float VerticalSpeed = 0.f;
 };
 
 struct FRoninAnimationPlayback

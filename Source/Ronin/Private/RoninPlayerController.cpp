@@ -10,6 +10,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "UnrealClient.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogRoninFeedback, Log, All);
+
 URoninImpactCameraModifier::URoninImpactCameraModifier()
 {
     Impulse.SetIntensity(1.f);
@@ -22,6 +24,7 @@ void URoninImpactCameraModifier::Pulse(ronin::HapticEvent Event)
     switch (Event)
     {
     case ronin::HapticEvent::Hit: Scale=.5f; break;
+    case ronin::HapticEvent::Counter: Scale=1.1f; break;
     case ronin::HapticEvent::Block: Scale=.4f; break;
     case ronin::HapticEvent::PerfectDodge: Scale=.18f; break;
     case ronin::HapticEvent::Parry: Scale=.8f; break;
@@ -42,11 +45,34 @@ bool URoninImpactCameraModifier::ModifyCamera(float DeltaTime, FMinimalViewInfo&
     InOutPOV.Location-=InOutPOV.Rotation.Vector()*(1.6f*Weight);
     InOutPOV.Rotation.Pitch+=.45f*Weight;
     InOutPOV.FOV+=.45f*Weight;
+    if (DefenseAge >= 0.f)
+    {
+        const float Duration = bDodgeBeat ? .3f : .52f;
+        const float ReturnDuration = bDodgeBeat ? .2f : .15f;
+        const float Phase = FMath::Clamp((DefenseAge - (Duration - ReturnDuration)) / ReturnDuration, 0.f, 1.f);
+        const float Release = 1.f - Phase * Phase * (3.f - 2.f * Phase);
+        const float Attack = FMath::Clamp(DefenseAge / .035f, 0.f, 1.f);
+        const float Emphasis = Attack * Attack * (3.f - 2.f * Attack) * Release;
+        // Push along the existing view and hold the clash briefly in frame.
+        // These offsets never accumulate into control rotation or orbit either fighter.
+        InOutPOV.FOV -= (bDodgeBeat ? 4.f : 8.f) * Emphasis;
+        InOutPOV.Location += InOutPOV.Rotation.Vector() * ((bDodgeBeat ? 24.f : 60.f) * Emphasis);
+        InOutPOV.Rotation.Yaw += (bDodgeBeat ? .8f : 2.f) * Emphasis;
+        InOutPOV.Rotation.Pitch -= (bDodgeBeat ? .4f : 1.f) * Emphasis;
+        DefenseAge += FMath::Max(DeltaTime, 0.f);
+        if (DefenseAge >= Duration) DefenseAge = -1.f;
+    }
     Impulse.Tick(DeltaTime);
     return false;
 }
 
-void URoninImpactCameraModifier::Clear() { Impulse.Stop(); ImpactScale=0.f; }
+void URoninImpactCameraModifier::PlayDefenseBeat(bool bPerfectDodge)
+{
+    DefenseAge = 0.f;
+    bDodgeBeat = bPerfectDodge;
+}
+
+void URoninImpactCameraModifier::Clear() { Impulse.Stop(); ImpactScale=0.f; DefenseAge=-1.f; }
 
 ARoninPlayerController::ARoninPlayerController() { bForceFeedbackEnabled=true; }
 
@@ -74,8 +100,18 @@ bool ARoninPlayerController::InputKey(const FInputKeyEventArgs& Params)
             ApplyRumble();
         }
         bUsingGamepad=Params.IsGamepad();
-        if (Params.IsGamepad() && !Params.IsSimulatedInput() && Params.InputDevice!=INPUTDEVICEID_NONE)
+        if (Params.IsGamepad() && !Params.IsSimulatedInput())
+        {
+            if (!bReceivedGamepadInput || LastGamepadDevice != Params.InputDevice)
+            {
+                UE_LOG(LogRoninFeedback, Display, TEXT("Physical gamepad input received: device=%d, player input index=%d, mapper state=%d"),
+                    Params.InputDevice.GetId(), GetInputIndex(),
+                    static_cast<int32>(IPlatformInputDeviceMapper::Get().GetInputDeviceConnectionState(Params.InputDevice)));
+                bLoggedFeedbackRoute = false;
+            }
+            bReceivedGamepadInput = true;
             LastGamepadDevice=Params.InputDevice;
+        }
     }
     return Super::InputKey(Params);
 }
@@ -87,7 +123,10 @@ void ARoninPlayerController::PlayerTick(float Dt)
     const bool bHasFocus=ViewportClient && ViewportClient->Viewport && ViewportClient->Viewport->HasFocus();
     if (!bHasFocus)
     {
-        StopRumble();
+        // Offscreen captures still need visual reactions, but must never send
+        // physical controller feedback without a focused game viewport.
+        if (FApp::IsUnattended()) SilenceControllerRumble();
+        else StopRumble();
         // Clear held controls once on the transition. Offscreen unattended runs
         // must keep simulating, while feedback is still silenced without focus.
         if (bHadViewportFocus) ClearHeldInputs(!FApp::IsUnattended());
@@ -100,7 +139,12 @@ void ARoninPlayerController::PostProcessInput(const float DeltaTime, const bool 
 {
     Super::PostProcessInput(DeltaTime,bGamePaused);
     if (!IsLocalController()) return;
-    if (!bHadViewportFocus || bGamePaused) StopRumble();
+    if (bGamePaused) StopRumble();
+    else if (!bHadViewportFocus)
+    {
+        if (FApp::IsUnattended()) SilenceControllerRumble();
+        else StopRumble();
+    }
     // This runs after action bindings but before UE processes force feedback.
     // Submit the attack/contact onset this frame, then advance its next sample.
     // A lease longer than this frame also survives a slow frame's engine update.
@@ -110,12 +154,14 @@ void ARoninPlayerController::PostProcessInput(const float DeltaTime, const bool 
 
 void ARoninPlayerController::ClearHeldInputs(bool bPauseIfActive)
 {
+    StopRumble();
     if (PlayerInput) PlayerInput->FlushPressedKeys();
     if (APawn* ControlledPawn=GetPawn()) ControlledPawn->ConsumeMovementInputVector();
     if (auto* Game=Cast<ARoninGameMode>(UGameplayStatics::GetGameMode(this)))
     {
         // Clearing the core's guard also clears the game's physical hold latch.
         Game->Guard(false);
+        Game->ClearDefenseCinematic();
         if (bPauseIfActive && Game->CanControl()) Game->TogglePause();
     }
 }
@@ -129,6 +175,8 @@ void ARoninPlayerController::HandleInputDeviceConnectionChange(EInputDeviceConne
 
     const bool bWasActiveGamepad=bUsingGamepad;
     LastGamepadDevice=INPUTDEVICEID_NONE;
+    bReceivedGamepadInput=false;
+    bLoggedFeedbackRoute=false;
     bUsingGamepad=false;
     StopRumble();
     ClearHeldInputs(bWasActiveGamepad);
@@ -136,14 +184,51 @@ void ARoninPlayerController::HandleInputDeviceConnectionChange(EInputDeviceConne
 
 void ARoninPlayerController::Pulse(ronin::HapticEvent Event)
 {
-    if (!IsLocalController() || !bHadViewportFocus) return;
-    if (bUsingGamepad) Rumble.Trigger(Event);
-    if (ImpactCamera) ImpactCamera->Pulse(Event);
+    if (!IsLocalController()) return;
+    SubmitRumble(Event);
+    if (ImpactCamera && (bHadViewportFocus || FApp::IsUnattended())) ImpactCamera->Pulse(Event);
+}
+
+void ARoninPlayerController::SubmitRumble(ronin::HapticEvent Event)
+{
+    if (CanSendGamepadFeedback() && Rumble.Trigger(Event))
+    {
+        LastSubmittedFeedback = Event;
+        ++SubmittedFeedbackSerial;
+        ApplyRumble();
+        if (!bLoggedFeedbackRoute)
+        {
+            UE_LOG(LogRoninFeedback, Display, TEXT("Submitted rumble to UE player input index=%d at intensity=%g; physical motor response is not measured."),
+                GetInputIndex(), Rumble.GetIntensity());
+            bLoggedFeedbackRoute = true;
+        }
+    }
+}
+
+void ARoninPlayerController::PreviewRumble() { SubmitRumble(ronin::HapticEvent::Parry); }
+
+void ARoninPlayerController::PlayDefenseCue(bool bPerfectDodge)
+{
+    if (IsLocalController() && ImpactCamera && (bHadViewportFocus || FApp::IsUnattended()))
+        ImpactCamera->PlayDefenseBeat(bPerfectDodge);
+}
+
+bool ARoninPlayerController::CanSendGamepadFeedback() const
+{
+    if (!IsLocalController() || FApp::IsUnattended() || !bHadViewportFocus || !bUsingGamepad ||
+        !bReceivedGamepadInput || GetInputIndex() == INDEX_NONE)
+        return false;
+    // This controller already received the physical gamepad event through UE's
+    // input routing. Linux sends feedback via GetInputIndex itself; requiring a
+    // second exact mapper match can reject legacy events with incomplete metadata.
+    // Unknown metadata is allowed, while an explicit disconnect always silences it.
+    return LastGamepadDevice == INPUTDEVICEID_NONE ||
+        IPlatformInputDeviceMapper::Get().GetInputDeviceConnectionState(LastGamepadDevice) != EInputDeviceConnectionState::Disconnected;
 }
 
 void ARoninPlayerController::ApplyRumble(float LeaseSeconds)
 {
-    const auto Output=Rumble.GetOutput();
+    const auto Output=CanSendGamepadFeedback() ? Rumble.GetOutput() : ronin::HapticOutput{};
     const float Values[]={Output.leftLarge,Output.leftSmall,Output.rightLarge,Output.rightSmall};
     for (int32 I=0; I<4; ++I)
     {
@@ -155,10 +240,14 @@ void ARoninPlayerController::ApplyRumble(float LeaseSeconds)
     }
 }
 
-void ARoninPlayerController::StopRumble()
+void ARoninPlayerController::SilenceControllerRumble()
 {
     Rumble.Stop();
     ApplyRumble();
+}
+void ARoninPlayerController::StopRumble()
+{
+    SilenceControllerRumble();
     if (ImpactCamera) ImpactCamera->Clear();
 }
 void ARoninPlayerController::SetRumbleIntensity(float Intensity) { Rumble.SetIntensity(Intensity); ApplyRumble(); }

@@ -1,0 +1,34 @@
+parry-motion-v2
+[2026.10.16-12.16.03:500][168]LogRoninCapture: Display: RONIN_CAPTURE_MOTION_BEGIN parry-motion frames=90 fixedDelta=1/30
+[2026.10.16-12.16.09:083][191]LogRoninCapture: Display: RONIN_CAPTURE_ACTION frame=23 attack=2 step=1 counter=1
+[2026.10.16-12.16.10:178][195]LogRoninCapture: Display: RONIN_CAPTURE_CONTACT frame=27 attack=2 result=5
+[2026.10.16-12.16.27:015][258]LogRoninCapture: Display: RONIN_CAPTURE_MOTION_RESULT scenario=parry-motion frames=90/90 attacks=1 comboMask=1 contacts=1 defenses=1 counters=1 bytes=243793477 success=1
+[2026.10.16-12.16.27:015][258]LogRoninCapture: Display: RONIN_CAPTURE_COMPLETE /home/jam/Desktop/idk-game/.cache/combat-motion-v2/parry.png (1600x1000, 243793477 bytes; frames=90)
+
+dodge-motion-v2
+[2026.10.16-12.17.17:407][168]LogRoninCapture: Display: RONIN_CAPTURE_MOTION_BEGIN dodge-motion frames=90 fixedDelta=1/30
+[2026.10.16-12.17.33:122][205]LogRoninCapture: Display: RONIN_CAPTURE_ACTION frame=37 attack=2 step=1 counter=1
+[2026.10.16-12.17.34:962][208]LogRoninCapture: Display: RONIN_CAPTURE_CONTACT frame=41 attack=2 result=5
+[2026.10.16-12.17.57:197][258]LogRoninCapture: Display: RONIN_CAPTURE_MOTION_RESULT scenario=dodge-motion frames=90/90 attacks=1 comboMask=1 contacts=1 defenses=1 counters=1 bytes=242143573 success=1
+[2026.10.16-12.17.57:197][258]LogRoninCapture: Display: RONIN_CAPTURE_COMPLETE /home/jam/Desktop/idk-game/.cache/combat-motion-v2/dodge.png (1600x1000, 242143573 bytes; frames=90)
+
+combo-motion-v2
+[2026.10.16-12.18.40:444][158]LogRoninCapture: Display: RONIN_CAPTURE_MOTION_BEGIN combo-motion frames=180 fixedDelta=1/30
+[2026.10.16-12.18.40:444][158]LogRoninCapture: Display: RONIN_CAPTURE_ACTION frame=0 attack=1 step=1 counter=0
+[2026.10.16-12.18.42:839][164]LogRoninCapture: Display: RONIN_CAPTURE_CONTACT frame=6 attack=1 result=4
+[2026.10.16-12.18.45:904][171]LogRoninCapture: Display: RONIN_CAPTURE_ACTION frame=13 attack=2 step=2 counter=0
+[2026.10.16-12.18.48:641][176]LogRoninCapture: Display: RONIN_CAPTURE_CONTACT frame=19 attack=2 result=4
+[2026.10.16-12.18.51:879][184]LogRoninCapture: Display: RONIN_CAPTURE_ACTION frame=26 attack=3 step=3 counter=0
+[2026.10.16-12.18.54:216][189]LogRoninCapture: Display: RONIN_CAPTURE_CONTACT frame=31 attack=3 result=4
+[2026.10.16-12.18.57:402][195]LogRoninCapture: Display: RONIN_CAPTURE_ACTION frame=38 attack=4 step=4 counter=0
+[2026.10.16-12.19.00:179][202]LogRoninCapture: Display: RONIN_CAPTURE_CONTACT frame=44 attack=4 result=4
+[2026.10.16-12.19.03:369][209]LogRoninCapture: Display: RONIN_CAPTURE_ACTION frame=51 attack=5 step=5 counter=0
+[2026.10.16-12.19.06:564][216]LogRoninCapture: Display: RONIN_CAPTURE_CONTACT frame=58 attack=5 result=4
+[2026.10.16-12.20.00:980][338]LogRoninCapture: Display: RONIN_CAPTURE_MOTION_RESULT scenario=combo-motion frames=180/180 attacks=5 comboMask=31 contacts=5 defenses=0 counters=0 bytes=489103925 success=1
+[2026.10.16-12.20.00:980][338]LogRoninCapture: Display: RONIN_CAPTURE_COMPLETE /home/jam/Desktop/idk-game/.cache/combat-motion-v2/combo.png (1600x1000, 489103925 bytes; frames=180)
+
+explore-motion
+[2026.10.16-12.24.05:941][155]LogRoninCapture: Display: RONIN_CAPTURE_EXPLORE_BEGIN start=X=-300.000 Y=0.000 Z=100.000
+[2026.10.16-12.25.56:420][395]LogRoninCapture: Display: RONIN_CAPTURE_EXPLORE_RESULT start=X=-300.000 Y=0.000 Z=100.000 end=X=3789.778 Y=0.000 Z=86.814 grounded=1 finite=1 success=1
+[2026.10.16-12.25.56:420][395]LogRoninCapture: Display: RONIN_CAPTURE_MOTION_RESULT scenario=explore-motion frames=240/240 attacks=0 comboMask=0 contacts=0 defenses=0 counters=0 bytes=604219910 success=1
+[2026.10.16-12.25.56:420][395]LogRoninCapture: Display: RONIN_CAPTURE_COMPLETE /home/jam/Desktop/idk-game/.cache/combat-motion-v2/explore.png (1600x1000, 604219910 bytes; frames=240)

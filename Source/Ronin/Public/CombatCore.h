@@ -10,6 +10,7 @@ namespace ronin
 enum class FighterId : std::uint8_t { Player, Enemy };
 enum class Stance : std::uint8_t { Flow, Stone, Gale };
 enum class AttackKind : std::uint8_t { Light, Heavy, Unblockable };
+enum class CounterSource : std::uint8_t { None, Parry, Dodge };
 enum class Action : std::uint8_t
 {
     Idle, Windup, Active, Recovery, Dodging, Staggered, Broken, Dead
@@ -51,6 +52,15 @@ struct FighterState
     float decisionTime = 0.f;
     float postureRecoveryDelay = 0.f;
     std::uint64_t attackId = 0;
+    // A light chain has five deliberate strikes. Only one follow-up can be
+    // queued at a time; attackId changes when it begins, not when it is queued.
+    std::uint8_t comboStep = 0;
+    bool comboQueued = false;
+    // counterSource describes an available opening; attackCounterSource is
+    // latched when that opening is spent and remains valid through recovery.
+    CounterSource counterSource = CounterSource::None;
+    CounterSource attackCounterSource = CounterSource::None;
+    bool isCounterAttack = false;
     bool guarding = false;
     bool hitResolved = false;
     HitResult lastHit = HitResult::None;
@@ -63,6 +73,11 @@ public:
     static constexpr float ParryRetryDelay = 0.32f;
     static constexpr float ParryCounterWindow = 1.1f;
     static constexpr float DodgeCounterWindow = 0.65f;
+    static constexpr std::uint8_t LightComboLength = 5;
+    static constexpr float ComboLinkRecovery = 0.09f;
+    static constexpr float CounterDamageMultiplier = 1.8f;
+    static constexpr float CounterPostureMultiplier = 1.8f;
+    static constexpr float CounterWindupMultiplier = 0.6f;
     static constexpr float ExecutionRange = 240.f;
     static constexpr float GuardBreakDuration = 2.2f;
 
@@ -71,6 +86,8 @@ public:
     void Tick(float deltaSeconds);
     const FighterState& Get(FighterId id) const;
 
+    // True means a strike started OR one follow-up was queued. Presentation
+    // should observe attackId to play each actual swing exactly once.
     bool TryAttack(FighterId id, AttackKind kind);
     // A physical press can cancel attack windup/recovery or a resolved strike.
     // Restoring a held button after an interruption
@@ -97,7 +114,10 @@ private:
     FighterState& Mutable(FighterId id);
     static FighterId Opponent(FighterId id);
     static void SetAction(FighterState& fighter, Action action, float duration = 0.f);
-    static void TickFighter(FighterState& fighter, float deltaSeconds);
+    void StartAttack(FighterId id, AttackKind kind, std::uint8_t comboStep = 0);
+    void TickFighter(FighterId id, float deltaSeconds);
+    static void ClearChain(FighterState& fighter);
+    static void ClearCounter(FighterState& fighter);
     static bool ApplyPosture(FighterState& fighter, float amount);
     static void Kill(FighterState& fighter);
 };

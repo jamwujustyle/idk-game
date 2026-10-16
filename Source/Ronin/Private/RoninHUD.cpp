@@ -44,17 +44,18 @@ void ARoninHUD::Controls(const ARoninGameMode& Game,float X,float Y)
 {
     const float S=Scale;
     const bool bPad=Game.bUsingGamepad;
-    DrawRect(FLinearColor(.015f,.025f,.03f,.9f),X-22*S,Y-20*S,548*S,330*S);
+    DrawRect(FLinearColor(.015f,.025f,.03f,.9f),X-22*S,Y-20*S,548*S,350*S);
     Label(TEXT("CONTROLS"),X,Y,.8f,Gold);
-    Label(bPad ? TEXT("LS  MOVE     RS  CAMERA") : TEXT("WASD  MOVE     MOUSE  CAMERA"),X,Y+42*S,.65f,Ivory);
+    Label(bPad ? TEXT("LS  MOVE   L3  SPRINT   RS  CAMERA") : TEXT("WASD  MOVE   SHIFT  SPRINT   MOUSE  CAMERA"),X,Y+42*S,.65f,Ivory);
     Label(bPad ? TEXT("RB  CUT     RT  HEAVY") : TEXT("LMB  CUT     E  HEAVY"),X,Y+72*S,.65f,Ivory);
     Label(bPad ? TEXT("LB  PARRY / HOLD GUARD") : TEXT("RMB  PARRY / HOLD GUARD"),X,Y+102*S,.65f,Ivory);
-    Label(bPad ? TEXT("B  DODGE     Y  FINISH") : TEXT("SPACE  DODGE     F  FINISH"),X,Y+132*S,.65f,Ivory);
+    Label(bPad ? TEXT("A  JUMP   B  DODGE   Y  FINISH") : TEXT("SPACE  JUMP   CTRL  DODGE   F  FINISH"),X,Y+132*S,.65f,Ivory);
     Label(bPad ? TEXT("D-PAD LEFT / UP / RIGHT  STANCE") : TEXT("1 / 2 / 3  FLOW / STONE / GALE"),X,Y+162*S,.65f,Ivory);
     Label(bPad ? TEXT("RS CLICK  LOCK     VIEW  REMATCH") : TEXT("TAB  LOCK     R  REMATCH"),X,Y+192*S,.65f,Ivory);
-    Label(TEXT("Tap guard just before impact to parry."),X,Y+235*S,.6f,Muted);
-    Label(TEXT("Red attack: dodge. Full gold posture: guard break."),X,Y+259*S,.55f,Muted);
-    if (Game.HasDuelStarted()) Statistics(Game,X+252*S,Y+287*S);
+    Label(TEXT("Cut again on contact for a 5-hit combo."),X,Y+230*S,.6f,Muted);
+    Label(TEXT("Perfect parry/dodge: cut for a critical counter."),X,Y+254*S,.55f,Muted);
+    Label(TEXT("Tap guard before impact. Red attack: dodge."),X,Y+278*S,.55f,Muted);
+    if (Game.HasDuelStarted()) Statistics(Game,X+252*S,Y+315*S);
 }
 
 void ARoninHUD::DrawHUD()
@@ -84,10 +85,10 @@ void ARoninHUD::DrawHUD()
         return;
     }
 
-    if (G->bCombatPaused || bDead || bWon)
+    if (G->bCombatPaused || bDead)
     {
         DrawRect(FLinearColor(.01f,.018f,.025f,.85f),0,0,W,H);
-        Label(G->bCombatPaused ? TEXT("PAUSED") : bWon ? TEXT("DUEL WON") : TEXT("RISE AGAIN"),
+        Label(G->bCombatPaused ? TEXT("PAUSED") : TEXT("RISE AGAIN"),
             W*.5f,H*.2f,1.9f,bDead && !G->bCombatPaused ? Red : Ivory,true);
         if (G->bShowHelp)
         {
@@ -98,7 +99,7 @@ void ARoninHUD::DrawHUD()
             Label(bPad ? TEXT("VIEW  REMATCH") : TEXT("R  REMATCH"),W*.5f,H*.36f,.9f,Gold,true);
             if (G->bCombatPaused)
             {
-                Label(bPad ? TEXT("MENU / B  RESUME") : TEXT("ESC / SPACE  RESUME"),W*.5f,H*.43f,.8f,Ivory,true);
+                Label(bPad ? TEXT("MENU / B  RESUME") : TEXT("ESC / CTRL  RESUME"),W*.5f,H*.43f,.8f,Ivory,true);
                 Label((bPad ? TEXT("A  QUALITY  ") : TEXT("F2  QUALITY  "))+G->QualityName,W*.5f,H*.53f,.7f,Muted,true);
                 Label((bPad ? TEXT("Y  FRAME LIMIT  ") : TEXT("F3  FRAME LIMIT  "))+G->FrameCapName,W*.5f,H*.59f,.7f,Muted,true);
                 Label((bPad ? TEXT("D-DOWN  RUMBLE  ") : TEXT("F4  RUMBLE  "))+G->HapticsName,W*.5f,H*.65f,.7f,Muted,true);
@@ -106,6 +107,21 @@ void ARoninHUD::DrawHUD()
             Statistics(*G,W*.5f,H*.76f);
         }
         Label(G->bShowHelp ? (bPad ? TEXT("X  BACK") : TEXT("H  BACK")) : HelpHint,W*.5f,H*.87f,.65f,Muted,true);
+        return;
+    }
+
+    if (bWon)
+    {
+        // Victory leaves traversal active: keep the landscape and camera visible.
+        DrawRect(FLinearColor(.01f,.018f,.025f,.65f),W*.5f-240*S,24*S,480*S,76*S);
+        Label(TEXT("DUEL WON"),W*.5f,32*S,.8f,Gold,true);
+        Label(bPad ? TEXT("EXPLORE THE VALLEY   /   VIEW  REMATCH") : TEXT("EXPLORE THE VALLEY   /   R  REMATCH"),
+            W*.5f,67*S,.55f,Ivory,true);
+        Label(bPad ? TEXT("LS  MOVE   L3  SPRINT   A  JUMP") : TEXT("WASD  MOVE   SHIFT  SPRINT   SPACE  JUMP"),
+            Margin,H-65*S,.55f,Muted);
+        Label(bPad ? TEXT("MENU  PAUSE    X  CONTROLS") : TEXT("ESC  PAUSE    H  CONTROLS"),
+            W-210*S,H-65*S,.55f,Muted,true);
+        if (G->bShowHelp) Controls(*G,Margin+22*S,H*.31f);
         return;
     }
 
@@ -125,11 +141,13 @@ void ARoninHUD::DrawHUD()
         }
     }
     if (Enemy.action==ronin::Action::Windup && Enemy.spec.unblockable)
-        Label(bPad ? TEXT("B  DODGE") : TEXT("SPACE  DODGE"),W*.5f,H*.34f,1.15f,Red,true);
+        Label(bPad ? TEXT("B  DODGE") : TEXT("CTRL  DODGE"),W*.5f,H*.34f,1.15f,Red,true);
     if (Enemy.action==ronin::Action::Broken)
         Label(bPad ? TEXT("Y  FINISH") : TEXT("F  FINISH"),W*.5f,H*.43f,1.15f,Gold,true);
     else if (Player.counterTime>0.f)
-        Label(TEXT("COUNTER WINDOW"),W*.5f,H*.65f,.7f,Teal,true);
+        Label(Player.action==ronin::Action::Idle ?
+            (bPad ? TEXT("RB  CRITICAL COUNTER") : TEXT("LMB  CRITICAL COUNTER")) : TEXT("COUNTER READY"),
+            W*.5f,H*.65f,.7f,Teal,true);
     if (G->FeedbackTime>0.f)
         Label(G->Feedback,W*.5f,H-185*S,.75f,G->FeedbackColor,true);
 

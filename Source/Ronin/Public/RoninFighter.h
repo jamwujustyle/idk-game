@@ -27,11 +27,16 @@ public:
     void ResetPose(FVector Location, FRotator Rotation);
     void BeginDodge();
     void AdvanceDodge(float SimulationDelta);
+    void AdvanceCombatMovement(float SimulationDelta);
     void HitFlash(FLinearColor Color);
     void SetFrozen(bool bFrozen);
     // Copied by the animation proxy on the game thread, never read from a worker.
     void GetAnimationState(FRoninAnimationState& OutState) const;
     UStaticMeshComponent* GetKatana() const { return Katana; }
+    void PlayDefenseReaction(bool bPerfectDodge);
+    void CancelDefenseReaction() { bDefenseReactionActive = false; }
+    void ReceiveImpact(FVector Direction, bool bBlocked, bool bStrong);
+    static FRotator EvaluateLockOnRotation(FRotator Current, FVector Toward, float DeltaSeconds);
 
 private:
     ARoninGameMode* Game() const;
@@ -45,6 +50,9 @@ private:
     void Light(); void Heavy(); void GuardDown(); void GuardUp(); void DodgeInput();
     void ExecuteInput(); void Flow(); void Stone(); void Gale(); void Restart();
     void Pause(); void Lock(); void Quality(); void FrameCap(); void Help(); void Haptics();
+    void Sprint();
+    void JumpInput();
+    void JumpRelease();
 
     UPROPERTY() TObjectPtr<USpringArmComponent> CameraBoom;
     UPROPERTY() TObjectPtr<UCameraComponent> Camera;
@@ -59,6 +67,18 @@ private:
     float DodgeElapsed = 0.f;
     FVector2D MoveInput = FVector2D::ZeroVector;
     uint32 AnimationResetSerial = 0;
+    uint32 DefenseReactionSerial = 0;
+    bool bPerfectDodgeReaction = false;
+    bool bDefenseReactionActive = false;
+    uint32 ImpactSerial = 0;
+    bool bImpactBlocked = false, bImpactStrong = false;
+    FVector ImpactDirection = FVector::ZeroVector;
+    float ImpactDistance = 0.f, ImpactElapsed = .2f;
+    uint64 AdvancingAttackId = 0;
+    FVector AttackAdvanceDirection = FVector::ZeroVector;
+    float AttackAdvanceDistance = 0.f, AttackAdvanceProgress = 0.f;
+    bool bSprintRequested = false;
     bool bFrozen = false;
+    FVector FrozenVelocity = FVector::ZeroVector;
     bool bBladeTrailEmitting = false;
 };

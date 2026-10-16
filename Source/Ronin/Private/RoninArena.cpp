@@ -1,6 +1,5 @@
 #include "RoninArena.h"
 
-#include "Components/BoxComponent.h"
 #include "Components/DirectionalLightComponent.h"
 #include "Components/ExponentialHeightFogComponent.h"
 #include "Components/InstancedStaticMeshComponent.h"
@@ -24,7 +23,7 @@ namespace
 {
 // Keep the approach level, then lift the forest into two flanking ridges.
 // All scenery shares this height function so trunks stay planted on the terrain.
-double TerrainHeight(double X, double Y)
+double NaturalHeight(double X, double Y)
 {
     const double Blend = FMath::SmoothStep(2400.0, 6600.0, FMath::Max(FMath::Abs(X), FMath::Abs(Y)));
     const auto Hill = [X, Y](double CenterX, double CenterY, double Radius)
@@ -35,6 +34,32 @@ double TerrainHeight(double X, double Y)
         + 850.0*Hill(7500.0, 4800.0, 3000.0)
         + 80.0*FMath::Sin(X*.0011)*FMath::Cos(Y*.0013);
     return -55.0 + Blend*Height;
+}
+
+const FVector2D RestingStones(4200.0, -2700.0);
+const FVector2D RidgeOverlook(6900.0, -3600.0);
+const FVector2D LanternGrove(-3900.0, 3100.0);
+
+double TerrainHeight(double X, double Y)
+{
+    double Height = NaturalHeight(X, Y);
+    for (const FVector2D& Site : {RestingStones, RidgeOverlook, LanternGrove})
+    {
+        const double Distance = FVector2D::Distance(FVector2D(X, Y), Site);
+        Height = FMath::Lerp(NaturalHeight(Site.X, Site.Y), Height,
+            FMath::SmoothStep(380.0, 750.0, Distance));
+    }
+    // Continuous descents at both exits avoid a ledge that only jumping can cross.
+    const double ExitX = FMath::Abs(X);
+    if (ExitX >= 800.0 && ExitX <= 1600.0 && FMath::Abs(Y) <= 500.0)
+    {
+        const double Ramp = FMath::Lerp(0.0, -55.0, FMath::Clamp((ExitX-900.0)/550.0, 0.0, 1.0));
+        Height = FMath::Lerp(Height, Ramp, 1.0-FMath::SmoothStep(380.0, 500.0, FMath::Abs(Y)));
+    }
+    // A visible steep escarpment bounds this finite valley. There are no
+    // invisible courtyard walls, and the ground never ends beside a trail.
+    Height += 2600.0 * FMath::SmoothStep(7600.0, 8900.0, FMath::Max(FMath::Abs(X), FMath::Abs(Y)));
+    return Height;
 }
 }
 
@@ -64,26 +89,6 @@ ARoninArena::ARoninArena()
     Floor->SetRelativeScale3D(FVector(19.0, 19.0, 0.7));
     Floor->SetCollisionProfileName(TEXT("BlockAll"));
     Floor->SetGenerateOverlapEvents(false);
-
-    // Boundary collision is independent of ornamental geometry and never obstructs the camera.
-    for (int32 Side = 0; Side < 4; ++Side)
-    {
-        UBoxComponent* Boundary = CreateDefaultSubobject<UBoxComponent>(
-            *FString::Printf(TEXT("ArenaBoundary%d"), Side));
-        Boundary->SetupAttachment(SceneRoot);
-        Boundary->SetMobility(EComponentMobility::Static);
-        const bool bAlongX = Side < 2;
-        const double Sign = Side % 2 == 0 ? -1.0 : 1.0;
-        Boundary->SetRelativeLocation(bAlongX ? FVector(Sign * 975.0, 0.0, 250.0)
-                                             : FVector(0.0, Sign * 975.0, 250.0));
-        Boundary->SetBoxExtent(bAlongX ? FVector(25.0, 1000.0, 300.0)
-                                      : FVector(1000.0, 25.0, 300.0));
-        Boundary->SetCollisionProfileName(TEXT("BlockAll"));
-        Boundary->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
-        Boundary->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
-        Boundary->SetGenerateOverlapEvents(false);
-        Boundary->SetHiddenInGame(true);
-    }
 
     UDirectionalLightComponent* Key = CreateDefaultSubobject<UDirectionalLightComponent>(TEXT("CloudBreakLight"));
     Key->SetupAttachment(SceneRoot);
@@ -273,7 +278,7 @@ void ARoninArena::BuildCourtyard()
     }
 
     // A continuous stone surface avoids repeated cube seams across the dueling ground.
-    // Only the original invisible boundary boxes and the floor affect movement.
+    // The courtyard and the surrounding terrain both support capsule movement.
     BuildTerrain(GardenGround);
     for (int32 Side = -1; Side <= 1; Side += 2)
     {
@@ -284,18 +289,28 @@ void ARoninArena::BuildCourtyard()
             AddShape(CubeMesh, Edge, FVector(X, Side * 1000.0, 38.0), FVector(395.0, 105.0, 140.0));
             AddShape(CubeMesh, Floor, FVector(X, Side * 1000.0, 112.0), FVector(402.0, 120.0, 12.0));
         }
-        AddShape(CubeMesh, Edge, FVector(Side * 1000.0, 0.0, -10.0), FVector(110.0, 1900.0, 82.0));
-        AddShape(CubeMesh, Floor, FVector(Side * 1000.0, 0.0, 35.0), FVector(120.0, 1900.0, 12.0));
+        // Open a broad east gate and a smaller west exit instead of fencing in the player.
+        for (int32 Flank : {-1, 1})
+        {
+            AddShape(CubeMesh, Edge, FVector(Side * 1000.0, Flank * 700.0, -10.0), FVector(110.0, 500.0, 82.0));
+            AddShape(CubeMesh, Floor, FVector(Side * 1000.0, Flank * 700.0, 35.0), FVector(120.0, 500.0, 12.0));
+        }
     }
 
     // The landmark is on the same X axis as the opening duel and its initial camera.
     BuildGate(1560.0f, Wood, DarkWood, Edge);
-    for (int32 Step = 0; Step < 4; ++Step)
-    {
-        AddShape(CubeMesh, Floor, FVector(1080.0 + Step * 105.0, 0.0, -12.0 - Step * 12.0),
-            FVector(110.0, 720.0 + Step * 25.0, 26.0));
-    }
-    AddShape(CubeMesh, Floor, FVector(1830.0, 0.0, -52.0), FVector(820.0, 780.0, 24.0));
+    BuildTrail({FVector2D(900,0), FVector2D(1560,0), FVector2D(2350,0)}, 700.f, Floor);
+    // A readable loop links three distinct stops and returns to the duel court.
+    BuildTrail({FVector2D(2350,0), FVector2D(3100,-650), FVector2D(3400,-1900),
+        RestingStones, FVector2D(5400,-2800), RidgeOverlook}, 300.f, Floor);
+    BuildTrail({RidgeOverlook, FVector2D(6300,-1100), FVector2D(5300,2100),
+        FVector2D(3400,3600), FVector2D(900,4100), LanternGrove,
+        FVector2D(-4400,1000), FVector2D(-2600,-400), FVector2D(-1000,0)}, 280.f, Floor);
+    BuildTrail({FVector2D(-1000,0), FVector2D(-1500,-900), FVector2D(-700,-2300),
+        FVector2D(1800,-2700), RestingStones}, 240.f, Floor);
+    BuildRestSite(RestingStones, Floor, Edge, DarkWood, Paper);
+    BuildRestSite(RidgeOverlook, Floor, Edge, DarkWood, Paper);
+    BuildRestSite(LanternGrove, Floor, Edge, DarkWood, Paper);
     for (int32 Side = -1; Side <= 1; Side += 2)
     {
         BuildLantern(FVector(1310.0, Side * 590.0, -40.0), Edge, DarkWood, Paper);
@@ -346,8 +361,8 @@ void ARoninArena::BuildCourtyard()
         }
         for (int32 Index = 0; Index < 9; ++Index)
         {
-            const double X = 5100.0 + Random.FRandRange(-350.0f, 600.0f);
-            const double Y = -4400.0 + Index * 1100.0;
+            const double X = -6600.0 + Index * 1600.0;
+            const double Y = Index % 2 == 0 ? -6500.0 : 6500.0;
             AddNaturalMesh(Rocks[Index % Rocks.Num()], FVector(X,Y,TerrainHeight(X,Y)-60.0),
                 Random.FRandRange(650.0f, 1050.0f), false, Random.FRandRange(0.0f, 360.0f));
         }
@@ -373,6 +388,17 @@ void ARoninArena::BuildCourtyard()
         for (int32 Index = 0; Index < 9; ++Index)
         {
             PlantSapling(Index, FVector(2900.0, -3000.0 + Index * 750.0, 0.0));
+        }
+        // Each destination has a small grove; clearings and path centers stay open.
+        for (const FVector2D& Site : {RestingStones, RidgeOverlook, LanternGrove})
+        {
+            for (int32 Index = 0; Index < 12; ++Index)
+            {
+                const double Angle = Index * UE_TWO_PI / 12.0;
+                const double Radius = Random.FRandRange(650.f, 1050.f);
+                PlantSapling(Index, FVector(Site.X + FMath::Cos(Angle)*Radius,
+                    Site.Y + FMath::Sin(Angle)*Radius, 0));
+            }
         }
     }
 
@@ -409,7 +435,7 @@ void ARoninArena::BuildCourtyard()
 
 void ARoninArena::BuildTerrain(UMaterialInterface* Material)
 {
-    constexpr int32 Cells = 96;
+    constexpr int32 Cells = 128;
     constexpr double HalfSize = 9000.0;
     constexpr double Step = 2.0*HalfSize/Cells;
     TArray<FVector> Vertices, Normals;
@@ -438,11 +464,87 @@ void ARoninArena::BuildTerrain(UMaterialInterface* Material)
     AddInstanceComponent(Terrain);
     Terrain->SetupAttachment(GetRootComponent());
     Terrain->SetMobility(EComponentMobility::Static);
-    Terrain->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    Terrain->SetCanEverAffectNavigation(false);
-    Terrain->CreateMeshSection_LinearColor(0,Vertices,Triangles,Normals,UVs,{},Tangents,false);
+    // Cook synchronously so the ground is ready before play can start. Procedural
+    // mesh collision is double sided and uses the same triangles as the surface.
+    Terrain->bUseAsyncCooking = false;
+    Terrain->bUseComplexAsSimpleCollision = true;
+    Terrain->SetCollisionProfileName(TEXT("BlockAll"));
+    Terrain->SetCollisionResponseToChannel(ECC_Camera, ECR_Ignore);
+    Terrain->SetGenerateOverlapEvents(false);
+    Terrain->SetCanEverAffectNavigation(true);
+    Terrain->CreateMeshSection_LinearColor(0,Vertices,Triangles,Normals,UVs,{},Tangents,true);
     Terrain->SetMaterial(0,Material);
     Terrain->RegisterComponent();
+}
+
+void ARoninArena::BuildTrail(const TArray<FVector2D>& Points, float Width, UMaterialInterface* Material)
+{
+    TArray<FVector> Vertices, Normals;
+    TArray<FVector2D> UVs;
+    TArray<FProcMeshTangent> Tangents;
+    TArray<int32> Triangles;
+    double DistanceAlong = 0.0;
+    for (int32 Segment = 1; Segment < Points.Num(); ++Segment)
+    {
+        const FVector2D Delta = Points[Segment] - Points[Segment-1];
+        const double Length = Delta.Size();
+        const FVector2D Direction = Delta.GetSafeNormal();
+        const FVector2D Across(-Direction.Y, Direction.X);
+        const int32 Steps = FMath::Max(1, FMath::CeilToInt(Length / 120.0));
+        const int32 Start = Vertices.Num();
+        for (int32 Step = 0; Step <= Steps; ++Step)
+        {
+            const double Fraction = static_cast<double>(Step) / Steps;
+            const FVector2D Center = Points[Segment-1] + Delta * Fraction;
+            for (int32 Side : {-1, 1})
+            {
+                const FVector2D XY = Center + Across * (Width * .5 * Side);
+                const double DX = (TerrainHeight(XY.X+10,XY.Y)-TerrainHeight(XY.X-10,XY.Y))/20.0;
+                const double DY = (TerrainHeight(XY.X,XY.Y+10)-TerrainHeight(XY.X,XY.Y-10))/20.0;
+                Vertices.Add(FVector(XY.X,XY.Y,TerrainHeight(XY.X,XY.Y)+2.5));
+                Normals.Add(FVector(-DX,-DY,1).GetSafeNormal());
+                Tangents.Add(FProcMeshTangent(FVector(Direction.X,Direction.Y,DX*Direction.X+DY*Direction.Y).GetSafeNormal(),false));
+                UVs.Add(FVector2D((DistanceAlong+Length*Fraction)/200.0, Side < 0 ? 0.0 : Width/200.0));
+            }
+            if (Step < Steps)
+            {
+                const int32 A = Start + Step*2;
+                Triangles.Append({A,A+1,A+2,A+1,A+3,A+2});
+            }
+        }
+        DistanceAlong += Length;
+    }
+    UProceduralMeshComponent* Trail = NewObject<UProceduralMeshComponent>(this);
+    AddInstanceComponent(Trail);
+    Trail->SetupAttachment(GetRootComponent());
+    Trail->SetMobility(EComponentMobility::Static);
+    Trail->SetCollisionEnabled(ECollisionEnabled::NoCollision); // Terrain directly below supports the route.
+    Trail->SetCanEverAffectNavigation(false);
+    Trail->CreateMeshSection_LinearColor(0,Vertices,Triangles,Normals,UVs,{},Tangents,false);
+    Trail->SetMaterial(0,Material);
+    Trail->RegisterComponent();
+}
+
+void ARoninArena::BuildRestSite(const FVector2D& Center, UMaterialInterface* Floor,
+    UMaterialInterface* Stone, UMaterialInterface* Wood, UMaterialInterface* Paper)
+{
+    const double Z = TerrainHeight(Center.X, Center.Y);
+    BuildTrail({Center-FVector2D(370,0), Center+FVector2D(370,0)}, 700.f, Floor);
+    for (int32 Side : {-1, 1})
+    {
+        BuildLantern(FVector(Center.X-280, Center.Y+Side*330, Z), Stone, Wood, Paper);
+        // Low cedar resting benches leave the central route clear.
+        AddShape(CubeMesh, Wood, FVector(Center.X+130,Center.Y+Side*310,Z+44), FVector(260,48,14));
+        for (int32 Leg : {-1,1})
+            AddShape(CubeMesh, Stone, FVector(Center.X+130+Leg*95,Center.Y+Side*310,Z+20), FVector(28,38,40));
+    }
+    // Three upright weathered stones mark each clearing without a screen or menu.
+    for (int32 Index = 0; Index < 3; ++Index)
+    {
+        const double Height = 100.0 + Index*34.0;
+        AddShape(CubeMesh, Stone, FVector(Center.X+420,Center.Y+(Index-1)*130,Z+Height*.5),
+            FVector(55,95,Height), FRotator(0,Index*11,0));
+    }
 }
 
 void ARoninArena::BuildGate(float X, UMaterialInterface* Wood, UMaterialInterface* DarkWood,

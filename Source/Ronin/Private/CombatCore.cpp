@@ -91,19 +91,86 @@ AttackSpec CombatCore::GetAttackSpec(Stance stance, AttackKind kind)
 bool CombatCore::TryAttack(FighterId id, AttackKind kind)
 {
     auto& fighter = Mutable(id);
-    if (fighter.action != Action::Idle || Get(Opponent(id)).action == Action::Dead)
+    if (Get(Opponent(id)).action == Action::Dead)
         return false;
 
-    auto spec = GetAttackSpec(fighter.stance, kind);
-    if (fighter.counterTime > 0.f)
+    if (fighter.action != Action::Idle)
     {
-        spec.damage *= 1.35f;
-        spec.postureDamage *= 1.4f;
-        spec.windup *= 0.75f;
+        // Pressing again during the first windup does not turn a single input
+        // burst into a whole combo. One fresh press during contact/follow-through
+        // commits one subsequent cut; repeated presses cannot extend the queue.
+        if (id != FighterId::Player || kind != AttackKind::Light ||
+            fighter.currentAttack != AttackKind::Light || fighter.isCounterAttack ||
+            fighter.comboStep >= LightComboLength - 1 || fighter.comboQueued ||
+            (fighter.action != Action::Active && fighter.action != Action::Recovery))
+            return false;
+        if (fighter.action == Action::Recovery && fighter.actionTime >= ComboLinkRecovery)
+            StartAttack(id, kind, fighter.comboStep + 1);
+        else
+            fighter.comboQueued = true;
+        return true;
+    }
+    StartAttack(id, kind);
+    return true;
+}
+
+void CombatCore::ClearChain(FighterState& fighter)
+{
+    fighter.comboQueued = false;
+    fighter.comboStep = 0;
+}
+
+void CombatCore::ClearCounter(FighterState& fighter)
+{
+    fighter.counterTime = 0.f;
+    fighter.counterSource = CounterSource::None;
+}
+
+void CombatCore::StartAttack(FighterId id, AttackKind kind, std::uint8_t comboStep)
+{
+    auto& fighter = Mutable(id);
+    fighter.comboQueued = false;
+    fighter.comboStep = comboStep;
+    fighter.isCounterAttack = fighter.counterTime > 0.f;
+    fighter.attackCounterSource = fighter.isCounterAttack ? fighter.counterSource : CounterSource::None;
+
+    auto spec = GetAttackSpec(fighter.stance, kind);
+    if (fighter.isCounterAttack)
+    {
+        spec.damage *= CounterDamageMultiplier;
+        spec.postureDamage *= CounterPostureMultiplier;
+        spec.windup *= CounterWindupMultiplier;
+    }
+    else if (comboStep == 1)
+    {
+        spec.damage *= 1.08f;
+        spec.postureDamage *= 1.15f;
+        spec.windup *= .9f;
+    }
+    else if (comboStep == 2)
+    {
+        spec.damage *= 1.04f;
+        spec.postureDamage *= 1.1f;
+        spec.windup *= .82f;
+        spec.recovery *= .9f;
+    }
+    else if (comboStep == 3)
+    {
+        spec.damage *= 1.25f;
+        spec.postureDamage *= 1.45f;
+        spec.windup *= 1.08f;
+        spec.recovery *= 1.05f;
+    }
+    else if (comboStep == 4)
+    {
+        spec.damage *= 1.55f;
+        spec.postureDamage *= 1.85f;
+        spec.windup *= 1.2f;
+        spec.recovery *= 1.35f;
     }
     fighter.guarding = false;
     fighter.parryTime = 0.f;
-    fighter.counterTime = 0.f;
+    ClearCounter(fighter);
     fighter.currentAttack = kind;
     fighter.spec = spec;
     fighter.attackElapsed = 0.f;
@@ -116,7 +183,6 @@ bool CombatCore::TryAttack(FighterId id, AttackKind kind)
         ++enemySequence_;
         fighter.decisionTime = spec.windup + spec.active + spec.recovery + 0.55f;
     }
-    return true;
 }
 
 void CombatCore::SetGuard(FighterId id, bool held, bool allowParry)
@@ -138,6 +204,9 @@ void CombatCore::SetGuard(FighterId id, bool held, bool allowParry)
         fighter.hitResolved = true;
         SetAction(fighter, Action::Idle);
     }
+    ClearChain(fighter);
+    fighter.isCounterAttack = false;
+    fighter.attackCounterSource = CounterSource::None;
     fighter.guarding = true;
     if (allowParry && fighter.parryCooldown <= Epsilon)
     {
@@ -152,6 +221,9 @@ bool CombatCore::TryDodge(FighterId id)
     if (!CanDefend(fighter) || Get(Opponent(id)).action == Action::Dead)
         return false;
     fighter.hitResolved = true;
+    ClearChain(fighter);
+    fighter.isCounterAttack = false;
+    fighter.attackCounterSource = CounterSource::None;
     fighter.guarding = false;
     fighter.parryTime = 0.f;
     fighter.invulnerabilityTime = fighter.stance == Stance::Gale ? 0.15f : 0.12f;
@@ -174,7 +246,10 @@ void CombatCore::Kill(FighterState& fighter)
     fighter.guarding = false;
     fighter.parryTime = 0.f;
     fighter.invulnerabilityTime = 0.f;
-    fighter.counterTime = 0.f;
+    ClearCounter(fighter);
+    ClearChain(fighter);
+    fighter.isCounterAttack = false;
+    fighter.attackCounterSource = CounterSource::None;
     fighter.hitResolved = true;
     SetAction(fighter, Action::Dead);
 }
@@ -190,7 +265,10 @@ bool CombatCore::ApplyPosture(FighterState& fighter, float amount)
     fighter.guarding = false;
     fighter.parryTime = 0.f;
     fighter.invulnerabilityTime = 0.f;
-    fighter.counterTime = 0.f;
+    ClearCounter(fighter);
+    ClearChain(fighter);
+    fighter.isCounterAttack = false;
+    fighter.attackCounterSource = CounterSource::None;
     fighter.hitResolved = true;
     SetAction(fighter, Action::Broken, GuardBreakDuration);
     return true;
@@ -210,6 +288,8 @@ HitResult CombatCore::ResolveHit(FighterId attackerId, float distance, bool faci
     {
         // Reward evading a real incoming contact, not rolling outside its reach.
         defender.counterTime = std::max(defender.counterTime, DodgeCounterWindow);
+        if (defender.counterSource == CounterSource::None)
+            defender.counterSource = CounterSource::Dodge;
         return attacker.lastHit = HitResult::Dodged;
     }
 
@@ -220,11 +300,18 @@ HitResult CombatCore::ResolveHit(FighterId attackerId, float distance, bool faci
             defender.parryTime = 0.f;
             defender.parryCooldown = 0.f;
             defender.counterTime = ParryCounterWindow;
+            defender.counterSource = CounterSource::Parry;
             defender.posture = std::max(0.f, defender.posture - 12.f);
             const float posture = defender.stance == Stance::Stone ? 42.f : 34.f;
             const bool broken = ApplyPosture(attacker, posture);
             if (!broken)
+            {
+                ClearChain(attacker);
+                ClearCounter(attacker);
+                attacker.isCounterAttack = false;
+                attacker.attackCounterSource = CounterSource::None;
                 SetAction(attacker, Action::Staggered, 0.58f);
+            }
             attacker.decisionTime = 1.15f;
             return attacker.lastHit = broken ? HitResult::GuardBreak : HitResult::Parried;
         }
@@ -235,6 +322,12 @@ HitResult CombatCore::ResolveHit(FighterId attackerId, float distance, bool faci
     }
 
     defender.health = std::max(0.f, defender.health - attacker.spec.damage);
+    // Taking a hit loses the earned opening. A later normal swing must not
+    // inherit an old parry's critical damage or a queued combo input.
+    ClearCounter(defender);
+    ClearChain(defender);
+    defender.isCounterAttack = false;
+    defender.attackCounterSource = CounterSource::None;
     if (defender.health <= 0.f)
     {
         Kill(defender);
@@ -248,7 +341,9 @@ HitResult CombatCore::ResolveHit(FighterId attackerId, float distance, bool faci
         defender.parryTime = 0.f;
         defender.invulnerabilityTime = 0.f;
         defender.hitResolved = true;
-        SetAction(defender, Action::Staggered, attacker.currentAttack == AttackKind::Light ? 0.28f : 0.42f);
+        const float stagger = attacker.isCounterAttack ? .52f :
+            (attacker.currentAttack == AttackKind::Light ? .28f : .42f);
+        SetAction(defender, Action::Staggered, stagger);
     }
     return attacker.lastHit = broken ? HitResult::GuardBreak : HitResult::Hit;
 }
@@ -264,12 +359,17 @@ bool CombatCore::TryExecute(FighterId attackerId, float distance, bool facing)
     attacker.guarding = false;
     attacker.parryTime = 0.f;
     attacker.posture = 0.f;
+    ClearCounter(attacker);
+    ClearChain(attacker);
+    attacker.isCounterAttack = false;
+    attacker.attackCounterSource = CounterSource::None;
     SetAction(attacker, Action::Recovery, 0.6f);
     return true;
 }
 
-void CombatCore::TickFighter(FighterState& fighter, float seconds)
+void CombatCore::TickFighter(FighterId id, float seconds)
 {
+    auto& fighter = Mutable(id);
     if (fighter.action == Action::Dead)
         return;
 
@@ -278,10 +378,15 @@ void CombatCore::TickFighter(FighterState& fighter, float seconds)
     float remaining = seconds;
     while (remaining > Epsilon)
     {
+        if (Get(Opponent(id)).action == Action::Dead)
+            fighter.comboQueued = false;
+        const bool linking = fighter.action == Action::Recovery && fighter.comboQueued;
         const bool timed = fighter.action != Action::Idle;
         float step = remaining;
         if (timed)
             step = std::min(step, std::max(0.f, fighter.actionDuration - fighter.actionTime));
+        if (linking)
+            step = std::min(step, std::max(0.f, ComboLinkRecovery - fighter.actionTime));
 
         const float postureTime = std::max(0.f, step - fighter.postureRecoveryDelay);
         if (fighter.action == Action::Idle && !fighter.guarding)
@@ -293,12 +398,20 @@ void CombatCore::TickFighter(FighterState& fighter, float seconds)
         CountDown(fighter.parryCooldown, step);
         CountDown(fighter.invulnerabilityTime, step);
         CountDown(fighter.counterTime, step);
+        if (fighter.counterTime <= 0.f)
+            fighter.counterSource = CounterSource::None;
         CountDown(fighter.decisionTime, step);
         CountDown(fighter.postureRecoveryDelay, step);
         if (IsAttacking(fighter.action))
             fighter.attackElapsed += step;
         fighter.actionTime += step;
         remaining -= step;
+
+        if (linking && fighter.actionTime + Epsilon >= ComboLinkRecovery)
+        {
+            StartAttack(id, AttackKind::Light, fighter.comboStep + 1);
+            continue;
+        }
 
         if (!timed || fighter.actionTime + Epsilon < fighter.actionDuration)
             break;
@@ -312,7 +425,10 @@ void CombatCore::TickFighter(FighterState& fighter, float seconds)
             fighter.postureRecoveryDelay = 1.f;
             SetAction(fighter, Action::Idle);
             break;
-        default: SetAction(fighter, Action::Idle); break;
+        default:
+            ClearChain(fighter);
+            SetAction(fighter, Action::Idle);
+            break;
         }
     }
 }
@@ -321,8 +437,8 @@ void CombatCore::Tick(float deltaSeconds)
 {
     if (!std::isfinite(deltaSeconds) || deltaSeconds <= 0.f)
         return;
-    for (auto& fighter : fighters_)
-        TickFighter(fighter, deltaSeconds);
+    TickFighter(FighterId::Player, deltaSeconds);
+    TickFighter(FighterId::Enemy, deltaSeconds);
 }
 
 bool CombatCore::EnemyReady() const

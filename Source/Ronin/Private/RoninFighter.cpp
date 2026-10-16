@@ -20,17 +20,35 @@
 #include "Particles/ParticleSystemComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
+namespace
+{
+void StopPlanarMovement(UCharacterMovementComponent* Movement)
+{
+    if (Movement->IsFalling())
+    {
+        Movement->Velocity.X = 0.f;
+        Movement->Velocity.Y = 0.f;
+    }
+    else Movement->StopMovementImmediately();
+}
+}
+
 ARoninFighter::ARoninFighter()
 {
     PrimaryActorTick.bCanEverTick = true;
     GetCapsuleComponent()->InitCapsuleSize(34.f, 88.f);
     bUseControllerRotationYaw = false;
     GetCharacterMovement()->bOrientRotationToMovement = false;
-    GetCharacterMovement()->MaxWalkSpeed = 390.f;
+    GetCharacterMovement()->MaxWalkSpeed = 260.f;
     GetCharacterMovement()->MaxAcceleration = 2200.f;
     GetCharacterMovement()->BrakingDecelerationWalking = 2200.f;
     GetCharacterMovement()->GroundFriction = 8.f;
     GetCharacterMovement()->bRunPhysicsWithNoController = true;
+    GetCharacterMovement()->JumpZVelocity = 520.f;
+    GetCharacterMovement()->GravityScale = 1.4f;
+    GetCharacterMovement()->AirControl = .25f;
+    JumpMaxCount = 1;
+    JumpMaxHoldTime = .12f;
 
     static ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerAsset(
         TEXT("/Game/Characters/Samurai/SK_Samurai.SK_Samurai"));
@@ -78,15 +96,15 @@ ARoninFighter::ARoninFighter()
 
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
-    CameraBoom->TargetArmLength = 460.f;
-    CameraBoom->SocketOffset = FVector(0,55,80);
+    CameraBoom->TargetArmLength = 380.f;
+    CameraBoom->SocketOffset = FVector(0,55,65);
     CameraBoom->bUsePawnControlRotation = true;
     CameraBoom->bEnableCameraLag = true;
     CameraBoom->CameraLagSpeed = 14.f;
     CameraBoom->ProbeSize = 14.f;
     Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-    Camera->FieldOfView = 82.f;
+    Camera->FieldOfView = 74.f;
     Camera->bConstrainAspectRatio = false;
 }
 
@@ -118,16 +136,71 @@ void ARoninFighter::GetAnimationState(FRoninAnimationState& OutState) const
     OutState.LocalVelocity = GetActorTransform().InverseTransformVectorNoScale(GetVelocity());
     OutState.LocalDodgeDirection = GetActorTransform().InverseTransformVectorNoScale(DodgeDirection);
     OutState.ResetSerial = AnimationResetSerial;
+    OutState.DefenseSerial = DefenseReactionSerial;
+    OutState.bDefenseActive = bDefenseReactionActive;
+    OutState.ImpactSerial = ImpactSerial;
+    OutState.bImpactBlocked = bImpactBlocked;
+    OutState.bImpactStrong = bImpactStrong;
+    OutState.bPerfectDodge = bPerfectDodgeReaction;
     OutState.bFrozen = bFrozen;
+    OutState.bAirborne = GetCharacterMovement()->IsFalling();
+    OutState.VerticalSpeed = GetVelocity().Z;
     if (const auto* G = Game())
     {
         OutState.Combat = G->Combat.Get(Identity);
         OutState.bFrozen |= G->bCombatPaused;
+        OutState.TimeScale = G->GetCombatTimeScale();
+        OutState.SimulationDelta = G->GetCombatDeltaSeconds();
+        if (OutState.TimeScale > .001f) OutState.LocalVelocity /= OutState.TimeScale;
     }
+}
+
+void ARoninFighter::PlayDefenseReaction(bool bPerfectDodge)
+{
+    ++DefenseReactionSerial;
+    bPerfectDodgeReaction = bPerfectDodge;
+    bDefenseReactionActive = true;
+}
+
+void ARoninFighter::ReceiveImpact(FVector Direction, bool bBlocked, bool bStrong)
+{
+    ++ImpactSerial;
+    bImpactBlocked = bBlocked;
+    bImpactStrong = bStrong;
+    ImpactDirection = Direction.GetSafeNormal2D();
+    ImpactDistance = bBlocked ? 8.f : bStrong ? 45.f : 18.f;
+    ImpactElapsed = 0.f;
+    StopPlanarMovement(GetCharacterMovement());
+}
+
+FRotator ARoninFighter::EvaluateLockOnRotation(FRotator Current, FVector Toward, float DeltaSeconds)
+{
+    // Control rotation stores -12 degrees as 348. Interpolating that raw number
+    // toward -12 takes the long route through the overhead pitch clamp.
+    Current.Pitch = FMath::FInterpTo(FRotator::NormalizeAxis(Current.Pitch), -12.f, DeltaSeconds, 4.f);
+    Current.Pitch = FMath::Clamp(Current.Pitch, -25.f, -6.f);
+    Toward.Z = 0.f;
+    if (!Toward.IsNearlyZero())
+        Current.Yaw = FMath::FixedTurn(Current.Yaw, Toward.Rotation().Yaw, DeltaSeconds * 160.f);
+    Current.Roll = 0.f;
+    return Current;
 }
 
 void ARoninFighter::SetFrozen(bool bValue)
 {
+    if (bValue != bFrozen)
+    {
+        if (bValue)
+        {
+            FrozenVelocity = GetCharacterMovement()->Velocity;
+            GetCharacterMovement()->SetComponentTickEnabled(false);
+        }
+        else
+        {
+            GetCharacterMovement()->SetComponentTickEnabled(true);
+            GetCharacterMovement()->Velocity = FrozenVelocity;
+        }
+    }
     bFrozen = bValue;
     // Still evaluate the explicit contact pose on the first hit-stop frame, with no clock advance.
     GetMesh()->GlobalAnimRateScale = bFrozen ? 0.f : 1.f;
@@ -135,7 +208,6 @@ void ARoninFighter::SetFrozen(bool bValue)
     BladeTrail->SetComponentTickEnabled(!bFrozen && BladeTrail->IsActive());
     if (bFrozen)
     {
-        GetCharacterMovement()->StopMovementImmediately();
         GetCharacterMovement()->MaxWalkSpeed = 0.f;
         ConsumeMovementInputVector();
     }
@@ -153,7 +225,7 @@ void ARoninFighter::UpdateBladeTrail(bool bActivePhase, bool bFreeze)
         bBladeTrailEmitting = bActivePhase;
     }
     // Preserve the current ribbon and its age through pause/hit-stop, without new samples.
-    BladeTrail->CustomTimeDilation = bFreeze ? 0.f : 1.f;
+    BladeTrail->CustomTimeDilation = bFreeze ? 0.f : (Game() ? Game()->GetCombatTimeScale() : 1.f);
     BladeTrail->SetComponentTickEnabled(!bFreeze && BladeTrail->IsActive());
 }
 
@@ -166,7 +238,6 @@ void ARoninFighter::Tick(float Dt)
     UpdateBladeTrail(G && G->Combat.Get(Identity).action == ronin::Action::Active, bFreeze);
     if (bFreeze)
     {
-        GetCharacterMovement()->StopMovementImmediately();
         GetCharacterMovement()->MaxWalkSpeed = 0.f;
         ConsumeMovementInputVector();
         return;
@@ -175,23 +246,36 @@ void ARoninFighter::Tick(float Dt)
     auto* Target = Identity == ronin::FighterId::Player ? G->EnemyFighter.Get() : G->PlayerFighter.Get();
     const bool bDead = State.action == ronin::Action::Dead;
     const bool bIdle = State.action == ronin::Action::Idle;
-    const bool bCanMove = !bDead && bIdle && G->CanControl();
+    const float CombatScale = G->GetCombatTimeScale();
     FVector Toward = Target ? Target->GetActorLocation() - GetActorLocation() : GetActorForwardVector();
     Toward.Z = 0;
     const float Distance = Toward.Size();
+    const bool bCanMove = !bDead && bIdle && ImpactElapsed >= .2f &&
+        (Identity == ronin::FighterId::Player ? G->CanTraverse() : G->CanControl() && Distance <= 850.f);
+    if (!bCanMove || State.guarding || MoveInput.IsNearlyZero(.1f)) bSprintRequested = false;
+    if (Identity == ronin::FighterId::Player && Target &&
+        (Distance > 900.f || G->Combat.Get(ronin::FighterId::Enemy).action == ronin::Action::Dead)) G->bLockOn = false;
+    const bool bSprinting = bSprintRequested && Identity == ronin::FighterId::Player;
     Toward.Normalize();
-    if (Target && !bDead && (Identity == ronin::FighterId::Enemy || G->bLockOn))
+    if (Target && !bDead && !bSprinting && (Identity == ronin::FighterId::Enemy || G->bLockOn))
     {
         // Committed attacks stop tracking; sidesteps can actually evade them.
         if (bIdle || (State.action == ronin::Action::Windup && State.actionTime < State.actionDuration * .5f))
-            SetActorRotation(FMath::RInterpTo(GetActorRotation(), Toward.Rotation(), Dt, 12.f));
+            SetActorRotation(FMath::RInterpTo(GetActorRotation(), Toward.Rotation(), Dt * CombatScale, 12.f));
     }
     else if (!bDead && GetVelocity().SizeSquared2D() > 20.f)
-        SetActorRotation(FMath::RInterpTo(GetActorRotation(), GetVelocity().Rotation(), Dt, 12.f));
-    GetCharacterMovement()->MaxWalkSpeed = bCanMove ? (State.guarding ? 130.f : 390.f) : 0.f;
+    {
+        const FVector PlanarVelocity(GetVelocity().X, GetVelocity().Y, 0.f);
+        const FRotator Facing = FMath::RInterpTo(GetActorRotation(), PlanarVelocity.Rotation(), Dt * CombatScale, 12.f);
+        SetActorRotation(FRotator(0.f, Facing.Yaw, 0.f));
+    }
+    const float MoveSpeed = State.guarding ? 130.f : bSprinting ? 520.f : 260.f;
+    GetCharacterMovement()->MaxWalkSpeed = bCanMove ? MoveSpeed * CombatScale : 0.f;
+    if (CombatScale < 1.f)
+        GetCharacterMovement()->Velocity = GetCharacterMovement()->Velocity.GetClampedToMaxSize2D(GetCharacterMovement()->MaxWalkSpeed);
     if (!bCanMove || (Identity == ronin::FighterId::Enemy && Distance <= 180.f))
     {
-        GetCharacterMovement()->StopMovementImmediately();
+        StopPlanarMovement(GetCharacterMovement());
         ConsumeMovementInputVector();
     }
     else if (Identity == ronin::FighterId::Enemy && Target)
@@ -200,10 +284,47 @@ void ARoninFighter::Tick(float Dt)
     }
     if (Identity == ronin::FighterId::Player && Controller && Target && G->bLockOn)
     {
-        auto Rotation = Controller->GetControlRotation();
-        Rotation.Yaw = FMath::FixedTurn(Rotation.Yaw, Toward.Rotation().Yaw, Dt * 160.f);
-        Rotation.Pitch = FMath::FInterpTo(Rotation.Pitch, -12.f, Dt, 4.f);
-        Controller->SetControlRotation(Rotation);
+        Controller->SetControlRotation(EvaluateLockOnRotation(Controller->GetControlRotation(), Toward, Dt));
+    }
+}
+
+void ARoninFighter::AdvanceCombatMovement(float SimulationDelta)
+{
+    auto* G = Game();
+    if (!G || SimulationDelta <= 0.f) return;
+    const auto& State = G->Combat.Get(Identity);
+    auto* Target = Identity == ronin::FighterId::Player ? G->EnemyFighter.Get() : G->PlayerFighter.Get();
+    if (ImpactElapsed < .2f && SimulationDelta > 0.f)
+    {
+        const float Before = ImpactElapsed / .2f;
+        ImpactElapsed = FMath::Min(.2f, ImpactElapsed + SimulationDelta);
+        const float After = ImpactElapsed / .2f;
+        const auto EaseOut = [](float T) { return T * (2.f - T); };
+        // Sweep the capsule: a wall stops recoil instead of clipping the victim.
+        AddActorWorldOffset(ImpactDirection * ImpactDistance * (EaseOut(After) - EaseOut(Before)), true);
+    }
+    const bool bAttack = State.action == ronin::Action::Windup || State.action == ronin::Action::Active || State.action == ronin::Action::Recovery;
+    if (bAttack && State.attackId != AdvancingAttackId)
+    {
+        AdvancingAttackId = State.attackId;
+        AttackAdvanceProgress = 0.f;
+        AttackAdvanceDistance = 0.f;
+        if (Target)
+        {
+            const FVector Delta = Target->GetActorLocation() - GetActorLocation();
+            const float Reach = State.isCounterAttack ? State.spec.range + 158.f : 260.f;
+            AttackAdvanceDirection = Delta.GetSafeNormal2D();
+            if (Delta.Size2D() <= Reach)
+                AttackAdvanceDistance = FMath::Clamp(static_cast<float>(Delta.Size2D()) - 165.f, 0.f, State.isCounterAttack ? 170.f : 32.f);
+        }
+    }
+    if ((State.action == ronin::Action::Windup || State.action == ronin::Action::Active) && SimulationDelta > 0.f)
+    {
+        const float Progress = State.action == ronin::Action::Active ? 1.f :
+            FMath::Clamp(State.actionTime / FMath::Max(State.actionDuration, .001f), 0.f, 1.f);
+        // A short, committed step keeps consecutive cuts connected after recoil.
+        AddActorWorldOffset(AttackAdvanceDirection * AttackAdvanceDistance * FMath::Max(0.f, Progress - AttackAdvanceProgress), true);
+        AttackAdvanceProgress = Progress;
     }
 }
 
@@ -215,11 +336,21 @@ void ARoninFighter::ResetPose(FVector Location, FRotator Rotation)
     BladeTrail->CustomTimeDilation = 1.f;
     bBladeTrailEmitting = false;
     SetActorLocationAndRotation(Location, Rotation, false, nullptr, ETeleportType::TeleportPhysics);
+    GetCharacterMovement()->SetComponentTickEnabled(true);
     GetCharacterMovement()->StopMovementImmediately();
-    GetCharacterMovement()->MaxWalkSpeed = 390.f;
+    FrozenVelocity = FVector::ZeroVector;
+    GetCharacterMovement()->MaxWalkSpeed = 260.f;
     ConsumeMovementInputVector();
     ++AnimationResetSerial;
+    bDefenseReactionActive = false;
+    ImpactElapsed = .2f;
+    ImpactDistance = AttackAdvanceDistance = AttackAdvanceProgress = 0.f;
+    AdvancingAttackId = 0;
     MoveInput = FVector2D::ZeroVector;
+    bSprintRequested = false;
+    StopJumping();
+    JumpCurrentCount = 0;
+    GetCharacterMovement()->SetMovementMode(MOVE_Walking);
     DodgeDuration = DodgeElapsed = 0.f;
     bFrozen = false;
     GetMesh()->GlobalAnimRateScale = 1.f;
@@ -255,7 +386,7 @@ void ARoninFighter::AdvanceDodge(float SimulationDelta)
         const auto Travel = [](float Phase) { return 1.6f * Phase - .6f * Phase * Phase; };
         const float DeltaDistance = DodgeDistance *
             (Travel(NextTime / DodgeDuration) - Travel(DodgeElapsed / DodgeDuration));
-        GetCharacterMovement()->StopMovementImmediately();
+        StopPlanarMovement(GetCharacterMovement());
         AddActorWorldOffset(DodgeDirection * DeltaDistance, true);
         DodgeElapsed = NextTime;
     }
@@ -271,14 +402,14 @@ void ARoninFighter::MoveForward(float Value)
 {
     MoveInput.X = Value;
     auto* G = Game();
-    if (!bFrozen && Controller && G && G->CanControl() && G->Combat.Get(Identity).action == ronin::Action::Idle)
+    if (!bFrozen && Controller && G && G->CanTraverse() && G->Combat.Get(Identity).action == ronin::Action::Idle)
         AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::X),Value);
 }
 void ARoninFighter::MoveRight(float Value)
 {
     MoveInput.Y = Value;
     auto* G = Game();
-    if (!bFrozen && Controller && G && G->CanControl() && G->Combat.Get(Identity).action == ronin::Action::Idle)
+    if (!bFrozen && Controller && G && G->CanTraverse() && G->Combat.Get(Identity).action == ronin::Action::Idle)
         AddMovementInput(FRotationMatrix(FRotator(0,Controller->GetControlRotation().Yaw,0)).GetUnitAxis(EAxis::Y),Value);
 }
 void ARoninFighter::Turn(float Value) { if (auto* G=Game(); G && !G->bCombatPaused && !G->bLockOn) AddControllerYawInput(Value); }
@@ -314,6 +445,23 @@ void ARoninFighter::Quality() { if (auto* G=Game(); G && G->bCombatPaused) G->Cy
 void ARoninFighter::FrameCap() { if (auto* G=Game()) G->CycleFrameCap(); }
 void ARoninFighter::Help() { if (auto* G=Game()) G->bShowHelp = !G->bShowHelp; }
 void ARoninFighter::Haptics() { if (auto* G=Game()) G->CycleHaptics(); }
+void ARoninFighter::Sprint()
+{
+    if (auto* G=Game(); G && G->CanTraverse() && !G->Combat.Get(Identity).guarding)
+        bSprintRequested = !bSprintRequested;
+}
+
+void ARoninFighter::JumpInput()
+{
+    auto* G = Game();
+    if (!G) return;
+    if (G->bCombatPaused) { G->CycleQuality(); return; }
+    const auto& State = G->Combat.Get(Identity);
+    // A also confirms the title screen; that same press must not launch a jump.
+    if (G->CanTraverse() && G->GetRoundTime() > .1f && State.action == ronin::Action::Idle &&
+        !State.guarding && GetCharacterMovement()->IsMovingOnGround()) Jump();
+}
+void ARoninFighter::JumpRelease() { StopJumping(); }
 
 void ARoninFighter::SetupPlayerInputComponent(UInputComponent* Input)
 {
@@ -350,4 +498,7 @@ void ARoninFighter::SetupPlayerInputComponent(UInputComponent* Input)
     Input->BindAction(TEXT("FrameCap"),IE_Pressed,this,&ARoninFighter::FrameCap);
     Input->BindAction(TEXT("Help"),IE_Pressed,this,&ARoninFighter::Help);
     Input->BindAction(TEXT("Haptics"),IE_Pressed,this,&ARoninFighter::Haptics);
+    Input->BindAction(TEXT("Sprint"),IE_Pressed,this,&ARoninFighter::Sprint);
+    Input->BindAction(TEXT("Jump"),IE_Pressed,this,&ARoninFighter::JumpInput);
+    Input->BindAction(TEXT("Jump"),IE_Released,this,&ARoninFighter::JumpRelease);
 }

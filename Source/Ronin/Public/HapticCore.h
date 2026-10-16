@@ -6,7 +6,8 @@ namespace ronin
 {
 enum class HapticEvent : std::uint8_t
 {
-    Swing, HeavySwing, Dodge, PerfectDodge, Hit, Block, Parry, Damage, GuardBreak, Execute
+    Swing, HeavySwing, Dodge, PerfectDodge, Hit, Block, Parry, Damage, GuardBreak, Execute,
+    Counter // Appended so existing serialized/event identifiers keep their values.
 };
 
 struct HapticOutput
@@ -37,7 +38,7 @@ private:
     HapticEvent event_ = HapticEvent::Swing;
     float elapsed_ = 0.f;
     float strength_ = 0.f;
-    float intensity_ = 0.7f;
+    float intensity_ = 1.f;
     bool active_ = false;
     bool enabled_ = true;
 };

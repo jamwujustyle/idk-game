@@ -11,6 +11,7 @@
 #include "Camera/CameraComponent.h"
 #include "Camera/CameraTypes.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -447,7 +448,7 @@ bool FRoninInputCoverageTest::RunTest(const FString& Parameters)
     // Test accessibility by device family, not a copy of particular physical keys.
     for (const TCHAR* Action : {TEXT("Light"), TEXT("Heavy"), TEXT("Guard"), TEXT("Dodge"), TEXT("Execute"),
         TEXT("Flow"), TEXT("Stone"), TEXT("Gale"), TEXT("Haptics"), TEXT("Lock"), TEXT("Pause"),
-        TEXT("Restart"), TEXT("Help"), TEXT("Quality"), TEXT("StartDuel")})
+        TEXT("Restart"), TEXT("Help"), TEXT("StartDuel"), TEXT("Sprint"), TEXT("Jump")})
     {
         bool bGamepad = false;
         bool bKeyboardMouse = false;
@@ -462,6 +463,29 @@ bool FRoninInputCoverageTest::RunTest(const FString& Parameters)
         bOk &= TestTrue(FString::Printf(TEXT("Gamepad action is reachable: %s"), Action), bGamepad);
         bOk &= TestTrue(FString::Printf(TEXT("Keyboard/mouse action is reachable: %s"), Action), bKeyboardMouse);
     }
+    for (const FKey& Key : {FKey(TEXT("Gamepad_LeftThumbstick")), FKey(TEXT("LeftShift"))})
+        bOk &= TestTrue(FString::Printf(TEXT("Sprint uses the requested input: %s"), *Key.ToString()),
+            Actions.ContainsByPredicate([&Key](const FInputActionKeyMapping& Mapping)
+            { return Mapping.ActionName == TEXT("Sprint") && Mapping.Key == Key; }));
+    for (const FKey& Key : {FKey(TEXT("Gamepad_FaceButton_Bottom")), FKey(TEXT("SpaceBar"))})
+        bOk &= TestTrue(FString::Printf(TEXT("Jump uses the requested input: %s"), *Key.ToString()),
+            Actions.ContainsByPredicate([&Key](const FInputActionKeyMapping& Mapping)
+            { return Mapping.ActionName == TEXT("Jump") && Mapping.Key == Key; }));
+    for (const FKey& Key : {FKey(TEXT("Gamepad_FaceButton_Right")), FKey(TEXT("LeftControl"))})
+        bOk &= TestTrue(FString::Printf(TEXT("Dodge remains distinct from jump: %s"), *Key.ToString()),
+            Actions.ContainsByPredicate([&Key](const FInputActionKeyMapping& Mapping)
+            { return Mapping.ActionName == TEXT("Dodge") && Mapping.Key == Key; }));
+    bOk &= TestFalse(TEXT("Space no longer triggers dodge alongside jump"),
+        Actions.ContainsByPredicate([](const FInputActionKeyMapping& Mapping)
+        { return Mapping.ActionName == TEXT("Dodge") && Mapping.Key == FKey(TEXT("SpaceBar")); }));
+    // Paused quality cycling reuses Jump's gamepad button; keeping a second
+    // consuming A binding would prevent the active-game jump action.
+    bOk &= TestTrue(TEXT("Quality cycling retains its keyboard binding"),
+        Actions.ContainsByPredicate([](const FInputActionKeyMapping& Mapping)
+        { return Mapping.ActionName == TEXT("Quality") && Mapping.Key.IsValid() && !Mapping.Key.IsGamepadKey(); }));
+    bOk &= TestFalse(TEXT("Quality cannot consume the active-game jump button"),
+        Actions.ContainsByPredicate([](const FInputActionKeyMapping& Mapping)
+        { return Mapping.ActionName == TEXT("Quality") && Mapping.Key == FKey(TEXT("Gamepad_FaceButton_Bottom")); }));
     // Frame-limit cycling reuses Execute's gamepad button while paused.
     bool bFrameCapKey = false;
     for (const FInputActionKeyMapping& Mapping : Actions)
@@ -730,6 +754,19 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
         AddError(FString::Printf(TEXT("Live input component has no bound action: %s (%d)"), *Name.ToString(), static_cast<int32>(Event)));
         return false;
     };
+    auto InvokeAxis = [this, Input](FName Name, float Value)
+    {
+        for (const FInputAxisBinding& Binding : Input->AxisBindings)
+        {
+            if (Binding.AxisName == Name && Binding.AxisDelegate.IsBound())
+            {
+                Binding.AxisDelegate.Execute(Value);
+                return true;
+            }
+        }
+        AddError(FString::Printf(TEXT("Live input component has no bound axis: %s"), *Name.ToString()));
+        return false;
+    };
     UInputComponent* StartInput = Game->FindComponentByClass<UInputComponent>();
     if (!TestNotNull(TEXT("Game mode installs the start action"), StartInput)) return false;
     bOk &= TestFalse(TEXT("A new world waits for explicit start"), Game->HasDuelStarted());
@@ -740,9 +777,18 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
     const FVector WaitingEnemyLocation = Enemy->GetActorLocation();
     bOk &= InvokeAction(TEXT("Light"), IE_Pressed);
     bOk &= InvokeAction(TEXT("Guard"), IE_Pressed);
+    bOk &= InvokeAction(TEXT("Jump"), IE_Pressed);
+    const double StartupHeight = Player->GetActorLocation().Z;
+    double HighestStartupHeight = StartupHeight;
     // Simulate a long shader/asset warmup. Both the encounter clock and core
     // decision/phase clocks must remain untouched, not merely the AI attack gate.
-    for (int32 Frame = 0; Frame < 180; ++Frame) TestWorld.TickTestWorld(1.f/30.f);
+    for (int32 Frame = 0; Frame < 180; ++Frame)
+    {
+        TestWorld.TickTestWorld(1.f/30.f);
+        HighestStartupHeight = FMath::Max(HighestStartupHeight, Player->GetActorLocation().Z);
+        if (Frame == 12) bOk &= InvokeAction(TEXT("Jump"), IE_Released);
+    }
+    bOk &= TestTrue(TEXT("Jump input cannot lift the fighter before the duel starts"), HighestStartupHeight <= StartupHeight + 1.);
     const auto& WaitingPlayer = Game->Combat.Get(ronin::FighterId::Player);
     const auto& WaitingEnemy = Game->Combat.Get(ronin::FighterId::Enemy);
     bOk &= TestEqual(TEXT("Startup does not advance duel time"), Game->GetRoundTime(), 0.f);
@@ -824,9 +870,11 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
     const FVector PausedPosition = Player->GetActorLocation();
     const float PausedTime = Game->GetRoundTime();
     bOk &= InvokeAction(TEXT("Light"), IE_Pressed);
+    bOk &= InvokeAction(TEXT("Jump"), IE_Pressed);
     for (int32 Frame = 0; Frame < 12; ++Frame) TestWorld.TickTestWorld(Step);
     bOk &= TestTrue(TEXT("Paused input cannot start an attack"), Game->Combat.Get(ronin::FighterId::Player).action == ronin::Action::Idle);
     bOk &= TestTrue(TEXT("Paused fighter remains in place"), Player->GetActorLocation().Equals(PausedPosition, 0.1));
+    bOk &= InvokeAction(TEXT("Jump"), IE_Released);
     bOk &= TestEqual(TEXT("Pause freezes the duel clock"), Game->GetRoundTime(), PausedTime);
     const FRoninAnimationPlayback PausedAnimation = PlayerAnimation->GetPlaybackState();
     bOk &= TestEqual(TEXT("Pause freezes the native idle clock"), PausedAnimation.IdleTime, BeforePause.IdleTime);
@@ -991,10 +1039,373 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
         }
     }
 
+    // Sample the bound stick delegates immediately before the fighter tick;
+    // the headless controller has no hardware and otherwise supplies zero axes.
+    bOk &= InvokeAction(TEXT("Restart"), IE_Pressed);
+    bOk &= InvokeAxis(TEXT("MoveForward"), 1.f);
+    Player->Tick(Step);
+    bOk &= TestEqual(TEXT("Ordinary movement uses walking speed"), Player->GetCharacterMovement()->MaxWalkSpeed, 260.f);
+    bOk &= InvokeAction(TEXT("Sprint"), IE_Pressed);
+    Player->Tick(Step);
+    bOk &= TestEqual(TEXT("The bound sprint toggle enables running"), Player->GetCharacterMovement()->MaxWalkSpeed, 520.f);
+    bOk &= InvokeAction(TEXT("Sprint"), IE_Pressed);
+    Player->Tick(Step);
+    bOk &= TestEqual(TEXT("A second sprint press returns to walking"), Player->GetCharacterMovement()->MaxWalkSpeed, 260.f);
+    bOk &= InvokeAction(TEXT("Sprint"), IE_Pressed);
+    bOk &= InvokeAxis(TEXT("MoveForward"), 0.f);
+    bOk &= InvokeAxis(TEXT("MoveRight"), 0.f);
+    Player->Tick(Step);
+    bOk &= InvokeAxis(TEXT("MoveForward"), 1.f);
+    Player->Tick(Step);
+    bOk &= TestEqual(TEXT("Releasing the stick clears sprint until another click"), Player->GetCharacterMovement()->MaxWalkSpeed, 260.f);
+    for (const TCHAR* CancelAction : {TEXT("Guard"), TEXT("Light"), TEXT("Dodge"), TEXT("Restart")})
+    {
+        bOk &= InvokeAction(TEXT("Restart"), IE_Pressed);
+        bOk &= InvokeAxis(TEXT("MoveForward"), 1.f);
+        bOk &= InvokeAction(TEXT("Sprint"), IE_Pressed);
+        Player->Tick(Step);
+        bOk &= TestEqual(FString(CancelAction) + TEXT(" trial begins while sprinting"), Player->GetCharacterMovement()->MaxWalkSpeed, 520.f);
+        bOk &= InvokeAction(CancelAction, IE_Pressed);
+        Player->Tick(Step);
+        bOk &= TestTrue(FString(CancelAction) + TEXT(" immediately removes sprint movement"),
+            Player->GetCharacterMovement()->MaxWalkSpeed <= 260.f);
+        bOk &= InvokeAction(TEXT("Guard"), IE_Released);
+        Game->Combat.Tick(2.f);
+        bOk &= InvokeAxis(TEXT("MoveForward"), 1.f);
+        Player->Tick(Step);
+        bOk &= TestEqual(FString(CancelAction) + TEXT(" cannot silently restore sprint after recovery"),
+            Player->GetCharacterMovement()->MaxWalkSpeed, 260.f);
+    }
+
+    // The jump action must travel through CharacterMovement's real falling and
+    // landing states. Keep the opponent distant so this measures movement alone.
+    bOk &= InvokeAction(TEXT("Restart"), IE_Pressed);
+    Player->ResetPose(FVector(-500, -500, 100), FRotator::ZeroRotator);
+    Enemy->ResetPose(FVector(650, 600, 100), FRotator(0, 180, 0));
+    for (int32 Frame = 0; Frame < 45; ++Frame) TestWorld.TickTestWorld(Step);
+    bOk &= TestTrue(TEXT("Jump trial starts on walkable ground"), Player->GetCharacterMovement()->IsMovingOnGround());
+    const double JumpStartHeight = Player->GetActorLocation().Z;
+    double JumpPeakHeight = JumpStartHeight;
+    double MaximumJumpTilt = 0.;
+    Game->bLockOn = false;
+    const bool bJumpControllerTickWasEnabled = Controller->IsActorTickEnabled();
+    Controller->SetActorTickEnabled(false);
+    bool bSawFalling = false, bLanded = false;
+    bOk &= InvokeAction(TEXT("Jump"), IE_Pressed);
+    for (int32 Frame = 0; Frame < 240; ++Frame)
+    {
+        bOk &= InvokeAxis(TEXT("MoveForward"), 1.f);
+        TestWorld.TickTestWorld(Step);
+        MaximumJumpTilt = FMath::Max(MaximumJumpTilt, FMath::Abs(FRotator::NormalizeAxis(Player->GetActorRotation().Pitch)));
+        MaximumJumpTilt = FMath::Max(MaximumJumpTilt, FMath::Abs(FRotator::NormalizeAxis(Player->GetActorRotation().Roll)));
+        if (Frame == 3) bOk &= InvokeAction(TEXT("Jump"), IE_Released);
+        if (Frame == 8)
+        {
+            bOk &= TestTrue(TEXT("Pause trial reaches an actual airborne jump"), Player->GetCharacterMovement()->IsFalling());
+            bOk &= InvokeAction(TEXT("Pause"), IE_Pressed);
+            const FVector AirbornePausePosition = Player->GetActorLocation();
+            for (int32 PausedFrame = 0; PausedFrame < 12; ++PausedFrame) TestWorld.TickTestWorld(Step);
+            bOk &= TestTrue(TEXT("Pausing midair freezes the capsule including its height"),
+                Player->GetActorLocation().Equals(AirbornePausePosition, .001));
+            bOk &= InvokeAction(TEXT("Pause"), IE_Pressed);
+        }
+        bSawFalling |= Player->GetCharacterMovement()->IsFalling();
+        JumpPeakHeight = FMath::Max(JumpPeakHeight, Player->GetActorLocation().Z);
+        if (bSawFalling && Player->GetCharacterMovement()->IsMovingOnGround()) { bLanded = true; break; }
+    }
+    bOk &= InvokeAxis(TEXT("MoveForward"), 0.f);
+    Controller->SetActorTickEnabled(bJumpControllerTickWasEnabled);
+    bOk &= TestTrue(TEXT("An unlocked moving jump keeps the fighter upright during ascent and descent"), MaximumJumpTilt < .1);
+    bOk &= TestTrue(TEXT("Bound jump actually leaves the ground and gains useful height"),
+        bSawFalling && JumpPeakHeight - JumpStartHeight > 20.);
+    bOk &= TestTrue(TEXT("Jump lands back on the courtyard without vertical drift"),
+        bLanded && FMath::Abs(Player->GetActorLocation().Z - JumpStartHeight) < 2.
+        && Player->GetCharacterMovement()->CurrentFloor.HitResult.GetActor() == Arena);
+
+    bOk &= InvokeAction(TEXT("Jump"), IE_Pressed);
+    for (int32 Frame = 0; Frame < 8; ++Frame) TestWorld.TickTestWorld(Step);
+    bOk &= InvokeAction(TEXT("Jump"), IE_Released);
+    bOk &= TestTrue(TEXT("Airborne attack trial begins while falling"), Player->GetCharacterMovement()->IsFalling());
+    bOk &= InvokeAction(TEXT("Heavy"), IE_Pressed);
+    bOk &= TestTrue(TEXT("A real heavy attack begins during the jump"),
+        Game->Combat.Get(ronin::FighterId::Player).action == ronin::Action::Windup);
+    bool bAttackJumpLanded = false;
+    for (int32 Frame = 0; Frame < 180; ++Frame)
+    {
+        TestWorld.TickTestWorld(Step);
+        if (Player->GetCharacterMovement()->IsMovingOnGround()) { bAttackJumpLanded = true; break; }
+    }
+    bOk &= TestTrue(TEXT("Airborne attacking preserves gravity and lands instead of hovering"),
+        bAttackJumpLanded && FMath::Abs(Player->GetActorLocation().Z - JumpStartHeight) < 2.);
+
+    // Supply held input through the actual axis/action delegates. Suspend only
+    // this headless controller's zero-hardware input tick during the fixture.
+    bOk &= InvokeAction(TEXT("Restart"), IE_Pressed);
+    Player->ResetPose(FVector(0, 0, 100), FRotator::ZeroRotator);
+    Enemy->ResetPose(FVector(-700, 650, 100), FRotator(0, 180, 0));
+    Game->bLockOn = false;
+    for (int32 Frame = 0; Frame < 30; ++Frame) TestWorld.TickTestWorld(1.f / 60.f);
+    const bool bControllerTickWasEnabled = Controller->IsActorTickEnabled();
+    Controller->SetActorTickEnabled(false);
+    bOk &= InvokeAxis(TEXT("MoveForward"), 1.f);
+    bOk &= InvokeAction(TEXT("Sprint"), IE_Pressed);
+    for (int32 Frame = 0; Frame < 300; ++Frame)
+    {
+        bOk &= InvokeAxis(TEXT("MoveForward"), 1.f);
+        TestWorld.TickTestWorld(1.f / 60.f);
+        if (Player->GetActorLocation().X > 1700. && Player->GetCharacterMovement()->IsMovingOnGround()) break;
+    }
+    bOk &= InvokeAxis(TEXT("MoveForward"), 0.f);
+    Controller->SetActorTickEnabled(bControllerTickWasEnabled);
+    bOk &= TestTrue(TEXT("Held forward sprint traverses the courtyard exit and reaches the outer trail"),
+        Player->GetActorLocation().X > 1600. && FMath::Abs(Player->GetActorLocation().Y) < 50.
+        && Player->GetCharacterMovement()->IsMovingOnGround()
+        && Player->GetCharacterMovement()->CurrentFloor.HitResult.GetActor() == Arena);
+
+    // Trigger the presentation through actual incoming contact, rather than
+    // starting its envelope directly. Keep each trial before the AI's first turn.
+    auto TriggerDefense = [&](bool bDodge)
+    {
+        bool bResult = InvokeAction(TEXT("Restart"), IE_Pressed);
+        Player->ResetPose(FVector(-65, 0, 100), FRotator::ZeroRotator);
+        Enemy->ResetPose(FVector(65, 0, 100), FRotator(0, 180, 0));
+        const uint32 Serial = Game->GetDefenseCueSerial();
+        const float Health = Game->Combat.Get(ronin::FighterId::Player).health;
+        bResult &= TestTrue(TEXT("Defense trial starts an incoming committed attack"),
+            Game->Combat.TryAttack(ronin::FighterId::Enemy, ronin::AttackKind::Light));
+        Game->Combat.Tick(Game->Combat.Get(ronin::FighterId::Enemy).spec.windup - Step * .5f);
+        bResult &= InvokeAction(bDodge ? TEXT("Dodge") : TEXT("Guard"), IE_Pressed);
+        for (int32 Frame = 0; Frame < 12 && Game->GetDefenseCueSerial() == Serial; ++Frame)
+            TestWorld.TickTestWorld(Step);
+        bResult &= TestEqual(TEXT("One confirmed defense starts one cinematic cue"), Game->GetDefenseCueSerial(), Serial + 1);
+        bResult &= TestTrue(TEXT("The incoming attack reports the intended defense result"),
+            Game->Combat.Get(ronin::FighterId::Enemy).lastHit == (bDodge ? ronin::HitResult::Dodged : ronin::HitResult::Parried));
+        bResult &= TestEqual(TEXT("The defense cue identifies its real contact type"), Game->IsPerfectDodgeCue(), bDodge);
+        bResult &= TestEqual(TEXT("Successful defense preserves player health"), Game->Combat.Get(ronin::FighterId::Player).health, Health);
+        bResult &= TestTrue(TEXT("Defense supplies a live counter opportunity and slows combat"),
+            Game->Combat.Get(ronin::FighterId::Player).counterTime > 0.f
+            && Game->GetCombatTimeScale() >= 0.f && Game->GetCombatTimeScale() < 1.f && Game->CanControl());
+        return bResult;
+    };
+    for (const bool bDodge : {false, true})
+    {
+        if (!TriggerDefense(bDodge)) { bOk = false; continue; }
+        const float CounterBefore = Game->Combat.Get(ronin::FighterId::Player).counterTime;
+        const float RoundBefore = Game->GetRoundTime();
+        const float IdleBefore = PlayerAnimation->GetPlaybackState().IdleTime;
+        float ReportedSimulationTime = 0.f;
+        // Observe beyond the contact hold plus one slowed 120 Hz simulation
+        // quantum; the longer parry beat may legitimately advance zero steps
+        // during its first 100 ms.
+        constexpr int32 DefenseObservationFrames = 18;
+        for (int32 Frame = 0; Frame < DefenseObservationFrames; ++Frame)
+        {
+            TestWorld.TickTestWorld(Step);
+            ReportedSimulationTime += Game->GetCombatDeltaSeconds();
+            bOk &= TestTrue(TEXT("Defense time scale remains finite and bounded"),
+                FMath::IsFinite(Game->GetCombatTimeScale()) && Game->GetCombatTimeScale() >= 0.f && Game->GetCombatTimeScale() <= 1.f);
+        }
+        const float Simulated = Game->GetRoundTime() - RoundBefore;
+        bOk &= TestTrue(TEXT("The defense beat advances less combat time than real frame time"),
+            Simulated > 0.f && Simulated < Step * DefenseObservationFrames * .8f);
+        bOk &= TestTrue(TEXT("The reported frame delta matches the actual fixed combat steps"),
+            FMath::IsNearlyEqual(ReportedSimulationTime, Simulated, .0001f));
+        bOk &= TestTrue(TEXT("Slow motion preserves the counter window in combat time"),
+            FMath::IsNearlyEqual(CounterBefore - Game->Combat.Get(ronin::FighterId::Player).counterTime, Simulated, .0001f));
+        bOk &= TestTrue(TEXT("Native pose clocks follow the same slowed simulation"),
+            FMath::IsNearlyEqual(PlayerAnimation->GetPlaybackState().IdleTime - IdleBefore, Simulated, Step * 1.1f));
+        const uint32 ConfirmedSerial = Game->GetDefenseCueSerial();
+        for (int32 Frame = 0; Frame < 72 && Game->GetCombatTimeScale() < 1.f; ++Frame)
+            TestWorld.TickTestWorld(Step);
+        bOk &= TestEqual(TEXT("The real-time defense envelope returns to normal speed"), Game->GetCombatTimeScale(), 1.f);
+        bOk &= TestEqual(TEXT("One contact cannot replay its cinematic on later frames"), Game->GetDefenseCueSerial(), ConfirmedSerial);
+        // A dodge must complete its real action before an attack can be accepted.
+        for (int32 Frame = 0; Frame < 60 && Game->Combat.Get(ronin::FighterId::Player).action == ronin::Action::Dodging; ++Frame)
+            TestWorld.TickTestWorld(Step);
+        bOk &= InvokeAction(TEXT("Guard"), IE_Released);
+        bOk &= TestTrue(TEXT("The counter opportunity survives the defense presentation"),
+            Game->Combat.Get(ronin::FighterId::Player).counterTime > 0.f);
+        const float EnemyHealthBeforeCounter = Game->Combat.Get(ronin::FighterId::Enemy).health;
+        bOk &= InvokeAction(TEXT("Light"), IE_Pressed);
+        bOk &= TestTrue(TEXT("A bound attack can use the post-defense counter opportunity"),
+            Game->Combat.Get(ronin::FighterId::Player).action == ronin::Action::Windup
+            && Game->Combat.Get(ronin::FighterId::Player).counterTime == 0.f
+            && Game->Combat.Get(ronin::FighterId::Player).isCounterAttack);
+        for (int32 Frame = 0; Frame < 120 && !Game->Combat.Get(ronin::FighterId::Player).hitResolved; ++Frame)
+            TestWorld.TickTestWorld(Step);
+        bOk &= TestTrue(TEXT("An earned counter closes real defense spacing and hits the enemy"),
+            Game->Combat.Get(ronin::FighterId::Player).lastHit == ronin::HitResult::Hit
+            && Game->Combat.Get(ronin::FighterId::Enemy).health < EnemyHealthBeforeCounter);
+
+        if (!TriggerDefense(bDodge)) { bOk = false; continue; }
+        bOk &= InvokeAction(TEXT("Pause"), IE_Pressed);
+        const float PausedCounter = Game->Combat.Get(ronin::FighterId::Player).counterTime;
+        const float PausedRound = Game->GetRoundTime();
+        const uint32 PausedSerial = Game->GetDefenseCueSerial();
+        for (int32 Frame = 0; Frame < 12; ++Frame) TestWorld.TickTestWorld(Step);
+        bOk &= TestEqual(TEXT("Pause sets combat scale to zero during a defense beat"), Game->GetCombatTimeScale(), 0.f);
+        bOk &= TestEqual(TEXT("Pause preserves a live counter opportunity"), Game->Combat.Get(ronin::FighterId::Player).counterTime, PausedCounter);
+        bOk &= TestEqual(TEXT("Pause freezes the defense simulation"), Game->GetRoundTime(), PausedRound);
+        bOk &= InvokeAction(TEXT("Pause"), IE_Pressed);
+        bOk &= TestEqual(TEXT("Resume clears stale defense slow motion"), Game->GetCombatTimeScale(), 1.f);
+        TestWorld.TickTestWorld(Step);
+        bOk &= TestEqual(TEXT("Resuming cannot replay the cleared contact cue"), Game->GetDefenseCueSerial(), PausedSerial);
+        bOk &= TestEqual(TEXT("Cleared defense speed stays restored on the next frame"), Game->GetCombatTimeScale(), 1.f);
+
+        if (!TriggerDefense(bDodge)) { bOk = false; continue; }
+        const uint32 ResetSerial = Game->GetDefenseCueSerial();
+        bOk &= InvokeAction(TEXT("Restart"), IE_Pressed);
+        bOk &= TestEqual(TEXT("Rematch immediately restores normal combat speed"), Game->GetCombatTimeScale(), 1.f);
+        bOk &= TestEqual(TEXT("Rematch clears the previous counter window"), Game->Combat.Get(ronin::FighterId::Player).counterTime, 0.f);
+        for (int32 Frame = 0; Frame < 12; ++Frame) TestWorld.TickTestWorld(Step);
+        bOk &= TestEqual(TEXT("Rematch cannot inherit the previous defense envelope"), Game->GetCombatTimeScale(), 1.f);
+        bOk &= TestEqual(TEXT("Rematch does not replay or reuse the defense cue serial"), Game->GetDefenseCueSerial(), ResetSerial);
+    }
+
+    // Resolve real attacks through GameMode, then measure the swept victim
+    // capsule. Blocking must brace with a small recoil; a committed heavy hit
+    // must interrupt the opponent and displace it substantially farther.
+    auto MeasureContactRecoil = [&](bool bStrong, double EnemyX)
+    {
+        bOk &= InvokeAction(TEXT("Restart"), IE_Pressed);
+        Player->ResetPose(FVector(EnemyX - 180., 0, 100), FRotator::ZeroRotator);
+        Enemy->ResetPose(FVector(EnemyX, 0, 100), FRotator(0, 180, 0));
+        FRoninAnimationState Before;
+        Enemy->GetAnimationState(Before);
+        const float HealthBefore = Game->Combat.Get(ronin::FighterId::Enemy).health;
+        if (bStrong)
+        {
+            // The long incoming commitment is interrupted by the faster heavy
+            // strike. It cannot auto-brace while attacking.
+            bOk &= TestTrue(TEXT("Recoil trial starts the enemy's committed attack"),
+                Game->Combat.TryAttack(ronin::FighterId::Enemy, ronin::AttackKind::Unblockable));
+        }
+        bOk &= InvokeAction(bStrong ? TEXT("Heavy") : TEXT("Light"), IE_Pressed);
+        for (int32 Frame = 0; Frame < 120 && !Game->Combat.Get(ronin::FighterId::Player).hitResolved; ++Frame)
+            TestWorld.TickTestWorld(Step);
+        const auto& Victim = Game->Combat.Get(ronin::FighterId::Enemy);
+        bOk &= TestTrue(TEXT("Recoil is caused by the intended actual contact"),
+            Game->Combat.Get(ronin::FighterId::Player).lastHit ==
+                (bStrong ? ronin::HitResult::Hit : ronin::HitResult::Blocked));
+        FRoninAnimationState Impact;
+        Enemy->GetAnimationState(Impact);
+        bOk &= TestEqual(TEXT("One resolved contact produces one victim reaction"), Impact.ImpactSerial, Before.ImpactSerial + 1);
+        bOk &= TestTrue(TEXT("Victim presentation receives the correct block or strong-hit kind"),
+            Impact.bImpactBlocked == !bStrong && Impact.bImpactStrong == bStrong);
+        if (bStrong)
+            bOk &= TestTrue(TEXT("A heavy contact damages and staggers the committed enemy"),
+                Victim.health < HealthBefore && Victim.action == ronin::Action::Staggered);
+        else
+            bOk &= TestTrue(TEXT("The enemy braces an incoming cut without gaining a parry or losing health"),
+                Victim.guarding && Victim.parryTime == 0.f && Victim.health == HealthBefore && Victim.posture > 0.f);
+
+        const FVector ContactLocation = Enemy->GetActorLocation();
+        double MaximumTravel = 0.;
+        float SimulatedTime = 0.f;
+        for (int32 Frame = 0; Frame < 90 && SimulatedTime < .23f; ++Frame)
+        {
+            TestWorld.TickTestWorld(Step);
+            SimulatedTime += Game->GetCombatDeltaSeconds();
+            const FVector Position = Enemy->GetActorLocation();
+            MaximumTravel = FMath::Max(MaximumTravel, Position.X - ContactLocation.X);
+            bOk &= TestTrue(TEXT("Contact recoil remains finite and lateral drift stays bounded"),
+                !Position.ContainsNaN() && FMath::Abs(Position.Y - ContactLocation.Y) < 1.);
+        }
+        Enemy->GetAnimationState(Impact);
+        bOk &= TestEqual(TEXT("The same active hit cannot restart recoil on later frames"), Impact.ImpactSerial, Before.ImpactSerial + 1);
+        return MaximumTravel;
+    };
+    const double BlockTravel = MeasureContactRecoil(false, 90.);
+    const double StrongTravel = MeasureContactRecoil(true, 90.);
+    bOk &= TestTrue(TEXT("A blocked cut produces a small visible physical recoil"), BlockTravel > 2. && BlockTravel <= 12.);
+    bOk &= TestTrue(TEXT("A strong hit moves the victim substantially farther than a block"),
+        StrongTravel > 30. && StrongTravel <= 50. && StrongTravel > BlockTravel * 3.);
+
+    // Exploration removes the old courtyard enclosure. A local obstacle keeps
+    // this sweep regression independent of the larger world's outer terrain.
+    AActor* WallFixture = World->SpawnActor<AActor>();
+    if (TestNotNull(TEXT("Recoil collision fixture can be created"), WallFixture))
+    {
+        UBoxComponent* Wall = NewObject<UBoxComponent>(WallFixture, TEXT("RecoilSweepObstacle"));
+        WallFixture->SetRootComponent(Wall);
+        WallFixture->AddInstanceComponent(Wall);
+        Wall->SetBoxExtent(FVector(25, 200, 300));
+        Wall->SetCollisionProfileName(TEXT("BlockAll"));
+        Wall->SetWorldLocation(FVector(875, 0, 250));
+        Wall->RegisterComponent();
+        const double InnerEdge = Wall->Bounds.Origin.X - Wall->Bounds.BoxExtent.X;
+        const double Radius = Enemy->GetCapsuleComponent()->GetScaledCapsuleRadius();
+        const double WallTravel = MeasureContactRecoil(true, InnerEdge - Radius - 5.);
+        bOk &= TestTrue(TEXT("A wall limits strong recoil before the capsule crosses it"),
+            WallTravel > 0. && WallTravel < StrongTravel - 5.
+            && Enemy->GetActorLocation().X + Radius <= InnerEdge + .5);
+        bOk &= TestTrue(TEXT("Recoil leaves the victim supported by the courtyard"),
+            Enemy->GetCharacterMovement()->IsMovingOnGround());
+        WallFixture->Destroy();
+    }
+    else bOk = false;
+
+    for (const FVector2D Point : {FVector2D(1400, 0), FVector2D(4200, -2700),
+        FVector2D(6900, -3600), FVector2D(-3900, 3100)})
+    {
+        FHitResult GroundHit;
+        const bool bGround = World->LineTraceSingleByChannel(GroundHit,
+            FVector(Point.X, Point.Y, 5000), FVector(Point.X, Point.Y, -2000), ECC_Visibility);
+        bOk &= TestTrue(FString::Printf(TEXT("Explorable terrain provides collision at (%g, %g)"), Point.X, Point.Y),
+            bGround && GroundHit.GetActor() == Arena && GroundHit.GetComponent()
+            && GroundHit.GetComponent()->GetFName() == TEXT("ForestTerrain") && GroundHit.ImpactNormal.Z > .5f);
+    }
+
     bOk &= TestTrue(TEXT("Combat and rematches leave the authored impact source unchanged"),
         SnapshotImpactSource(SparkSource) == OriginalImpact);
     bOk &= TestWorld.DestroyTestWorld(false);
     TestWorld.ForwardErrorMessages(this);
+    return bOk && !HasAnyErrors();
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FRoninLockOnCameraTest, "Ronin.Integration.LockOnCamera",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FRoninLockOnCameraTest::RunTest(const FString& Parameters)
+{
+    bool bOk = true;
+    const FVector AcrossYawSeam = FRotator(0, -179, 0).Vector();
+    for (const float Rate : {30.f, 60.f, 120.f})
+    {
+        const float Delta = 1.f / Rate;
+        const FRotator Normal = ARoninFighter::EvaluateLockOnRotation(FRotator(-12, 179, 0), AcrossYawSeam, Delta);
+        for (const double EquivalentPitch : {348., -372., 708.})
+        {
+            const FRotator Wrapped = ARoninFighter::EvaluateLockOnRotation(FRotator(EquivalentPitch, 179, 0), AcrossYawSeam, Delta);
+            bOk &= TestTrue(TEXT("Equivalent stored pitches produce the same lock-on view"), Wrapped.Equals(Normal, .0001));
+        }
+        const double YawTravel = FRotator::NormalizeAxis(Normal.Yaw - 179.);
+        bOk &= TestTrue(TEXT("Lock-on crosses the yaw seam along the short direction"),
+            YawTravel >= 0. && YawTravel <= 2.001 && YawTravel <= Delta * 160. + .001);
+
+        for (const double StartingPitch : {348., 25., 305.})
+        {
+            FRotator View(StartingPitch, 179, 0);
+            bool bStayedFramed = true;
+            for (int32 Frame = 0; Frame < int32(Rate * 2.f); ++Frame)
+            {
+                // Reproduce normalized controller storage on every retreat frame.
+                View.Pitch = FRotator::ClampAxis(View.Pitch);
+                const FVector RetreatTarget = AcrossYawSeam * (150. + Frame * 8.) + FVector(0, 0, 40.);
+                View = ARoninFighter::EvaluateLockOnRotation(View, RetreatTarget, Delta);
+                const double Pitch = FRotator::NormalizeAxis(View.Pitch);
+                bStayedFramed &= !View.ContainsNaN() && Pitch >= -25.001 && Pitch <= -5.999
+                    && FMath::Abs(View.Roll) < .001;
+            }
+            bOk &= TestTrue(TEXT("Retreat and repeated angle wrapping never send lock-on overhead"), bStayedFramed);
+            bOk &= TestTrue(TEXT("Lock-on settles back to its playable pitch"),
+                FMath::Abs(FRotator::NormalizeAxis(View.Pitch) + 12.) < .05);
+        }
+    }
+    const FRotator Coincident = ARoninFighter::EvaluateLockOnRotation(FRotator(348, 73, 0), FVector::ZeroVector, 1.f / 60.f);
+    bOk &= TestTrue(TEXT("Coincident targets preserve yaw without invalid camera angles"),
+        !Coincident.ContainsNaN() && FMath::IsNearlyEqual(Coincident.Yaw, 73.)
+        && FMath::IsNearlyEqual(FRotator::NormalizeAxis(Coincident.Pitch), -12.));
     return bOk && !HasAnyErrors();
 }
 
@@ -1027,7 +1438,8 @@ bool FRoninImpactCameraTest::RunTest(const FString& Parameters)
     for (float Rate : {30.f,60.f,120.f})
     {
         for (auto Event : {ronin::HapticEvent::Hit,ronin::HapticEvent::Block,ronin::HapticEvent::PerfectDodge,
-            ronin::HapticEvent::Parry,ronin::HapticEvent::Damage,ronin::HapticEvent::GuardBreak,ronin::HapticEvent::Execute})
+            ronin::HapticEvent::Parry,ronin::HapticEvent::Damage,ronin::HapticEvent::GuardBreak,
+            ronin::HapticEvent::Execute,ronin::HapticEvent::Counter})
         {
             Modifier->Clear();
             Modifier->Pulse(Event);
@@ -1048,7 +1460,49 @@ bool FRoninImpactCameraTest::RunTest(const FString& Parameters)
             bOk &= TestTrue(TEXT("Repeated camera evaluation stays bounded without accumulating aim or roll"),bBounded);
             bOk &= TestTrue(TEXT("Every contact settles exactly to the base view"),SameView(View));
         }
+        for (const bool bDodge : {false, true})
+        {
+            Modifier->Clear();
+            Modifier->Pulse(bDodge ? ronin::HapticEvent::PerfectDodge : ronin::HapticEvent::Parry);
+            Modifier->PlayDefenseBeat(bDodge);
+            const double ForwardLimit = bDodge ? 24. : 60.;
+            const double YawLimit = bDodge ? .8 : 2.;
+            const double PitchLimit = bDodge ? .4 : 1.;
+            const float FovLimit = bDodge ? 4.f : 8.f;
+            bool bBounded = true;
+            double MaximumForward = 0.;
+            float MaximumFovPush = 0.f;
+            auto DefenseView = Base;
+            for (int32 Frame = 0; Frame <= FMath::CeilToInt(Rate * .65f); ++Frame)
+            {
+                DefenseView = Base;
+                Modifier->ModifyCamera(1.f / Rate, DefenseView);
+                MaximumForward = FMath::Max(MaximumForward,
+                    FVector::DotProduct(DefenseView.Location - Base.Location, Base.Rotation.Vector()));
+                MaximumFovPush = FMath::Max(MaximumFovPush, Base.FOV - DefenseView.FOV);
+                bBounded &= !DefenseView.Location.ContainsNaN() && !DefenseView.Rotation.ContainsNaN()
+                    && FVector::Dist(DefenseView.Location, Base.Location) <= ForwardLimit + 2.401
+                    && FMath::Abs(DefenseView.Rotation.Yaw - Base.Rotation.Yaw) <= YawLimit + .001
+                    && FMath::Abs(DefenseView.Rotation.Pitch - Base.Rotation.Pitch) <= PitchLimit + .676
+                    && FMath::Abs(DefenseView.FOV - Base.FOV) <= FovLimit + .676f
+                    && DefenseView.Rotation.Roll == Base.Rotation.Roll;
+            }
+            bOk &= TestTrue(TEXT("Defense lens push remains bounded with the concurrent contact impulse"), bBounded);
+            bOk &= TestTrue(TEXT("Confirmed defense supplies a visible forward push and lens change"),
+                MaximumForward > ForwardLimit * .75 && MaximumFovPush > FovLimit * .75f);
+            bOk &= TestTrue(TEXT("Defense and contact return exactly to the fresh base view after 0.6 seconds"), SameView(DefenseView));
+        }
     }
+    Modifier->PlayDefenseBeat(false);
+    auto ClearedDefenseView = Base;
+    Modifier->ModifyCamera(.04f, ClearedDefenseView);
+    ClearedDefenseView = Base;
+    Modifier->ModifyCamera(.04f, ClearedDefenseView);
+    bOk &= TestFalse(TEXT("Defense beat is active before explicit cleanup"), SameView(ClearedDefenseView));
+    Modifier->Clear();
+    ClearedDefenseView = Base;
+    Modifier->ModifyCamera(.04f, ClearedDefenseView);
+    bOk &= TestTrue(TEXT("Pause and rematch cleanup also cancel the defense lens push"), SameView(ClearedDefenseView));
     Modifier->Pulse(ronin::HapticEvent::Parry);
     auto View=Base;
     Modifier->ModifyCamera(.05f,View);

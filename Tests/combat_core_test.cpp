@@ -137,6 +137,7 @@ void ParryAndCounter()
     CHECK(Near(combat.Get(FighterId::Enemy).posture, 34.f));
     CHECK(combat.Get(FighterId::Player).health == 100.f);
     CHECK(combat.Get(FighterId::Player).counterTime > 0.f);
+    CHECK(combat.Get(FighterId::Player).counterSource == CounterSource::Parry);
     CHECK(combat.Get(FighterId::Player).parryCooldown == 0.f);
     combat.SetGuard(FighterId::Player, true);
     CHECK(combat.Get(FighterId::Player).parryTime == 0.f); // Holding cannot auto-deflect.
@@ -146,10 +147,13 @@ void ParryAndCounter()
     CHECK(combat.SetStance(FighterId::Player, Stance::Stone));
     const auto base = CombatCore::GetAttackSpec(Stance::Stone, AttackKind::Heavy);
     CHECK(combat.TryAttack(FighterId::Player, AttackKind::Heavy));
-    CHECK(Near(combat.Get(FighterId::Player).spec.damage, base.damage * 1.35f));
-    CHECK(Near(combat.Get(FighterId::Player).spec.postureDamage, base.postureDamage * 1.4f));
-    CHECK(Near(combat.Get(FighterId::Player).spec.windup, base.windup * 0.75f));
+    CHECK(Near(combat.Get(FighterId::Player).spec.damage, base.damage * CombatCore::CounterDamageMultiplier));
+    CHECK(Near(combat.Get(FighterId::Player).spec.postureDamage, base.postureDamage * CombatCore::CounterPostureMultiplier));
+    CHECK(Near(combat.Get(FighterId::Player).spec.windup, base.windup * CombatCore::CounterWindupMultiplier));
     CHECK(combat.Get(FighterId::Player).counterTime == 0.f);
+    CHECK(combat.Get(FighterId::Player).counterSource == CounterSource::None);
+    CHECK(combat.Get(FighterId::Player).isCounterAttack);
+    CHECK(combat.Get(FighterId::Player).attackCounterSource == CounterSource::Parry);
     CHECK(!combat.Get(FighterId::Player).guarding);
 }
 
@@ -227,12 +231,15 @@ void DodgeTimingAndUnblockable()
     CHECK(timed.ResolveHit(FighterId::Enemy, 150.f) == HitResult::Dodged);
     CHECK(timed.Get(FighterId::Player).health == 100.f);
     CHECK(Near(timed.Get(FighterId::Player).counterTime, CombatCore::DodgeCounterWindow));
+    CHECK(timed.Get(FighterId::Player).counterSource == CounterSource::Dodge);
     CHECK(timed.ResolveHit(FighterId::Enemy, 150.f) == HitResult::None);
     CHECK(!timed.TryDodge(FighterId::Player));
     AdvanceToIdle(timed, FighterId::Player);
     CHECK(timed.TryAttack(FighterId::Player, AttackKind::Light));
     CHECK(Near(timed.Get(FighterId::Player).spec.windup,
-        CombatCore::GetAttackSpec(Stance::Stone, AttackKind::Light).windup * .75f));
+        CombatCore::GetAttackSpec(Stance::Stone, AttackKind::Light).windup * CombatCore::CounterWindupMultiplier));
+    CHECK(timed.Get(FighterId::Player).isCounterAttack);
+    CHECK(timed.Get(FighterId::Player).attackCounterSource == CounterSource::Dodge);
 
     CombatCore early;
     CHECK(early.TryDodge(FighterId::Player));
@@ -478,6 +485,239 @@ void EnemyRhythmResetAndLethality()
     CHECK(combat.Get(FighterId::Player).action == Action::Idle);
     CHECK(combat.Get(FighterId::Player).health == 100.f);
 }
+
+void DeliberateLightChains()
+{
+    constexpr float Damage[] = {1.f, 1.08f, 1.04f, 1.25f, 1.55f};
+    constexpr float Posture[] = {1.f, 1.15f, 1.1f, 1.45f, 1.85f};
+    constexpr float Windup[] = {1.f, .9f, .82f, 1.08f, 1.2f};
+    constexpr float Recovery[] = {1.f, 1.f, .9f, 1.05f, 1.35f};
+    CHECK(CombatCore::LightComboLength == 5);
+    for (const auto stance : {Stance::Flow, Stance::Stone, Stance::Gale})
+    {
+        CombatCore combat;
+        CHECK(combat.SetStance(FighterId::Player, stance));
+        CHECK(combat.TryAttack(FighterId::Player, AttackKind::Light));
+        const auto base = CombatCore::GetAttackSpec(stance, AttackKind::Light);
+        float totalDamage = 0.f;
+        std::uint64_t previousId = 0;
+        for (std::uint8_t cut = 0; cut < CombatCore::LightComboLength; ++cut)
+        {
+            const auto state = combat.Get(FighterId::Player);
+            CHECK(state.comboStep == cut);
+            CHECK(state.action == Action::Windup);
+            CHECK(state.attackId > previousId);
+            CHECK(!state.comboQueued);
+            CHECK(!state.isCounterAttack);
+            CHECK(Near(state.attackElapsed, 0.f));
+            CHECK(Near(state.spec.damage, base.damage * Damage[cut]));
+            CHECK(Near(state.spec.postureDamage, base.postureDamage * Posture[cut]));
+            CHECK(Near(state.spec.windup, base.windup * Windup[cut]));
+            CHECK(Near(state.spec.active, base.active));
+            CHECK(Near(state.spec.recovery, base.recovery * Recovery[cut]));
+            CHECK(!combat.TryAttack(FighterId::Player, AttackKind::Light));
+            CHECK(!combat.Get(FighterId::Player).comboQueued);
+            combat.Tick(state.spec.windup);
+            CHECK(combat.ResolveHit(FighterId::Player, 150.f) == HitResult::Hit);
+            CHECK(combat.ResolveHit(FighterId::Player, 150.f) == HitResult::None);
+            totalDamage += state.spec.damage;
+            CHECK(Near(combat.Get(FighterId::Enemy).health, 125.f - totalDamage));
+            CHECK(Near(combat.Get(FighterId::Enemy).actionDuration, .28f));
+            previousId = state.attackId;
+            if (cut + 1 == CombatCore::LightComboLength)
+            {
+                CHECK(!combat.TryAttack(FighterId::Player, AttackKind::Light));
+                combat.Tick(state.spec.active);
+                CHECK(!combat.TryAttack(FighterId::Player, AttackKind::Light));
+                combat.Tick(state.spec.recovery);
+            }
+            else if (cut % 2 == 0)
+            {
+                CHECK(combat.TryAttack(FighterId::Player, AttackKind::Light));
+                CHECK(combat.Get(FighterId::Player).comboQueued);
+                CHECK(combat.Get(FighterId::Player).attackId == previousId);
+                CHECK(!combat.TryAttack(FighterId::Player, AttackKind::Light));
+                CHECK(!combat.TryAttack(FighterId::Player, AttackKind::Heavy));
+                combat.Tick(state.spec.active + CombatCore::ComboLinkRecovery - .001f);
+                CHECK(combat.Get(FighterId::Player).attackId == previousId);
+                CHECK(combat.Get(FighterId::Player).action == Action::Recovery);
+                combat.Tick(.001f);
+            }
+            else
+            {
+                // Late recovery presses link immediately without restarting or
+                // extending the prior strike. They still require a fresh press.
+                combat.Tick(state.spec.active + CombatCore::ComboLinkRecovery + .01f);
+                CHECK(combat.Get(FighterId::Player).action == Action::Recovery);
+                CHECK(combat.Get(FighterId::Player).attackId == previousId);
+                CHECK(combat.TryAttack(FighterId::Player, AttackKind::Light));
+            }
+        }
+        CHECK(combat.Get(FighterId::Player).action == Action::Idle);
+        CHECK(combat.Get(FighterId::Player).comboStep == 0);
+        CHECK(!combat.Get(FighterId::Player).comboQueued);
+        CHECK(combat.TryAttack(FighterId::Player, AttackKind::Light));
+        CHECK(combat.Get(FighterId::Player).comboStep == 0);
+        CHECK(Near(combat.Get(FighterId::Player).spec.damage, base.damage));
+    }
+}
+
+void QueuedChainsCancelAndDoNotAutoRepeat()
+{
+    // Every non-finishing cut offers the same defensive exit. Earlier cuts
+    // deliberately whiff so this test does not confuse death with cancellation.
+    for (std::uint8_t cut = 0; cut + 1 < CombatCore::LightComboLength; ++cut)
+    {
+        for (const bool dodge : {false, true})
+        {
+            CombatCore combat;
+            CHECK(combat.TryAttack(FighterId::Player, AttackKind::Light));
+            for (std::uint8_t earlier = 0; earlier < cut; ++earlier)
+            {
+                combat.Tick(combat.Get(FighterId::Player).spec.windup);
+                CHECK(combat.TryAttack(FighterId::Player, AttackKind::Light));
+                combat.Tick(combat.Get(FighterId::Player).spec.active + CombatCore::ComboLinkRecovery);
+            }
+            combat.Tick(combat.Get(FighterId::Player).spec.windup);
+            CHECK(combat.Get(FighterId::Player).comboStep == cut);
+            CHECK(combat.ResolveHit(FighterId::Player, 150.f) == HitResult::Hit);
+            CHECK(combat.TryAttack(FighterId::Player, AttackKind::Light));
+            const auto oldId = combat.Get(FighterId::Player).attackId;
+            if (dodge) CHECK(combat.TryDodge(FighterId::Player));
+            else combat.SetGuard(FighterId::Player, true);
+            CHECK(!combat.Get(FighterId::Player).comboQueued);
+            combat.Tick(2.f);
+            CHECK(combat.Get(FighterId::Player).attackId == oldId);
+            CHECK(combat.Get(FighterId::Player).action == Action::Idle);
+            CHECK(combat.Get(FighterId::Player).comboStep == 0);
+        }
+    }
+
+    CombatCore hit;
+    EnterActive(hit, FighterId::Player, AttackKind::Light);
+    CHECK(hit.TryAttack(FighterId::Player, AttackKind::Light));
+    EnterActive(hit, FighterId::Enemy, AttackKind::Light);
+    const auto interruptedId = hit.Get(FighterId::Player).attackId;
+    CHECK(hit.ResolveHit(FighterId::Enemy, 150.f) == HitResult::Hit);
+    CHECK(!hit.Get(FighterId::Player).comboQueued);
+    hit.Tick(2.f);
+    CHECK(hit.Get(FighterId::Player).attackId == interruptedId);
+
+    CombatCore parried;
+    EnterActive(parried, FighterId::Player, AttackKind::Light);
+    CHECK(parried.TryAttack(FighterId::Player, AttackKind::Light));
+    const auto parriedId = parried.Get(FighterId::Player).attackId;
+    parried.SetGuard(FighterId::Enemy, true);
+    CHECK(parried.ResolveHit(FighterId::Player, 150.f) == HitResult::Parried);
+    CHECK(!parried.Get(FighterId::Player).comboQueued);
+    parried.Tick(2.f);
+    CHECK(parried.Get(FighterId::Player).attackId == parriedId);
+
+    CombatCore oneFollowup;
+    EnterActive(oneFollowup, FighterId::Player, AttackKind::Light);
+    CHECK(oneFollowup.TryAttack(FighterId::Player, AttackKind::Light));
+    const auto oldId = oneFollowup.Get(FighterId::Player).attackId;
+    oneFollowup.Tick(3.f);
+    CHECK(oneFollowup.Get(FighterId::Player).attackId == oldId + 1);
+    CHECK(oneFollowup.Get(FighterId::Player).action == Action::Idle);
+
+    CombatCore dead;
+    for (int strike = 0; strike < 4; ++strike)
+    {
+        EnterActive(dead, FighterId::Player, AttackKind::Heavy);
+        CHECK(dead.ResolveHit(FighterId::Player, 150.f) == HitResult::Hit);
+        dead.Tick(2.f);
+    }
+    EnterActive(dead, FighterId::Player, AttackKind::Light);
+    CHECK(dead.TryAttack(FighterId::Player, AttackKind::Light));
+    CHECK(dead.ResolveHit(FighterId::Player, 150.f) == HitResult::Hit);
+    dead.Tick(dead.Get(FighterId::Player).spec.active + CombatCore::ComboLinkRecovery);
+    CHECK(dead.Get(FighterId::Player).comboStep == 1);
+    dead.Tick(dead.Get(FighterId::Player).spec.windup);
+    CHECK(dead.TryAttack(FighterId::Player, AttackKind::Light));
+    CHECK(dead.ResolveHit(FighterId::Player, 150.f) == HitResult::Hit);
+    // The third strike was queued, but the second killed its target.
+    CHECK(dead.Get(FighterId::Enemy).action == Action::Dead);
+    const auto killId = dead.Get(FighterId::Player).attackId;
+    dead.Tick(3.f);
+    CHECK(dead.Get(FighterId::Player).attackId == killId);
+    CHECK(!dead.Get(FighterId::Player).comboQueued);
+}
+
+void QueuedTimingIsFrameIndependent()
+{
+    CombatCore coarse;
+    CombatCore fine;
+    for (auto* combat : {&coarse, &fine})
+    {
+        EnterActive(*combat, FighterId::Player, AttackKind::Light);
+        CHECK(combat->TryAttack(FighterId::Player, AttackKind::Light));
+    }
+    coarse.Tick(.35f);
+    for (int frame = 0; frame < 42; ++frame) fine.Tick(1.f / 120.f);
+    const auto& a = coarse.Get(FighterId::Player);
+    const auto& b = fine.Get(FighterId::Player);
+    CHECK(a.action == b.action);
+    CHECK(a.attackId == b.attackId);
+    CHECK(a.comboStep == b.comboStep && a.comboStep == 1);
+    CHECK(Near(a.attackElapsed, b.attackElapsed));
+    CHECK(Near(a.actionTime, b.actionTime));
+    CHECK(a.comboQueued == b.comboQueued && !a.comboQueued);
+}
+
+void CriticalOpeningIsEarnedAndConsumedOnce()
+{
+    CombatCore combat;
+    CHECK(combat.TryAttack(FighterId::Enemy, AttackKind::Light));
+    combat.Tick(combat.Get(FighterId::Enemy).spec.windup - .05f);
+    combat.SetGuard(FighterId::Player, true);
+    combat.Tick(.05f);
+    CHECK(combat.ResolveHit(FighterId::Enemy, 150.f) == HitResult::Parried);
+    CHECK(combat.TryAttack(FighterId::Player, AttackKind::Light));
+    const auto critical = combat.Get(FighterId::Player).spec;
+    CHECK(combat.Get(FighterId::Player).isCounterAttack);
+    combat.Tick(critical.windup);
+    CHECK(combat.Get(FighterId::Enemy).action == Action::Staggered);
+    CHECK(!combat.TryAttack(FighterId::Player, AttackKind::Light));
+    CHECK(combat.ResolveHit(FighterId::Player, 150.f) == HitResult::Hit);
+    CHECK(Near(combat.Get(FighterId::Enemy).health, 125.f - critical.damage));
+    CHECK(Near(combat.Get(FighterId::Enemy).actionDuration, .52f));
+    CHECK(combat.ResolveHit(FighterId::Player, 150.f) == HitResult::None);
+    combat.Tick(critical.active + critical.recovery);
+    CHECK(combat.TryAttack(FighterId::Player, AttackKind::Light));
+    CHECK(!combat.Get(FighterId::Player).isCounterAttack);
+    CHECK(combat.Get(FighterId::Player).attackCounterSource == CounterSource::None);
+    CHECK(Near(combat.Get(FighterId::Player).spec.damage,
+        CombatCore::GetAttackSpec(Stance::Flow, AttackKind::Light).damage));
+
+    CombatCore expired;
+    CHECK(expired.TryAttack(FighterId::Enemy, AttackKind::Light));
+    expired.Tick(expired.Get(FighterId::Enemy).spec.windup - .05f);
+    expired.SetGuard(FighterId::Player, true);
+    expired.Tick(.05f);
+    CHECK(expired.ResolveHit(FighterId::Enemy, 150.f) == HitResult::Parried);
+    expired.Tick(CombatCore::ParryCounterWindow);
+    CHECK(expired.Get(FighterId::Player).counterSource == CounterSource::None);
+    CHECK(expired.TryAttack(FighterId::Player, AttackKind::Light));
+    CHECK(!expired.Get(FighterId::Player).isCounterAttack);
+
+    CombatCore wounded;
+    CHECK(wounded.TryAttack(FighterId::Enemy, AttackKind::Light));
+    wounded.Tick(wounded.Get(FighterId::Enemy).spec.windup - .05f);
+    wounded.SetGuard(FighterId::Player, true);
+    wounded.Tick(.05f);
+    CHECK(wounded.ResolveHit(FighterId::Enemy, 150.f) == HitResult::Parried);
+    wounded.SetGuard(FighterId::Player, false);
+    wounded.Tick(.58f);
+    EnterActive(wounded, FighterId::Enemy, AttackKind::Light);
+    CHECK(wounded.Get(FighterId::Player).counterTime > 0.f);
+    CHECK(wounded.ResolveHit(FighterId::Enemy, 150.f) == HitResult::Hit);
+    CHECK(wounded.Get(FighterId::Player).counterTime == 0.f);
+    CHECK(wounded.Get(FighterId::Player).counterSource == CounterSource::None);
+    AdvanceToIdle(wounded, FighterId::Player);
+    CHECK(wounded.TryAttack(FighterId::Player, AttackKind::Light));
+    CHECK(!wounded.Get(FighterId::Player).isCounterAttack);
+}
 } // namespace
 
 int main()
@@ -493,5 +733,9 @@ int main()
     DefenseCancelsAndCommitment();
     DefenseBoundariesAndPosturePressure();
     EnemyRhythmResetAndLethality();
+    DeliberateLightChains();
+    QueuedChainsCancelAndDoNotAutoRepeat();
+    QueuedTimingIsFrameIndependent();
+    CriticalOpeningIsEarnedAndConsumedOnce();
     std::cout << "Combat core: " << checks << " checks passed.\n";
 }

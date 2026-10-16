@@ -36,7 +36,7 @@ public:
     float DisplayedFPS = 0.f;
     FString QualityName = TEXT("HIGH");
     FString FrameCapName = TEXT("UNCAPPED");
-    FString HapticsName = TEXT("70%");
+    FString HapticsName = TEXT("100%");
 
     void StartDuel();
     void RestartDuel();
@@ -51,8 +51,16 @@ public:
     void CycleFrameCap();
     void CycleHaptics();
     bool CanControl() const;
+    bool CanTraverse() const;
     bool HasDuelStarted() const { return bDuelStarted; }
     float GetRoundTime() const { return RoundTime; }
+    // Only combat/movement/pose time is scaled; world, input and HUD time stay live.
+    float GetCombatTimeScale() const { return CombatTimeScale; }
+    float GetCombatDeltaSeconds() const { return CombatFrameDelta; }
+    // Monotonic success identifier; the kind belongs to the most recent cue.
+    uint32 GetDefenseCueSerial() const { return DefenseCueSerial; }
+    bool IsPerfectDodgeCue() const { return bPerfectDodgeCue; }
+    void ClearDefenseCinematic();
     const UParticleSystem* GetContactSparkTemplate() const { return ContactSparks; }
     void Notify(const FString& Text, FLinearColor Color, float Duration = 1.25f);
 
@@ -64,6 +72,9 @@ private:
     void SpawnContactSparks(FVector Location);
     void UpdateContactSparks(float DeltaSeconds);
     void ClearContactSparks();
+    void BeginDefenseCinematic(bool bPerfectDodge);
+    float SampleDefenseTimeScale() const;
+    void ObservePlayerAttackStart();
     UPROPERTY() TMap<FName, TObjectPtr<USoundBase>> Sounds;
     UPROPERTY() TObjectPtr<UParticleSystem> ContactSparkSource;
     UPROPERTY(Transient) TObjectPtr<UParticleSystem> ContactSparks;
@@ -75,10 +86,16 @@ private:
     TArray<FContactSparkBurst> ContactSparkBursts;
     float Accumulator = 0.f;
     float HitStop = 0.f;
+    double DefenseCueStartedAt = -1.0;
+    float CombatTimeScale = 1.f;
+    float CombatFrameDelta = 0.f;
+    uint32 DefenseCueSerial = 0;
+    uint64 LastPlayerAttackId = 0;
+    bool bPerfectDodgeCue = false;
     float RoundTime = 0.f;
     int32 QualityIndex = 2;
     int32 FrameCapIndex = 0;
-    int32 HapticsIndex = 2;
+    int32 HapticsIndex = 3;
     bool bRoundScored = false;
     bool bDuelStarted = false;
     bool bGuardHeld = false;

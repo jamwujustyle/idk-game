@@ -35,22 +35,27 @@ Envelope GetEnvelope(HapticEvent event)
     // Shape the two motor frequencies independently. UE's Linux Xbox path takes
     // max(leftLarge, rightLarge) and max(leftSmall, rightSmall), so side balance
     // alone cannot distinguish events on that controller.
-    static constexpr Keyframe swing[]{{0.f, .13f, .32f}, {.015f, .1f, .24f}, {.065f, 0.f, 0.f}};
-    static constexpr Keyframe heavySwing[]{{0.f, .38f, .24f}, {.025f, .28f, .13f}, {.095f, 0.f, 0.f}};
-    static constexpr Keyframe dodge[]{{0.f, .16f, .03f}, {.015f, .12f, .02f}, {.055f, 0.f, 0.f}};
-    static constexpr Keyframe perfectDodge[]{{0.f, .06f, .62f}, {.025f, .12f, .3f},
-        {.09f, .04f, .12f}, {.12f, 0.f, 0.f}};
-    static constexpr Keyframe hit[]{{0.f, .85f, .25f}, {.025f, .7f, .08f},
-        {.065f, .36f, .02f}, {.14f, 0.f, 0.f}};
-    static constexpr Keyframe block[]{{0.f, .45f, .85f}, {.018f, .32f, .45f},
-        {.045f, .12f, .15f}, {.105f, 0.f, 0.f}};
-    static constexpr Keyframe damage[]{{0.f, 1.f, .35f}, {.035f, 1.f, .15f},
+    static constexpr Keyframe swing[]{{0.f, .32f, .6f}, {.02f, .25f, .45f}, {.095f, 0.f, 0.f}};
+    static constexpr Keyframe heavySwing[]{{0.f, .68f, .45f}, {.03f, .55f, .28f}, {.13f, 0.f, 0.f}};
+    static constexpr Keyframe dodge[]{{0.f, .28f, .08f}, {.02f, .2f, .04f}, {.065f, 0.f, 0.f}};
+    static constexpr Keyframe perfectDodge[]{{0.f, .25f, 1.f}, {.03f, .32f, .65f},
+        {.1f, .1f, .25f}, {.16f, 0.f, 0.f}};
+    static constexpr Keyframe hit[]{{0.f, .95f, .42f}, {.035f, .85f, .22f},
+        {.1f, .45f, .04f}, {.18f, 0.f, 0.f}};
+    static constexpr Keyframe block[]{{0.f, .75f, 1.f}, {.025f, .55f, .7f},
+        {.06f, .2f, .25f}, {.13f, 0.f, 0.f}};
+    static constexpr Keyframe damage[]{{0.f, 1.f, .5f}, {.035f, 1.f, .25f},
         {.095f, .55f, .02f}, {.24f, 0.f, 0.f}};
     // A zero plateau longer than two 60 Hz frames preserves the double tap even
     // when a low-priority swing/dodge arrives during the gap.
-    static constexpr Keyframe parry[]{{0.f, .3f, 1.f}, {.016f, .2f, .85f},
-        {.04f, 0.f, 0.f}, {.075f, 0.f, 0.f}, {.09f, .16f, .9f},
-        {.115f, .08f, .35f}, {.18f, 0.f, 0.f}};
+    static constexpr Keyframe parry[]{{0.f, .9f, 1.f}, {.016f, .8f, .95f},
+        {.04f, 0.f, 0.f}, {.075f, 0.f, 0.f}, {.09f, 1.f, 1.f},
+        {.115f, .5f, .65f}, {.2f, 0.f, 0.f}};
+    // A critical counter lands as a sustained heavy onset and a bass rebound,
+    // distinct from both the ordinary hit decay and the parry's silent double tap.
+    static constexpr Keyframe counter[]{{0.f, 1.f, .9f}, {.035f, 1.f, .7f},
+        {.075f, .65f, .12f}, {.11f, .35f, .04f}, {.135f, .92f, .36f},
+        {.175f, .62f, .12f}, {.26f, 0.f, 0.f}};
     static constexpr Keyframe guardBreak[]{{0.f, 1.f, .65f}, {.035f, .8f, .3f},
         {.08f, .25f, .05f}, {.115f, .7f, .25f}, {.16f, .4f, .1f}, {.29f, 0.f, 0.f}};
     static constexpr Keyframe execute[]{{0.f, 1.f, .8f}, {.045f, .9f, .4f},
@@ -68,8 +73,9 @@ Envelope GetEnvelope(HapticEvent event)
     case HapticEvent::PerfectDodge: return MakeEnvelope(perfectDodge, 4);
     case HapticEvent::Damage: return MakeEnvelope(damage, 5);
     case HapticEvent::Parry: return MakeEnvelope(parry, 6);
-    case HapticEvent::GuardBreak: return MakeEnvelope(guardBreak, 7);
-    case HapticEvent::Execute: return MakeEnvelope(execute, 8);
+    case HapticEvent::Counter: return MakeEnvelope(counter, 7);
+    case HapticEvent::GuardBreak: return MakeEnvelope(guardBreak, 8);
+    case HapticEvent::Execute: return MakeEnvelope(execute, 9);
     }
     return MakeEnvelope(silent, 0);
 }

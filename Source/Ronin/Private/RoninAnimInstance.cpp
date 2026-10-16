@@ -29,8 +29,11 @@ struct FRootLockedPose : FAnimNode_Base
 {
     FPoseLink Source;
     FBoneReference Hands[2], WristBranches[2], WristTips[2];
+    FBoneReference Torso;
+    float Crouch = 0.f, LeanForward = 0.f, LeanSide = 0.f, DeflectTwist = 0.f;
     FRootLockedPose()
     {
+        Torso.BoneName = TEXT("mixamorig_Spine1");
         Hands[0].BoneName = TEXT("mixamorig_RightHand");
         Hands[1].BoneName = TEXT("mixamorig_LeftHand");
         WristBranches[0].BoneName = TEXT("Bone_020");
@@ -44,6 +47,7 @@ struct FRootLockedPose : FAnimNode_Base
     {
         Source.CacheBones(Context);
         const FBoneContainer& Bones = Context.AnimInstanceProxy->GetRequiredBones();
+        Torso.Initialize(Bones);
         for (int32 Side = 0; Side < 2; ++Side)
         {
             Hands[Side].Initialize(Bones);
@@ -65,9 +69,18 @@ struct FRootLockedPose : FAnimNode_Base
             const FVector Bind = Output.Pose.GetRefPose(Root).GetTranslation();
             Position.X = Bind.X;
             Position.Y = Bind.Y;
+            Position.Z -= Crouch;
             Output.Pose[Root].SetTranslation(Position);
         }
         const FBoneContainer& Bones = Output.Pose.GetBoneContainer();
+        if (Torso.IsValidToEvaluate(Bones))
+        {
+            FTransform& Chest = Output.Pose[Torso.GetCompactPoseIndex(Bones)];
+            const FQuat Offset = FQuat(FVector::UpVector, FMath::DegreesToRadians(DeflectTwist))
+                * FQuat(FVector::ForwardVector, FMath::DegreesToRadians(LeanForward))
+                * FQuat(FVector::RightVector, FMath::DegreesToRadians(LeanSide));
+            Chest.SetRotation((Offset * Chest.GetRotation()).GetNormalized());
+        }
         for (int32 Side = 0; Side < 2; ++Side)
         {
             if (!Hands[Side].IsValidToEvaluate(Bones) || !WristBranches[Side].IsValidToEvaluate(Bones)
@@ -173,6 +186,11 @@ struct FRoninAnimProxy : FAnimInstanceProxy
         LastPhaseTime = 0.f;
         ReactionSerial = 0;
         bExecutionRecovery = false;
+        DefenseTime = 1.f;
+        DefenseSerial = State.DefenseSerial;
+        ImpactSerial = State.ImpactSerial;
+        ImpactTime = 1.f;
+        Root.Crouch = Root.LeanForward = Root.LeanSide = Root.DeflectTwist = 0.f;
     }
 
     virtual void Update(float DeltaSeconds) override
@@ -182,7 +200,20 @@ struct FRoninAnimProxy : FAnimInstanceProxy
             ResetState();
             ResetSerial = State.ResetSerial;
         }
-        const float Dt = State.bFrozen ? 0.f : DeltaSeconds;
+        const float Dt = State.bFrozen ? 0.f : State.SimulationDelta;
+        if (DefenseSerial != State.DefenseSerial)
+        {
+            DefenseSerial = State.DefenseSerial;
+            DefenseTime = 0.f;
+        }
+        else DefenseTime += Dt;
+        if (ImpactSerial != State.ImpactSerial)
+        {
+            ImpactSerial = State.ImpactSerial;
+            ImpactTime = 0.f;
+            if (State.bImpactBlocked) GuardWeight = 1.f;
+        }
+        else ImpactTime += Dt;
         const auto& Combat = State.Combat;
         const auto Action = Combat.action;
         IdleTime += Dt;
@@ -202,7 +233,27 @@ struct FRoninAnimProxy : FAnimInstanceProxy
 
         GuardWeight = FMath::FInterpConstantTo(GuardWeight,
             Combat.guarding && Action == ronin::Action::Idle ? 1.f : 0.f, Dt, 10.f);
-        GuardBlend.BlendWeights[0] = GuardWeight;
+        // A successful deflection has an explicit blade lift and torso recoil,
+        // then opens back toward neutral so an immediate counter can take over.
+        const float Deflect = State.bDefenseActive && !State.bPerfectDodge && Action == ronin::Action::Idle ? FMath::Clamp(1.f - DefenseTime / .32f, 0.f, 1.f) : 0.f;
+        GuardPlayer.SetExplicitTime(FMath::Lerp(.8f, .58f, Deflect));
+        GuardBlend.BlendWeights[0] = FMath::Max(GuardWeight, Deflect);
+        Root.DeflectTwist = -18.f * Deflect * Deflect;
+        Root.Crouch = 2.5f * Deflect;
+        Root.LeanForward = 5.f * Deflect;
+        Root.LeanSide = 0.f;
+        const float Recoil = FMath::Clamp(1.f - ImpactTime / .25f, 0.f, 1.f);
+        if (State.bImpactBlocked && Action == ronin::Action::Idle)
+        {
+            GuardBlend.BlendWeights[0] = FMath::Max(GuardBlend.BlendWeights[0], Recoil);
+            Root.LeanForward -= 7.f * Recoil;
+            Root.Crouch += 3.f * Recoil;
+        }
+        else if (Action == ronin::Action::Staggered || Action == ronin::Action::Broken)
+        {
+            Root.LeanForward -= (State.bImpactStrong ? 16.f : 9.f) * Recoil;
+            Root.LeanSide = (ImpactSerial % 2 ? 1.f : -1.f) * 6.f * Recoil;
+        }
 
         if (Action == ronin::Action::Dead)
         {
@@ -220,9 +271,12 @@ struct FRoninAnimProxy : FAnimInstanceProxy
         bool bActionPose = true;
         if (IsAttack(Action))
         {
-            Selected = Combat.currentAttack == ronin::AttackKind::Unblockable ? Clip::AttackD :
+            Selected = Combat.isCounterAttack || Combat.currentAttack == ronin::AttackKind::Unblockable ? Clip::AttackD :
                 Combat.currentAttack == ronin::AttackKind::Heavy ? Clip::AttackC :
-                (Combat.attackId % 2 == 0 ? Clip::AttackB : Clip::AttackA);
+                Combat.comboStep == 4 ? Clip::AttackC : Combat.comboStep == 3 ? Clip::AttackD :
+                Combat.comboStep == 1 ? Clip::AttackB : Clip::AttackA;
+            if (Combat.comboStep == 2 && !Combat.isCounterAttack)
+                Root.DeflectTwist = -12.f * FMath::Sin(PI * FMath::Clamp(Combat.attackElapsed / FMath::Max(.01f, Combat.spec.windup + Combat.spec.active + Combat.spec.recovery), 0.f, 1.f));
             // Source sword attacks reach their forward sweep at .2 s, then exit by .3 s.
             // These are visual phase anchors; animation notifies never resolve gameplay hits.
             Time = URoninAnimInstance::MapAttackPhase(Combat, Length(Selected), .2f, .3f);
@@ -253,6 +307,11 @@ struct FRoninAnimProxy : FAnimInstanceProxy
                 FMath::Clamp(Combat.actionTime / Combat.actionDuration, 0.f, 1.f) : 1.f;
             // The package has no roll: use the authored directional launch as an evasive step.
             Time = Progress * FMath::Min(.8f, Length(Selected));
+            // Lower the centre of mass into the step, then recover it smoothly.
+            const float Slip = FMath::Sin(PI * FMath::Clamp(Progress, 0.f, 1.f));
+            Root.Crouch = 9.f * Slip;
+            Root.LeanForward = -14.f * Direction.X * Slip;
+            Root.LeanSide = -18.f * Direction.Y * Slip;
             Key = (1ull << 56) + ReactionSerial * ClipCount + static_cast<int32>(Selected);
         }
         else if (Action == ronin::Action::Staggered || Action == ronin::Action::Broken)
@@ -269,6 +328,14 @@ struct FRoninAnimProxy : FAnimInstanceProxy
             Selected = Clip::Death;
             Time = FMath::Min(DeathTime, Length(Selected));
             Key = (3ull << 56) + ReactionSerial;
+        }
+        else if (State.bAirborne)
+        {
+            Selected = Clip::StepForward;
+            Time = State.VerticalSpeed > 0.f ? .22f : .36f;
+            Root.Crouch = State.VerticalSpeed > 0.f ? 7.f : 3.f;
+            Root.LeanForward = 8.f;
+            Key = (4ull << 56);
         }
         else bActionPose = false;
 
@@ -303,6 +370,10 @@ struct FRoninAnimProxy : FAnimInstanceProxy
     FVector SmoothedVelocity = FVector::ZeroVector;
     float IdleTime = 0.f, GaitPhase = 0.f, DeathTime = 0.f;
     float ActionWeight = 0.f, GuardWeight = 0.f, LastPhaseTime = 0.f;
+    float DefenseTime = 1.f;
+    uint32 DefenseSerial = 0;
+    uint32 ImpactSerial = 0;
+    float ImpactTime = 1.f;
     uint32 ResetSerial = 0;
     uint64 ActionKey = 0, ReactionSerial = 0;
     int32 CurrentSlot = 0;

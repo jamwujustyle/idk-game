@@ -10,7 +10,7 @@ class UMaterialInterface;
 class USkyLightComponent;
 class UStaticMesh;
 
-/** Courtyard using imported CC0 surfaces and scenery, with a flat 1900 cm combat floor. */
+/** Walkable forest valley surrounding a flat 1900 cm duel courtyard. */
 UCLASS()
 class RONIN_API ARoninArena : public AActor
 {
@@ -33,6 +33,9 @@ private:
         bool bSizeByHeight, float Yaw);
     void BuildCourtyard();
     void BuildTerrain(UMaterialInterface* Material);
+    void BuildTrail(const TArray<FVector2D>& Points, float Width, UMaterialInterface* Material);
+    void BuildRestSite(const FVector2D& Center, UMaterialInterface* Floor,
+        UMaterialInterface* Stone, UMaterialInterface* Wood, UMaterialInterface* Paper);
     void BuildGate(float X, UMaterialInterface* Wood, UMaterialInterface* DarkWood, UMaterialInterface* Stone);
     void BuildLantern(const FVector& Position, UMaterialInterface* Stone,
         UMaterialInterface* Wood, UMaterialInterface* Paper);
