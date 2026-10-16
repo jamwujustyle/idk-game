@@ -1,0 +1,530 @@
+{
+  "path": "assets/generated/torii/ToriiGate.glb",
+  "revision": 5,
+  "bytes": 1506464,
+  "sha256": "ef77f8da332f35ea508e354050aff9e377ef666983ef1ef6dea150598ae4baa1",
+  "glb_version": 2,
+  "triangles": 37064,
+  "mesh_count": 22,
+  "mesh_parts": [
+    {
+      "name": "TORII_Dowel_L_Back_Mesh",
+      "triangles": 284,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Dowel_L_Front_Mesh",
+      "triangles": 284,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Dowel_R_Back_Mesh",
+      "triangles": 284,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Dowel_R_Front_Mesh",
+      "triangles": 284,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Footing_L_Mesh",
+      "triangles": 1020,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Footing_R_Mesh",
+      "triangles": 1020,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Gakuzuka_Mesh",
+      "triangles": 188,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Hashira_L_Mesh",
+      "triangles": 8252,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Hashira_R_Mesh",
+      "triangles": 8252,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Kasagi_Mesh",
+      "triangles": 4516,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_KasagiCap_Mesh",
+      "triangles": 4516,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Kusabi_L_Back_Mesh",
+      "triangles": 108,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Kusabi_L_Front_Mesh",
+      "triangles": 108,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Kusabi_R_Back_Mesh",
+      "triangles": 108,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Kusabi_R_Front_Mesh",
+      "triangles": 108,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Nuki_Mesh",
+      "triangles": 3236,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Plaque_Mesh",
+      "triangles": 188,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_PlaqueFrame_Bottom_Mesh",
+      "triangles": 108,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_PlaqueFrame_L_Mesh",
+      "triangles": 108,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_PlaqueFrame_R_Mesh",
+      "triangles": 108,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_PlaqueFrame_Top_Mesh",
+      "triangles": 108,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    },
+    {
+      "name": "TORII_Shimaki_Mesh",
+      "triangles": 3876,
+      "attributes": [
+        "POSITION",
+        "NORMAL",
+        "TEXCOORD_0"
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "extras": {
+        "Unreal_material": "M_Cedar",
+        "review_shader_only": false,
+        "Unreal_override": "Use UV cedar variant or M_StoneEdge; preview images are not CC0 source textures"
+      },
+      "name": "Cap_BlackenedCedar",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.7300000190734863
+      }
+    },
+    {
+      "extras": {
+        "Unreal_material": "M_StoneEdge",
+        "review_shader_only": false,
+        "Unreal_override": "Use UV cedar variant or M_StoneEdge; preview images are not CC0 source textures"
+      },
+      "name": "Footing_Stone",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 1
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.8199999928474426
+      }
+    },
+    {
+      "extras": {
+        "Unreal_material": "M_Cedar",
+        "review_shader_only": false,
+        "Unreal_override": "Use UV cedar variant or M_StoneEdge; preview images are not CC0 source textures"
+      },
+      "name": "Cedar_Weathered",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 2
+        },
+        "metallicFactor": 0,
+        "roughnessFactor": 0.7300000190734863
+      }
+    }
+  ],
+  "embedded_images": [
+    {
+      "bufferView": 4,
+      "mimeType": "image/png",
+      "name": "Torii_BlackCap_AuthoredPreview"
+    },
+    {
+      "bufferView": 18,
+      "mimeType": "image/png",
+      "name": "Torii_Stone_AuthoredPreview"
+    },
+    {
+      "bufferView": 27,
+      "mimeType": "image/png",
+      "name": "Torii_Cedar_AuthoredPreview"
+    }
+  ],
+  "nodes": [
+    {
+      "name": "CAM_main",
+      "translation": [
+        12,
+        9,
+        22
+      ],
+      "rotation": [
+        -0.11086789518594742,
+        0.24546484649181366,
+        0.028270626440644264,
+        0.9626297950744629
+      ]
+    },
+    {
+      "name": "LGT_fill",
+      "translation": [
+        5,
+        8,
+        4
+      ],
+      "rotation": [
+        -0.2933253347873688,
+        0.40960630774497986,
+        0.14097942411899567,
+        0.8522370457649231
+      ]
+    },
+    {
+      "name": "LGT_key",
+      "translation": [
+        -5,
+        10,
+        8
+      ],
+      "rotation": [
+        -0.3016284704208374,
+        -0.2617586851119995,
+        -0.0865059494972229,
+        0.9126989245414734
+      ]
+    },
+    {
+      "name": "TORII_Dowel_L_Back",
+      "mesh": 0,
+      "translation": [
+        -3.054856538772583,
+        4.420000076293945,
+        -0.28481999039649963
+      ],
+      "rotation": [
+        0.7071068286895752,
+        0,
+        0,
+        0.7071068286895752
+      ]
+    },
+    {
+      "name": "TORII_Dowel_L_Front",
+      "mesh": 1,
+      "translation": [
+        -3.054856538772583,
+        4.420000076293945,
+        0.28481999039649963
+      ],
+      "rotation": [
+        0.7071068286895752,
+        0,
+        0,
+        0.7071068286895752
+      ]
+    },
+    {
+      "name": "TORII_Dowel_R_Back",
+      "mesh": 2,
+      "translation": [
+        3.054856538772583,
+        4.420000076293945,
+        -0.28481999039649963
+      ],
+      "rotation": [
+        0.7071068286895752,
+        0,
+        0,
+        0.7071068286895752
+      ]
+    },
+    {
+      "name": "TORII_Dowel_R_Front",
+      "mesh": 3,
+      "translation": [
+        3.054856538772583,
+        4.420000076293945,
+        0.28481999039649963
+      ],
+      "rotation": [
+        0.7071068286895752,
+        0,
+        0,
+        0.7071068286895752
+      ]
+    },
+    {
+      "name": "TORII_Footing_L",
+      "mesh": 4
+    },
+    {
+      "name": "TORII_Footing_R",
+      "mesh": 5
+    },
+    {
+      "name": "TORII_Gakuzuka",
+      "mesh": 6,
+      "translation": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "name": "TORII_Hashira_L",
+      "mesh": 7
+    },
+    {
+      "name": "TORII_Hashira_R",
+      "mesh": 8
+    },
+    {
+      "name": "TORII_Kasagi",
+      "mesh": 9
+    },
+    {
+      "name": "TORII_KasagiCap",
+      "mesh": 10
+    },
+    {
+      "name": "TORII_Kusabi_L_Back",
+      "mesh": 11,
+      "translation": [
+        -3.1648566722869873,
+        4.590000152587891,
+        -0.28200000524520874
+      ]
+    },
+    {
+      "name": "TORII_Kusabi_L_Front",
+      "mesh": 12,
+      "translation": [
+        -3.1648566722869873,
+        4.590000152587891,
+        0.28200000524520874
+      ]
+    },
+    {
+      "name": "TORII_Kusabi_R_Back",
+      "mesh": 13,
+      "translation": [
+        3.1648566722869873,
+        4.590000152587891,
+        -0.28200000524520874
+      ]
+    },
+    {
+      "name": "TORII_Kusabi_R_Front",
+      "mesh": 14,
+      "translation": [
+        3.1648566722869873,
+        4.590000152587891,
+        0.28200000524520874
+      ]
+    },
+    {
+      "name": "TORII_Nuki",
+      "mesh": 15
+    },
+    {
+      "name": "TORII_Plaque",
+      "mesh": 16,
+      "translation": [
+        0,
+        5.039999961853027,
+        0.2529999911785126
+      ]
+    },
+    {
+      "name": "TORII_PlaqueFrame_Bottom",
+      "mesh": 17,
+      "translation": [
+        0,
+        4.7270002365112305,
+        0.3009999990463257
+      ]
+    },
+    {
+      "name": "TORII_PlaqueFrame_L",
+      "mesh": 18,
+      "translation": [
+        -0.23100000619888306,
+        5.039999961853027,
+        0.3009999990463257
+      ]
+    },
+    {
+      "name": "TORII_PlaqueFrame_R",
+      "mesh": 19,
+      "translation": [
+        0.23100000619888306,
+        5.039999961853027,
+        0.3009999990463257
+      ]
+    },
+    {
+      "name": "TORII_PlaqueFrame_Top",
+      "mesh": 20,
+      "translation": [
+        0,
+        5.353000164031982,
+        0.3009999990463257
+      ]
+    },
+    {
+      "name": "TORII_Shimaki",
+      "mesh": 21
+    },
+    {
+      "name": "TORII_Root",
+      "children": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ]
+    }
+  ],
+  "asset": {
+    "generator": "Khronos glTF Blender I/O v5.2.39",
+    "version": "2.0"
+  }
+}

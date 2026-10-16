@@ -1,0 +1,736 @@
+{
+  "mode": "verify",
+  "materials": {
+    "M_StoneFloor": {
+      "before": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionComponentMask_1",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionComponentMask_2",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionComponentMask_4",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        }
+      },
+      "after": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionComponentMask_1",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionComponentMask_2",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionComponentMask_4",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        }
+      },
+      "other_graph_data_unchanged": true,
+      "needs_repair_before": false
+    },
+    "M_StoneEdge": {
+      "before": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionComponentMask_3",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionMaterialFunctionCall_3",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionComponentMask_6",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionMaterialFunctionCall_3",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionComponentMask_7",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionMaterialFunctionCall_3",
+          "property_output": ""
+        }
+      },
+      "after": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionComponentMask_3",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionMaterialFunctionCall_3",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionComponentMask_6",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionMaterialFunctionCall_3",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionComponentMask_7",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge:MaterialExpressionMaterialFunctionCall_3",
+          "property_output": ""
+        }
+      },
+      "other_graph_data_unchanged": true,
+      "needs_repair_before": false
+    },
+    "M_Cedar": {
+      "before": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionComponentMask_1",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionComponentMask_2",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionComponentMask_4",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        }
+      },
+      "after": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionComponentMask_1",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionComponentMask_2",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionComponentMask_4",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_Cedar.M_Cedar:MaterialExpressionMaterialFunctionCall_8",
+          "property_output": ""
+        }
+      },
+      "other_graph_data_unchanged": true,
+      "needs_repair_before": false
+    },
+    "M_Rock": {
+      "before": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_1",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_4",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_6",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        }
+      },
+      "after": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_1",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_4",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_6",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        }
+      },
+      "other_graph_data_unchanged": true,
+      "needs_repair_before": false
+    },
+    "M_FirBark": {
+      "before": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionComponentMask_1",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionComponentMask_4",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionComponentMask_6",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        }
+      },
+      "after": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionComponentMask_1",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionComponentMask_4",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionComponentMask_6",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_FirBark.M_FirBark:MaterialExpressionTextureSampleParameter2D_8",
+          "property_output": ""
+        }
+      },
+      "other_graph_data_unchanged": true,
+      "needs_repair_before": false
+    },
+    "M_FirNeedles": {
+      "before": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionComponentMask_3",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionComponentMask_6",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionComponentMask_9",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        }
+      },
+      "after": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionComponentMask_3",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionComponentMask_6",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionComponentMask_9",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        }
+      },
+      "other_graph_data_unchanged": true,
+      "needs_repair_before": false
+    },
+    "M_ForestGround": {
+      "before": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_0",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_2",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_1",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_2",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_2",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_2",
+          "property_output": ""
+        }
+      },
+      "after": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_0",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_2",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_1",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_2",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_2",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_2",
+          "property_output": ""
+        }
+      },
+      "other_graph_data_unchanged": true,
+      "needs_repair_before": false
+    },
+    "M_FirMediumBark": {
+      "before": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_0",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_1",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_2",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2",
+          "property_output": ""
+        }
+      },
+      "after": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_0",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_1",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_2",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2",
+          "property_output": ""
+        }
+      },
+      "other_graph_data_unchanged": true,
+      "needs_repair_before": false
+    },
+    "M_FirMediumNeedles": {
+      "before": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_3",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_4",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_5",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6",
+          "property_output": ""
+        }
+      },
+      "after": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_3",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_4",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_5",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6",
+          "property_output": ""
+        }
+      },
+      "other_graph_data_unchanged": true,
+      "needs_repair_before": false
+    },
+    "M_ToriiCedar": {
+      "before": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_3",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_4",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_5",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        }
+      },
+      "after": {
+        "ambient_occlusion": {
+          "node": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_3",
+          "expected": "r",
+          "enabled": [
+            "r"
+          ],
+          "source": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        },
+        "roughness": {
+          "node": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_4",
+          "expected": "g",
+          "enabled": [
+            "g"
+          ],
+          "source": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        },
+        "metallic": {
+          "node": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_5",
+          "expected": "b",
+          "enabled": [
+            "b"
+          ],
+          "source": "/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5",
+          "property_output": ""
+        }
+      },
+      "other_graph_data_unchanged": true,
+      "needs_repair_before": false
+    }
+  },
+  "files_before": {
+    "Content/Environment/Firs/SM_Fir01.uasset": "084cb48a5b255cc32747890f6562a6f4e3ffe0fc82dcc8749b60d5da0954cc7a",
+    "Content/Environment/Firs/SM_Fir02.uasset": "83ced220a60260f69469e3d78ed5d2430de77142f4acb335688a95ec84a0fb2b",
+    "Content/Environment/Firs/SM_Fir03.uasset": "1a301f12fe9965772c06cbdda0cda9aff0284a47e49db80205d20ea380032bcb",
+    "Content/Environment/FirsMedium/SM_FirMedium01.uasset": "d93ed628dc99230d37767144d0571481d8a19b3a8a7c515fafc02f763fe70596",
+    "Content/Environment/FirsMedium/SM_FirMedium02.uasset": "1c539ec524531b334dad9a923eb194fd107e785df91543da559dab25476d8d25",
+    "Content/Environment/FirsMedium/SM_FirMedium03.uasset": "f8428de3742dc0c0568faef38800d541528eb0b0c727e97275c205aab2822a8a",
+    "Content/Environment/Materials/MI_ToriiCedarCap.uasset": "ca9e10d9d766b8329400f72e9394ced34e8b7c33aed2096361c945c46cbf2391",
+    "Content/Environment/Materials/M_Cedar.uasset": "b2ffb4ff6c474284e22721e7e562e7b43960788b18b9eaf212b6a5ba514a9085",
+    "Content/Environment/Materials/M_FirBark.uasset": "1f4e03a8e2db26442b038ffb4831097109a61bc43e0686357b390ea8f662d1ac",
+    "Content/Environment/Materials/M_FirMediumBark.uasset": "b41bb8a7035282dc183f9f86c759bd58e1502475268fdf40975dbc696936b574",
+    "Content/Environment/Materials/M_FirMediumNeedles.uasset": "b35d20fc21bed92cdd03674f32b43d99c8b316715928396bbb400888bcf5fd31",
+    "Content/Environment/Materials/M_FirNeedles.uasset": "8e10a950ebf8c6d168cc2283975c3352ab87f49d82c9fbe4bb818f17efb78160",
+    "Content/Environment/Materials/M_ForestGround.uasset": "983b352c77333d2702c458740d07e89c554c63facbeaf91c78ae63633baec19d",
+    "Content/Environment/Materials/M_Rock.uasset": "d2c3df3579ac047d017ba3abc851167c53923952419ff458e6a1858d5b369801",
+    "Content/Environment/Materials/M_Sky.uasset": "69ad1924e222f095dd6c9b498752e40ce2efe0fccfe4a290ba14065a2627a061",
+    "Content/Environment/Materials/M_StoneEdge.uasset": "f18eb1fe90131433c3fc4979ad0c225de195634a914c5ec98ac24ae8e8a263ad",
+    "Content/Environment/Materials/M_StoneFloor.uasset": "5514d66433b63d54ab9e2ac75fb78c542936fd945794e55fbbcf2727f147e74a",
+    "Content/Environment/Materials/M_ToriiCedar.uasset": "9531c039b43316ec50ef4cc1bc4158c8edab89ac501669b132bf6971ff4ae1f8",
+    "Content/Environment/Rocks/SM_Rock01.uasset": "10a615bc6f63876dd9f422ca09e0dd238f36fd65fbebabf25d740acf84061e0b",
+    "Content/Environment/Rocks/SM_Rock02.uasset": "71b044bdee46bef9fc4323d962c1d595615f3a9f585fbe2788b42d5b5b2ba5c7",
+    "Content/Environment/Rocks/SM_Rock03.uasset": "c7ec522ed18a0640b96b771f52534a1c83433c3fd3b2e4ca8592c73e71d42a83",
+    "Content/Environment/Rocks/SM_Rock04.uasset": "af81ba59c76dc184e06720db077d3cfd16eda4782929b5dec056520040aa1423",
+    "Content/Environment/Rocks/SM_Rock05.uasset": "34e3fb1cfa7165bdb0706a6fe757b0a9780b71e1260a714ab7a639b9cab8b372",
+    "Content/Environment/Rocks/SM_Rock06.uasset": "e9319786d29ed95ec661023bcffda552684fa7f9d9025b215b366b93022cb767",
+    "Content/Environment/Textures/T_Cedar_Diffuse.uasset": "90dadd1333d966d1a09bd3aa5211f14558e9966416dadf4e773b43fe38cb1677",
+    "Content/Environment/Textures/T_Cedar_arm.uasset": "c565803d903830deaf9536b8abd34664db7c7dce9b24cc13f00247534e89fdef",
+    "Content/Environment/Textures/T_Cedar_nor_dx.uasset": "21ed9fd383d3f5ef4f180eab0abcf056d814870745ca3471bb69772cac315f4e",
+    "Content/Environment/Textures/T_FirMedium_branches_arm.uasset": "5602f659116adb736661f079d47bcf4840eb2bbc0186a3fc6632bf3d191f91ee",
+    "Content/Environment/Textures/T_FirMedium_branches_diff.uasset": "31e741e54fbf9b9b3cc3c718b857dcf3e7b3bb4c37d6a0b8fa4d18b59a1b4485",
+    "Content/Environment/Textures/T_FirMedium_branches_nor_dx.uasset": "9ff509aa283f7b62cc4f1792b639d4e31c0790c235f8a9a29c9620d06b3c63e0",
+    "Content/Environment/Textures/T_FirMedium_twigs_alpha.uasset": "c59719fb9421e939913db301cd38f110cde8e2113049de0a1a7d2769c2a9bed1",
+    "Content/Environment/Textures/T_FirMedium_twigs_arm.uasset": "a5c0d8061d152d5bd2cc2f4f08d8db36082c03635303e89ae6b7b55e05862aa6",
+    "Content/Environment/Textures/T_FirMedium_twigs_diff.uasset": "4f6830e342b1254a72e61db3e8a8d64955694877e72164d9eef4419acdaf1678",
+    "Content/Environment/Textures/T_FirMedium_twigs_nor_dx.uasset": "d1961d387921ffdca6ce47f3cd8791a3b5d586a4260c7b1a9a1019f073a0234a",
+    "Content/Environment/Textures/T_Fir_branches_arm.uasset": "dd4157eae41a99ee26c9d9cebdc4f235ffdeafa3c800d4cb7087ef6a14fefa67",
+    "Content/Environment/Textures/T_Fir_branches_diff.uasset": "d8d94a2e75e74b6605319cd1b23aa0779478e9a4113be33661c3a97c94c1b661",
+    "Content/Environment/Textures/T_Fir_branches_nor_dx.uasset": "9bc3d980150ba58b6d1c503149699e0f866403f27d9c57c7af49a3299a30c515",
+    "Content/Environment/Textures/T_Fir_twigs_alpha.uasset": "fd5c2919db2c1ba3ea5e3f8489f1cf587c3f912bf62a766067fd6509b8dd86ec",
+    "Content/Environment/Textures/T_Fir_twigs_arm.uasset": "14d919fc9ce60cdd00afb63a220696f089f3c600e9ddb8e9d36c56ab7fb3df8b",
+    "Content/Environment/Textures/T_Fir_twigs_diff.uasset": "e9055aca2c5c8ff151246582576169c339e22898131b02dcb79f52c178d2987e",
+    "Content/Environment/Textures/T_Fir_twigs_nor_dx.uasset": "e5879e73c1c95f3fcd31c8ad11ba156009b33a9891bc49b7acc7e8b41903ccbb",
+    "Content/Environment/Textures/T_ForestGround_ARM.uasset": "d086643d041bc4bae4406f5e6651d49ab23400e6518f87218a1662adf16d23bd",
+    "Content/Environment/Textures/T_ForestGround_Diffuse.uasset": "1d3ab60d444e9936ae967ac79e2e1962ca504cedc871df244788c877eb2f8adb",
+    "Content/Environment/Textures/T_ForestGround_Normal.uasset": "3bf3e2ef805d0dee598b322ac1216f8e90dcd9e8f07d7860f101f64c9d7cd2b2",
+    "Content/Environment/Textures/T_OvercastSky.uasset": "7f73a24240b9fcb7668f767a1a37c8236fd5bf6af8559b964c1f866e5228b240",
+    "Content/Environment/Textures/T_Rock_Diffuse.uasset": "5d0ed81f6d9901e79f0e04390a411480c3912a133a90c04de8d06ea202836f07",
+    "Content/Environment/Textures/T_Rock_arm.uasset": "f3737f65287da383ba526dd22dc65bf4826ee8298e9421b5b6247ad7cb9913f5",
+    "Content/Environment/Textures/T_Rock_nor_dx.uasset": "4abb34df5409694d92fca20b702f7ae616b4fabf14f4ad830ef8735dbe15dedf",
+    "Content/Environment/Textures/T_Stone_Diffuse.uasset": "51d0d6e7d228cf681bb4553f8de83bb4bc78b45eb90c0f12535558a422c93c90",
+    "Content/Environment/Textures/T_Stone_arm.uasset": "fd6555f2238c584846fe122bf9d7d42640a307dc1f172c1ed414af80252c9b3e",
+    "Content/Environment/Textures/T_Stone_nor_dx.uasset": "377706639ba349fc305d7c1e31f94adb1324a22729543ab4af5d756a164c69d4",
+    "Content/Environment/Torii/SM_ToriiGate.uasset": "5a710a3e9c770c727e024b20f60ba1ed1082c87e33c89fd5309a1d5e9ed068ae"
+  },
+  "saved": [],
+  "files_after": {
+    "Content/Environment/Firs/SM_Fir01.uasset": "084cb48a5b255cc32747890f6562a6f4e3ffe0fc82dcc8749b60d5da0954cc7a",
+    "Content/Environment/Firs/SM_Fir02.uasset": "83ced220a60260f69469e3d78ed5d2430de77142f4acb335688a95ec84a0fb2b",
+    "Content/Environment/Firs/SM_Fir03.uasset": "1a301f12fe9965772c06cbdda0cda9aff0284a47e49db80205d20ea380032bcb",
+    "Content/Environment/FirsMedium/SM_FirMedium01.uasset": "d93ed628dc99230d37767144d0571481d8a19b3a8a7c515fafc02f763fe70596",
+    "Content/Environment/FirsMedium/SM_FirMedium02.uasset": "1c539ec524531b334dad9a923eb194fd107e785df91543da559dab25476d8d25",
+    "Content/Environment/FirsMedium/SM_FirMedium03.uasset": "f8428de3742dc0c0568faef38800d541528eb0b0c727e97275c205aab2822a8a",
+    "Content/Environment/Materials/MI_ToriiCedarCap.uasset": "ca9e10d9d766b8329400f72e9394ced34e8b7c33aed2096361c945c46cbf2391",
+    "Content/Environment/Materials/M_Cedar.uasset": "b2ffb4ff6c474284e22721e7e562e7b43960788b18b9eaf212b6a5ba514a9085",
+    "Content/Environment/Materials/M_FirBark.uasset": "1f4e03a8e2db26442b038ffb4831097109a61bc43e0686357b390ea8f662d1ac",
+    "Content/Environment/Materials/M_FirMediumBark.uasset": "b41bb8a7035282dc183f9f86c759bd58e1502475268fdf40975dbc696936b574",
+    "Content/Environment/Materials/M_FirMediumNeedles.uasset": "b35d20fc21bed92cdd03674f32b43d99c8b316715928396bbb400888bcf5fd31",
+    "Content/Environment/Materials/M_FirNeedles.uasset": "8e10a950ebf8c6d168cc2283975c3352ab87f49d82c9fbe4bb818f17efb78160",
+    "Content/Environment/Materials/M_ForestGround.uasset": "983b352c77333d2702c458740d07e89c554c63facbeaf91c78ae63633baec19d",
+    "Content/Environment/Materials/M_Rock.uasset": "d2c3df3579ac047d017ba3abc851167c53923952419ff458e6a1858d5b369801",
+    "Content/Environment/Materials/M_Sky.uasset": "69ad1924e222f095dd6c9b498752e40ce2efe0fccfe4a290ba14065a2627a061",
+    "Content/Environment/Materials/M_StoneEdge.uasset": "f18eb1fe90131433c3fc4979ad0c225de195634a914c5ec98ac24ae8e8a263ad",
+    "Content/Environment/Materials/M_StoneFloor.uasset": "5514d66433b63d54ab9e2ac75fb78c542936fd945794e55fbbcf2727f147e74a",
+    "Content/Environment/Materials/M_ToriiCedar.uasset": "9531c039b43316ec50ef4cc1bc4158c8edab89ac501669b132bf6971ff4ae1f8",
+    "Content/Environment/Rocks/SM_Rock01.uasset": "10a615bc6f63876dd9f422ca09e0dd238f36fd65fbebabf25d740acf84061e0b",
+    "Content/Environment/Rocks/SM_Rock02.uasset": "71b044bdee46bef9fc4323d962c1d595615f3a9f585fbe2788b42d5b5b2ba5c7",
+    "Content/Environment/Rocks/SM_Rock03.uasset": "c7ec522ed18a0640b96b771f52534a1c83433c3fd3b2e4ca8592c73e71d42a83",
+    "Content/Environment/Rocks/SM_Rock04.uasset": "af81ba59c76dc184e06720db077d3cfd16eda4782929b5dec056520040aa1423",
+    "Content/Environment/Rocks/SM_Rock05.uasset": "34e3fb1cfa7165bdb0706a6fe757b0a9780b71e1260a714ab7a639b9cab8b372",
+    "Content/Environment/Rocks/SM_Rock06.uasset": "e9319786d29ed95ec661023bcffda552684fa7f9d9025b215b366b93022cb767",
+    "Content/Environment/Textures/T_Cedar_Diffuse.uasset": "90dadd1333d966d1a09bd3aa5211f14558e9966416dadf4e773b43fe38cb1677",
+    "Content/Environment/Textures/T_Cedar_arm.uasset": "c565803d903830deaf9536b8abd34664db7c7dce9b24cc13f00247534e89fdef",
+    "Content/Environment/Textures/T_Cedar_nor_dx.uasset": "21ed9fd383d3f5ef4f180eab0abcf056d814870745ca3471bb69772cac315f4e",
+    "Content/Environment/Textures/T_FirMedium_branches_arm.uasset": "5602f659116adb736661f079d47bcf4840eb2bbc0186a3fc6632bf3d191f91ee",
+    "Content/Environment/Textures/T_FirMedium_branches_diff.uasset": "31e741e54fbf9b9b3cc3c718b857dcf3e7b3bb4c37d6a0b8fa4d18b59a1b4485",
+    "Content/Environment/Textures/T_FirMedium_branches_nor_dx.uasset": "9ff509aa283f7b62cc4f1792b639d4e31c0790c235f8a9a29c9620d06b3c63e0",
+    "Content/Environment/Textures/T_FirMedium_twigs_alpha.uasset": "c59719fb9421e939913db301cd38f110cde8e2113049de0a1a7d2769c2a9bed1",
+    "Content/Environment/Textures/T_FirMedium_twigs_arm.uasset": "a5c0d8061d152d5bd2cc2f4f08d8db36082c03635303e89ae6b7b55e05862aa6",
+    "Content/Environment/Textures/T_FirMedium_twigs_diff.uasset": "4f6830e342b1254a72e61db3e8a8d64955694877e72164d9eef4419acdaf1678",
+    "Content/Environment/Textures/T_FirMedium_twigs_nor_dx.uasset": "d1961d387921ffdca6ce47f3cd8791a3b5d586a4260c7b1a9a1019f073a0234a",
+    "Content/Environment/Textures/T_Fir_branches_arm.uasset": "dd4157eae41a99ee26c9d9cebdc4f235ffdeafa3c800d4cb7087ef6a14fefa67",
+    "Content/Environment/Textures/T_Fir_branches_diff.uasset": "d8d94a2e75e74b6605319cd1b23aa0779478e9a4113be33661c3a97c94c1b661",
+    "Content/Environment/Textures/T_Fir_branches_nor_dx.uasset": "9bc3d980150ba58b6d1c503149699e0f866403f27d9c57c7af49a3299a30c515",
+    "Content/Environment/Textures/T_Fir_twigs_alpha.uasset": "fd5c2919db2c1ba3ea5e3f8489f1cf587c3f912bf62a766067fd6509b8dd86ec",
+    "Content/Environment/Textures/T_Fir_twigs_arm.uasset": "14d919fc9ce60cdd00afb63a220696f089f3c600e9ddb8e9d36c56ab7fb3df8b",
+    "Content/Environment/Textures/T_Fir_twigs_diff.uasset": "e9055aca2c5c8ff151246582576169c339e22898131b02dcb79f52c178d2987e",
+    "Content/Environment/Textures/T_Fir_twigs_nor_dx.uasset": "e5879e73c1c95f3fcd31c8ad11ba156009b33a9891bc49b7acc7e8b41903ccbb",
+    "Content/Environment/Textures/T_ForestGround_ARM.uasset": "d086643d041bc4bae4406f5e6651d49ab23400e6518f87218a1662adf16d23bd",
+    "Content/Environment/Textures/T_ForestGround_Diffuse.uasset": "1d3ab60d444e9936ae967ac79e2e1962ca504cedc871df244788c877eb2f8adb",
+    "Content/Environment/Textures/T_ForestGround_Normal.uasset": "3bf3e2ef805d0dee598b322ac1216f8e90dcd9e8f07d7860f101f64c9d7cd2b2",
+    "Content/Environment/Textures/T_OvercastSky.uasset": "7f73a24240b9fcb7668f767a1a37c8236fd5bf6af8559b964c1f866e5228b240",
+    "Content/Environment/Textures/T_Rock_Diffuse.uasset": "5d0ed81f6d9901e79f0e04390a411480c3912a133a90c04de8d06ea202836f07",
+    "Content/Environment/Textures/T_Rock_arm.uasset": "f3737f65287da383ba526dd22dc65bf4826ee8298e9421b5b6247ad7cb9913f5",
+    "Content/Environment/Textures/T_Rock_nor_dx.uasset": "4abb34df5409694d92fca20b702f7ae616b4fabf14f4ad830ef8735dbe15dedf",
+    "Content/Environment/Textures/T_Stone_Diffuse.uasset": "51d0d6e7d228cf681bb4553f8de83bb4bc78b45eb90c0f12535558a422c93c90",
+    "Content/Environment/Textures/T_Stone_arm.uasset": "fd6555f2238c584846fe122bf9d7d42640a307dc1f172c1ed414af80252c9b3e",
+    "Content/Environment/Textures/T_Stone_nor_dx.uasset": "377706639ba349fc305d7c1e31f94adb1324a22729543ab4af5d756a164c69d4",
+    "Content/Environment/Torii/SM_ToriiGate.uasset": "5a710a3e9c770c727e024b20f60ba1ed1082c87e33c89fd5309a1d5e9ed068ae"
+  },
+  "changed_files": [],
+  "success": true
+}

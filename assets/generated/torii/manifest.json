@@ -1,0 +1,156 @@
+{
+  "asset": "Myojin torii gate",
+  "provider": "Higgsfield 3D Jutsu; Blender 5.2.0 LTS",
+  "authorship": "AI-assisted project-authored Python geometry and mathematical preview maps; no downloaded model or reference image used",
+  "project_id": "56228f77-b006-42ea-911d-ca91fc793c9a",
+  "project_url": "https://higgsfield.ai/3d-jutsu/56228f77-b006-42ea-911d-ca91fc793c9a",
+  "revision": 5,
+  "source_axes": {
+    "width": "+X",
+    "depth": "Y",
+    "front": "-Y",
+    "up": "+Z",
+    "pivot": "base centre at (0,0,0)"
+  },
+  "dimensions_m": [
+    10.899999618530273,
+    1.1011841893196106,
+    6.570000171661377
+  ],
+  "triangles_lod0": 37064,
+  "mesh_parts": 22,
+  "material_slots": [
+    "Cedar_Weathered",
+    "Cap_BlackenedCedar",
+    "Footing_Stone"
+  ],
+  "uv_layout": "UV0 is tiled; 1 UV unit = 1.1 m, V follows cedar grain",
+  "rights_basis": {
+    "reviewed": "2026-10-16",
+    "source": "https://higgsfield.ai/terms-of-use-agreement",
+    "sections": [
+      "4.2",
+      "4.4"
+    ],
+    "summary": "Higgsfield does not claim ownership of user content, inputs or outputs and does not restrict commercial use; exported-output rights survive account cancellation and may be transferred or sublicensed. This is project-authored geometry, not a third-party marketplace model or CC0 claim."
+  },
+  "exports": {
+    "glb": {
+      "path": "assets/generated/torii/ToriiGate.glb",
+      "size_bytes": 1506464,
+      "sha256": "ef77f8da332f35ea508e354050aff9e377ef666983ef1ef6dea150598ae4baa1"
+    },
+    "blend": {
+      "path": "assets/generated/torii/ToriiGate.blend",
+      "size_bytes": 3460821,
+      "sha256": "0e65cd5c85502ebd8e14698d1db2fcb3766b5fcf4fec80ac55082b1537d73d4d"
+    }
+  },
+  "verification": {
+    "source_audit": "assets/generated/torii/audit.json",
+    "portable_export_audit": "assets/generated/torii/export-audit.json",
+    "actual_render": "reports/assets/torii-final-front.png",
+    "scene_geometry": "All 22 parts closed with positive signed volume; zero nonmanifold edges, degenerate faces or zero-area UV triangles",
+    "unreal": "NullRHI import metadata verified; the assigned gate is also visible in the recorded in-game GPU frame. See scene_assignment and the environment report for scope.",
+    "actual_render_context": "Blender source preview; in-game evidence is separate below."
+  },
+  "unreal_expected": {
+    "object_path": "/Game/Environment/Torii/SM_ToriiGate.SM_ToriiGate",
+    "dimensions_cm": [
+      1090,
+      110.1184,
+      657
+    ],
+    "front": "+Y",
+    "arena_yaw_degrees": 90,
+    "materials": {
+      "Cedar_Weathered": "/Game/Environment/Materials/M_ToriiCedar",
+      "Cap_BlackenedCedar": "/Game/Environment/Materials/MI_ToriiCedarCap",
+      "Footing_Stone": "/Game/Environment/Materials/M_StoneEdge"
+    },
+    "sections": 3
+  },
+  "limitations": [
+    "LOD0 only; no automatic collision hull; the runtime gate is decorative and has collision disabled.",
+    "The saved GPU view establishes in-scene appearance from one camera; close-up UVs, alternate lighting, and sustained-play readability remain to be reviewed.",
+    "GLB preview maps are mathematical textures; Unreal uses the separately sourced CC0 cedar/stone maps.",
+    "Not a scan or reconstruction of a particular historical gate."
+  ],
+  "unreal_import": {
+    "engine": "5.7.4-51494982+++UE5+Release-5.7",
+    "object_path": "/Game/Environment/Torii/SM_ToriiGate.SM_ToriiGate",
+    "bounds_min_cm": [
+      -545.0,
+      -55.0592,
+      0.0
+    ],
+    "bounds_max_cm": [
+      545.0,
+      55.0593,
+      657.0
+    ],
+    "dimensions_cm": [
+      1090.0,
+      110.1184,
+      657.0
+    ],
+    "triangles_lod0": 37064,
+    "sections_lod0": 3,
+    "uv_channels_lod0": 1,
+    "material_slots": [
+      "Cap_BlackenedCedar",
+      "Footing_Stone",
+      "Cedar_Weathered"
+    ],
+    "materials": {
+      "Cedar_Weathered": "/Game/Environment/Materials/M_ToriiCedar",
+      "Cap_BlackenedCedar": "/Game/Environment/Materials/MI_ToriiCedarCap",
+      "Footing_Stone": "/Game/Environment/Materials/M_StoneEdge"
+    },
+    "source_front_unreal": "+Y",
+    "arena_yaw_degrees": 90,
+    "arena_placement": "Unit scale at (1560,0,-55) cm, yaw 90 degrees facing -X; base pivot is on the outer approach.",
+    "verification": "Bounds, triangles, sections, UVs and material slots verified on import; assigned in RoninArena and visible in one in-game GPU frame.",
+    "material_channel_verification": {
+      "channels": {
+        "ambient_occlusion": "R",
+        "roughness": "G",
+        "metallic": "B"
+      },
+      "other_channels_enabled": false,
+      "repair_report": "reports/assets/surface-channels-20261016T100843085413Z/report.json",
+      "fresh_load_verification_report": "reports/assets/surface-channels-20261016T100924966245Z/report.json",
+      "scope": "Only connected ARM mask flags changed; other graph data preserved except engine material cache GUIDs.",
+      "materials": [
+        "M_ToriiCedar",
+        "M_StoneEdge"
+      ],
+      "inherited_by": "MI_ToriiCedarCap inherits repaired M_ToriiCedar; the material instance file was unchanged."
+    }
+  },
+  "scene_assignment": {
+    "source": "Source/Ronin/Private/RoninArena.cpp",
+    "builder": "ARoninArena::BuildCourtyard -> BuildGate",
+    "object_path": "/Game/Environment/Torii/SM_ToriiGate.SM_ToriiGate",
+    "instance_count": 1,
+    "location_cm": [
+      1560,
+      0,
+      -55
+    ],
+    "rotation_degrees_pitch_yaw_roll": [
+      0,
+      90,
+      0
+    ],
+    "scale": [
+      1,
+      1,
+      1
+    ],
+    "collision": "Decorative instanced mesh; courtyard floor and invisible boundaries handle movement.",
+    "gpu_capture": "reports/visuals/parry-v1.png",
+    "observation": "The curved cap, tapered posts and stone footings are visible in the native game scene with the cedar/stone material assignments.",
+    "validation_report": "reports/2026-10-16-environment.md"
+  }
+}

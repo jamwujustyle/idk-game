@@ -7,6 +7,6 @@ public class Ronin : ModuleRules
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         CppStandard = CppStandardVersion.Cpp20;
         PublicDependencyModuleNames.AddRange(new string[] {"Core", "CoreUObject", "Engine", "InputCore", "ApplicationCore"});
-        PrivateDependencyModuleNames.Add("AnimGraphRuntime");
+        PrivateDependencyModuleNames.AddRange(new string[] {"AnimGraphRuntime", "ProceduralMeshComponent"});
     }
 }

@@ -32,6 +32,7 @@ private:
     void AddNaturalMesh(UStaticMesh* Mesh, const FVector& GroundPosition, float Size,
         bool bSizeByHeight, float Yaw);
     void BuildCourtyard();
+    void BuildTerrain(UMaterialInterface* Material);
     void BuildGate(float X, UMaterialInterface* Wood, UMaterialInterface* DarkWood, UMaterialInterface* Stone);
     void BuildLantern(const FVector& Position, UMaterialInterface* Stone,
         UMaterialInterface* Wood, UMaterialInterface* Paper);

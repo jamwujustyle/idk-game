@@ -1,0 +1,186 @@
+Begin Object Class=/Script/Engine.Material Name="M_FirMediumNeedles" ExportPath="/Script/Engine.Material'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles'"
+   Begin Object Class=/Script/Engine.MaterialEditorOnlyData Name="M_FirMediumNeedlesEditorOnlyData" ExportPath="/Script/Engine.MaterialEditorOnlyData'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:M_FirMediumNeedlesEditorOnlyData'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_0" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_2" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_2'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_3" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_3'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_4" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_4'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_5" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_5'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_1" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionMultiply_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_2" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionMultiply_2'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionScalarParameter Name="MaterialExpressionScalarParameter_0" ExportPath="/Script/Engine.MaterialExpressionScalarParameter'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionScalarParameter_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_1" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_4" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_4'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_5" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_5'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_6" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_7" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_7'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVectorParameter Name="MaterialExpressionVectorParameter_0" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionVectorParameter_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVectorParameter Name="MaterialExpressionVectorParameter_1" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionVectorParameter_1'"
+   End Object
+   Begin Object Name="M_FirMediumNeedlesEditorOnlyData" ExportPath="/Script/Engine.MaterialEditorOnlyData'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:M_FirMediumNeedlesEditorOnlyData'"
+      BaseColor=(Expression="/Script/Engine.MaterialExpressionMultiply'M_FirMediumNeedles:MaterialExpressionMultiply_1'")
+      Metallic=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_FirMediumNeedles:MaterialExpressionComponentMask_5'")
+      Roughness=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_FirMediumNeedles:MaterialExpressionComponentMask_4'")
+      Normal=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_5'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      OpacityMask=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_7'",OutputIndex=1,Mask=1,MaskR=1)
+      SubsurfaceColor=(Expression="/Script/Engine.MaterialExpressionMultiply'M_FirMediumNeedles:MaterialExpressionMultiply_2'")
+      AmbientOcclusion=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_FirMediumNeedles:MaterialExpressionComponentMask_3'")
+      ExpressionCollection=(Expressions=("/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_1'","/Script/Engine.MaterialExpressionVectorParameter'M_FirMediumNeedles:MaterialExpressionVectorParameter_0'","/Script/Engine.MaterialExpressionComponentMask'M_FirMediumNeedles:MaterialExpressionComponentMask_0'","/Script/Engine.MaterialExpressionComponentMask'M_FirMediumNeedles:MaterialExpressionComponentMask_2'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_4'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_5'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6'","/Script/Engine.MaterialExpressionVectorParameter'M_FirMediumNeedles:MaterialExpressionVectorParameter_1'","/Script/Engine.MaterialExpressionMultiply'M_FirMediumNeedles:MaterialExpressionMultiply_1'","/Script/Engine.MaterialExpressionComponentMask'M_FirMediumNeedles:MaterialExpressionComponentMask_3'","/Script/Engine.MaterialExpressionComponentMask'M_FirMediumNeedles:MaterialExpressionComponentMask_4'","/Script/Engine.MaterialExpressionComponentMask'M_FirMediumNeedles:MaterialExpressionComponentMask_5'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_7'","/Script/Engine.MaterialExpressionScalarParameter'M_FirMediumNeedles:MaterialExpressionScalarParameter_0'","/Script/Engine.MaterialExpressionMultiply'M_FirMediumNeedles:MaterialExpressionMultiply_2'"))
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_0" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_0'"
+      Input=(Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      R=True
+      G=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=838
+      MaterialExpressionGuid=028EA097D27B4E10BA7C5B5A87EFB177
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_2" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_2'"
+      Input=(Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      R=True
+      G=True
+      B=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=338
+      MaterialExpressionGuid=939F83E1469243D98E5E3A988EE43E14
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_3" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_3'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      R=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=838
+      MaterialExpressionGuid=96471BA8B40147378FA52FBC90F2BBBE
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_4" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_4'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      G=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=338
+      MaterialExpressionGuid=9EAA11ADC6D849928FB7C8FAC011613B
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_5" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionComponentMask_5'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      B=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=176
+      MaterialExpressionGuid=F22E1B5692F446B7AD5B1EF02351D157
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_1" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionMultiply_1'"
+      A=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_4'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      B=(Expression="/Script/Engine.MaterialExpressionVectorParameter'M_FirMediumNeedles:MaterialExpressionVectorParameter_1'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      MaterialExpressionEditorX=-520
+      MaterialExpressionGuid=3222499301864D51AD7FF51590DA46E2
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_2" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionMultiply_2'"
+      A=(Expression="/Script/Engine.MaterialExpressionMultiply'M_FirMediumNeedles:MaterialExpressionMultiply_1'")
+      B=(Expression="/Script/Engine.MaterialExpressionScalarParameter'M_FirMediumNeedles:MaterialExpressionScalarParameter_0'")
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=676
+      MaterialExpressionGuid=E5F48B5EA90B4329B47032F5E4ACF503
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionScalarParameter_0" ExportPath="/Script/Engine.MaterialExpressionScalarParameter'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionScalarParameter_0'"
+      DefaultValue=0.350000
+      SliderMax=1.000000
+      ParameterName="SubsurfaceStrength"
+      ExpressionGUID=30F7F6CD9F934B87B1ADF45E9B8B0152
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=676
+      MaterialExpressionGuid=6D077AB548D44703ADF6F063F2FD9F6C
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_1" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_1'"
+      ParameterName="Normal"
+      ExpressionGUID=912B9B67F2CA4ABDA61F473C478E1994
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_FirMedium_twigs_nor_dx.T_FirMedium_twigs_nor_dx'"
+      SamplerType=SAMPLERTYPE_Normal
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=662
+      MaterialExpressionGuid=0E35B38D9A44498F99431FA78DF5AE55
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_4" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_4'"
+      ParameterName="Diffuse"
+      ExpressionGUID=909A64103EFD4611968BC4B94B3224E1
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_FirMedium_twigs_diff.T_FirMedium_twigs_diff'"
+      MaterialExpressionEditorX=-780
+      MaterialExpressionGuid=024B98E36A64489A89749AB3ADBF51E9
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_5" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_5'"
+      ParameterName="Normal"
+      ExpressionGUID=018A0BB815B645C2B2370240F3608481
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_FirMedium_twigs_nor_dx.T_FirMedium_twigs_nor_dx'"
+      SamplerType=SAMPLERTYPE_Normal
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=500
+      MaterialExpressionGuid=928362B288EE4E3B8F74BBD101551A82
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_6" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_6'"
+      ParameterName="ARM"
+      ExpressionGUID=F9823008354448F099CFBC2C19828426
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_FirMedium_twigs_arm.T_FirMedium_twigs_arm'"
+      SamplerType=SAMPLERTYPE_Masks
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=176
+      MaterialExpressionGuid=82E7C7B4FC20475CA171E81445FCA683
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_7" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionTextureSampleParameter2D_7'"
+      ParameterName="Opacity"
+      ExpressionGUID=8860B783C0A448D896E874BC6B75E3CD
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_FirMedium_twigs_alpha.T_FirMedium_twigs_alpha'"
+      SamplerType=SAMPLERTYPE_Masks
+      MaterialExpressionEditorX=-260
+      MaterialExpressionGuid=689151FFE6534E5EA6746FA7FF6336F9
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionVectorParameter_0" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionVectorParameter_0'"
+      DefaultValue=(R=1.000000,G=1.000000,B=1.000000,A=1.000000)
+      ParameterName="ColorTint"
+      ExpressionGUID=D089E5D2D9C34E36BA0282067ABCF091
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=352
+      MaterialExpressionGuid=C23F20978EC64971A21AD4970CBD716E
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   Begin Object Name="MaterialExpressionVectorParameter_1" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles:MaterialExpressionVectorParameter_1'"
+      DefaultValue=(R=1.000000,G=1.000000,B=1.000000,A=1.000000)
+      ParameterName="ColorTint"
+      ExpressionGUID=DA24CE1AF8864A85B0600E9CAF57717A
+      MaterialExpressionEditorX=-780
+      MaterialExpressionEditorY=176
+      MaterialExpressionGuid=DF2AA7C564CA44249978DBD70F8DFC20
+      Material="/Script/Engine.Material'M_FirMediumNeedles'"
+   End Object
+   BlendMode=BLEND_Masked
+   ShadingModel=MSM_TwoSidedFoliage
+   ShadingModels=(ShadingModelField=64)
+   OpacityMaskClipValue=0.350000
+   TwoSided=True
+   bUsedWithInstancedStaticMeshes=True
+   StateId=DE1381606B214E659BAF897CE3FAC235
+   EditorOnlyData="/Script/Engine.MaterialEditorOnlyData'M_FirMediumNeedlesEditorOnlyData'"
+   LightingGuid=C717ECEAD4A04174B8ABC98C1AACA6F3
+End Object

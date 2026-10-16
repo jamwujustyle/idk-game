@@ -1,0 +1,167 @@
+Begin Object Class=/Script/Engine.Material Name="M_Rock" ExportPath="/Script/Engine.Material'/Game/Environment/Materials/M_Rock.M_Rock'"
+   Begin Object Class=/Script/Engine.MaterialEditorOnlyData Name="M_RockEditorOnlyData" ExportPath="/Script/Engine.MaterialEditorOnlyData'/Game/Environment/Materials/M_Rock.M_Rock:M_RockEditorOnlyData'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_0" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_1" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_2" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_2'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_4" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_4'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_6" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_6'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_1" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionMultiply_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_3" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionMultiply_3'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_2" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_2'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_4" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_4'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_5" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_5'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_6" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_6'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_8" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_8'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVectorParameter Name="MaterialExpressionVectorParameter_0" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionVectorParameter_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVectorParameter Name="MaterialExpressionVectorParameter_1" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionVectorParameter_1'"
+   End Object
+   Begin Object Name="M_RockEditorOnlyData" ExportPath="/Script/Engine.MaterialEditorOnlyData'/Game/Environment/Materials/M_Rock.M_Rock:M_RockEditorOnlyData'"
+      BaseColor=(Expression="/Script/Engine.MaterialExpressionMultiply'M_Rock:MaterialExpressionMultiply_3'")
+      Metallic=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_Rock:MaterialExpressionComponentMask_6'")
+      Roughness=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_Rock:MaterialExpressionComponentMask_4'")
+      Normal=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_Rock:MaterialExpressionTextureSampleParameter2D_5'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      AmbientOcclusion=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_Rock:MaterialExpressionComponentMask_1'")
+      ExpressionCollection=(Expressions=("/Script/Engine.MaterialExpressionMultiply'M_Rock:MaterialExpressionMultiply_1'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_Rock:MaterialExpressionTextureSampleParameter2D_6'","/Script/Engine.MaterialExpressionComponentMask'M_Rock:MaterialExpressionComponentMask_2'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_Rock:MaterialExpressionTextureSampleParameter2D_4'","/Script/Engine.MaterialExpressionVectorParameter'M_Rock:MaterialExpressionVectorParameter_1'","/Script/Engine.MaterialExpressionComponentMask'M_Rock:MaterialExpressionComponentMask_0'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_Rock:MaterialExpressionTextureSampleParameter2D_2'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_Rock:MaterialExpressionTextureSampleParameter2D_5'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_Rock:MaterialExpressionTextureSampleParameter2D_8'","/Script/Engine.MaterialExpressionVectorParameter'M_Rock:MaterialExpressionVectorParameter_0'","/Script/Engine.MaterialExpressionMultiply'M_Rock:MaterialExpressionMultiply_3'","/Script/Engine.MaterialExpressionComponentMask'M_Rock:MaterialExpressionComponentMask_1'","/Script/Engine.MaterialExpressionComponentMask'M_Rock:MaterialExpressionComponentMask_4'","/Script/Engine.MaterialExpressionComponentMask'M_Rock:MaterialExpressionComponentMask_6'"))
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_0" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_0'"
+      Input=(Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      R=True
+      G=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=662
+      MaterialExpressionGuid=CFCA677C3A0E49FA9DE5FCB2CC569D15
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_1" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_1'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_Rock:MaterialExpressionTextureSampleParameter2D_8'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      R=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=662
+      MaterialExpressionGuid=D9A5181C6F554A3380A265CEAE3CAB17
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_2" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_2'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_Rock:MaterialExpressionTextureSampleParameter2D_6'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      R=True
+      G=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=324
+      MaterialExpressionGuid=596DCD42D4394A49BF38937C220D98D1
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_4" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_4'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_Rock:MaterialExpressionTextureSampleParameter2D_8'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      G=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=324
+      MaterialExpressionGuid=D13060A073DE48AF9CE56FCD6B41ACF0
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_6" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionComponentMask_6'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_Rock:MaterialExpressionTextureSampleParameter2D_8'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      B=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=162
+      MaterialExpressionGuid=08C8494AED2A41B48D137D6F92C034E4
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_1" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionMultiply_1'"
+      A=(Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      B=(Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      MaterialExpressionEditorX=-260
+      MaterialExpressionGuid=71332FD25DE74DA79D8A5BC653878157
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_3" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionMultiply_3'"
+      A=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_Rock:MaterialExpressionTextureSampleParameter2D_2'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      B=(Expression="/Script/Engine.MaterialExpressionVectorParameter'M_Rock:MaterialExpressionVectorParameter_0'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      MaterialExpressionEditorX=-260
+      MaterialExpressionGuid=61D3DC7976804773887EB3CF16F060EE
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_2" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_2'"
+      ParameterName="Diffuse"
+      ExpressionGUID=1779374664054210930DDE8206B3474E
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_Rock_Diffuse.T_Rock_Diffuse'"
+      MaterialExpressionEditorX=-520
+      MaterialExpressionGuid=867FB52FAC72494E9E8A0C451FD5C93B
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_4" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_4'"
+      ParameterName="Normal"
+      ExpressionGUID=A20F93E353B04C62BE4059588F6FF1B3
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_Rock_nor_dx.T_Rock_nor_dx'"
+      SamplerType=SAMPLERTYPE_Normal
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=486
+      MaterialExpressionGuid=94DAD2D3F98D49D6ADCD01F4F6AD057F
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_5" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_5'"
+      ParameterName="Normal"
+      ExpressionGUID=962E46C961E54D77A93399AE5744C2FD
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_Rock_nor_dx.T_Rock_nor_dx'"
+      SamplerType=SAMPLERTYPE_Normal
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=486
+      MaterialExpressionGuid=19CCCF58051444E098C4CBBB61969E35
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_6" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_6'"
+      ParameterName="ARM"
+      ExpressionGUID=1F38FD6B6032434DA76AC9119F610D6B
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_Rock_arm.T_Rock_arm'"
+      SamplerType=SAMPLERTYPE_Masks
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=352
+      MaterialExpressionGuid=0AF7B32EEAD64BE09F9C9121B443728F
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_8" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionTextureSampleParameter2D_8'"
+      ParameterName="ARM"
+      ExpressionGUID=4BE039A755A64BBEB2E84F739F2DFC2D
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_Rock_arm.T_Rock_arm'"
+      SamplerType=SAMPLERTYPE_Masks
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=352
+      MaterialExpressionGuid=BEDBEE428AEB4603908DAB43321D7A7C
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionVectorParameter_0" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionVectorParameter_0'"
+      DefaultValue=(R=1.000000,G=1.000000,B=1.000000,A=1.000000)
+      ParameterName="ColorTint"
+      ExpressionGUID=5D0E6EB9FDA94EE2B20643EE72AF3475
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=176
+      MaterialExpressionGuid=6A77E565B8474AFA95B6DAF9CBC90F46
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   Begin Object Name="MaterialExpressionVectorParameter_1" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_Rock.M_Rock:MaterialExpressionVectorParameter_1'"
+      DefaultValue=(R=1.000000,G=1.000000,B=1.000000,A=1.000000)
+      ParameterName="ColorTint"
+      ExpressionGUID=7026F8CD89614A4B9DD48BCE5B2069C2
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=176
+      MaterialExpressionGuid=BDA8AE5CB33545258212D11BE226EEFB
+      Material="/Script/Engine.Material'M_Rock'"
+   End Object
+   bUsedWithInstancedStaticMeshes=True
+   bCanMaskedBeAssumedOpaque=True
+   StateId=7A014F9AA32741A59962FABC84E6DB9F
+   EditorOnlyData="/Script/Engine.MaterialEditorOnlyData'M_RockEditorOnlyData'"
+   LightingGuid=22030A1FB4DF43A19B4810A122945CA7
+End Object

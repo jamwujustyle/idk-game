@@ -1,0 +1,376 @@
+{
+  "bounds_min_m": [
+    -5.449999809265137,
+    -0.5505926609039307,
+    0
+  ],
+  "bounds_max_m": [
+    5.449999809265137,
+    0.5505915284156799,
+    6.570000171661377
+  ],
+  "dimensions_m": [
+    10.899999618530273,
+    1.1011841893196106,
+    6.570000171661377
+  ],
+  "mesh_count": 22,
+  "triangles": 37064,
+  "parts": [
+    {
+      "name": "TORII_Dowel_L_Back",
+      "triangles": 284,
+      "vertices": 144,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.00013302488427136726,
+      "materials": [
+        "Cap_BlackenedCedar"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_Dowel_L_Front",
+      "triangles": 284,
+      "vertices": 144,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.00013302488427136726,
+      "materials": [
+        "Cap_BlackenedCedar"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_Dowel_R_Back",
+      "triangles": 284,
+      "vertices": 144,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.00013302488427136726,
+      "materials": [
+        "Cap_BlackenedCedar"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_Dowel_R_Front",
+      "triangles": 284,
+      "vertices": 144,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.00013302488427136726,
+      "materials": [
+        "Cap_BlackenedCedar"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_Footing_L",
+      "triangles": 1020,
+      "vertices": 512,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.4621229288940898,
+      "materials": [
+        "Footing_Stone"
+      ],
+      "has_custom_normals": true
+    },
+    {
+      "name": "TORII_Footing_R",
+      "triangles": 1020,
+      "vertices": 512,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.4621229309963488,
+      "materials": [
+        "Footing_Stone"
+      ],
+      "has_custom_normals": true
+    },
+    {
+      "name": "TORII_Gakuzuka",
+      "triangles": 188,
+      "vertices": 96,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.09588293992430161,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_Hashira_L",
+      "triangles": 8252,
+      "vertices": 4128,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 1.5821313478066905,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": true
+    },
+    {
+      "name": "TORII_Hashira_R",
+      "triangles": 8252,
+      "vertices": 4128,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 1.5821094498473687,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": true
+    },
+    {
+      "name": "TORII_Kasagi",
+      "triangles": 4516,
+      "vertices": 2260,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 3.712010109862993,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": true
+    },
+    {
+      "name": "TORII_KasagiCap",
+      "triangles": 4516,
+      "vertices": 2260,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 1.0718258338146711,
+      "materials": [
+        "Cap_BlackenedCedar"
+      ],
+      "has_custom_normals": true
+    },
+    {
+      "name": "TORII_Kusabi_L_Back",
+      "triangles": 108,
+      "vertices": 56,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.009716821965849368,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_Kusabi_L_Front",
+      "triangles": 108,
+      "vertices": 56,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.009716821965849368,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_Kusabi_R_Back",
+      "triangles": 108,
+      "vertices": 56,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.00971682196584937,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_Kusabi_R_Front",
+      "triangles": 108,
+      "vertices": 56,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.00971682196584937,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_Nuki",
+      "triangles": 3236,
+      "vertices": 1620,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 1.2737665126365343,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": true
+    },
+    {
+      "name": "TORII_Plaque",
+      "triangles": 188,
+      "vertices": 96,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.024081544163817276,
+      "materials": [
+        "Cap_BlackenedCedar"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_PlaqueFrame_Bottom",
+      "triangles": 108,
+      "vertices": 56,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.0006617361957298359,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_PlaqueFrame_L",
+      "triangles": 108,
+      "vertices": 56,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.0010102058186033814,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_PlaqueFrame_R",
+      "triangles": 108,
+      "vertices": 56,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.0010102058186033814,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_PlaqueFrame_Top",
+      "triangles": 108,
+      "vertices": 56,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 0.0006617361957298359,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": false
+    },
+    {
+      "name": "TORII_Shimaki",
+      "triangles": 3876,
+      "vertices": 1940,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "zero_uv_triangles": 0,
+      "nonmanifold_edges": 0,
+      "degenerate_faces": 0,
+      "signed_volume_m3": 1.5159476768737226,
+      "materials": [
+        "Cedar_Weathered"
+      ],
+      "has_custom_normals": true
+    }
+  ],
+  "preview": "torii-final-front.png",
+  "project_id": "56228f77-b006-42ea-911d-ca91fc793c9a",
+  "revision": 5
+}

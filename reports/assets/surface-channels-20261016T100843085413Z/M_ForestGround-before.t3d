@@ -1,0 +1,189 @@
+Begin Object Class=/Script/Engine.Material Name="M_ForestGround" ExportPath="/Script/Engine.Material'/Game/Environment/Materials/M_ForestGround.M_ForestGround'"
+   Begin Object Class=/Script/Engine.MaterialEditorOnlyData Name="M_ForestGroundEditorOnlyData" ExportPath="/Script/Engine.MaterialEditorOnlyData'/Game/Environment/Materials/M_ForestGround.M_ForestGround:M_ForestGroundEditorOnlyData'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_0" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_1" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_2" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_2'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMaterialFunctionCall Name="MaterialExpressionMaterialFunctionCall_0" ExportPath="/Script/Engine.MaterialExpressionMaterialFunctionCall'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMaterialFunctionCall Name="MaterialExpressionMaterialFunctionCall_1" ExportPath="/Script/Engine.MaterialExpressionMaterialFunctionCall'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMaterialFunctionCall Name="MaterialExpressionMaterialFunctionCall_2" ExportPath="/Script/Engine.MaterialExpressionMaterialFunctionCall'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_2'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_0" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMultiply_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionScalarParameter Name="MaterialExpressionScalarParameter_0" ExportPath="/Script/Engine.MaterialExpressionScalarParameter'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionScalarParameter_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionStaticBool Name="MaterialExpressionStaticBool_0" ExportPath="/Script/Engine.MaterialExpressionStaticBool'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionStaticBool_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureObjectParameter Name="MaterialExpressionTextureObjectParameter_0" ExportPath="/Script/Engine.MaterialExpressionTextureObjectParameter'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionTextureObjectParameter_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureObjectParameter Name="MaterialExpressionTextureObjectParameter_1" ExportPath="/Script/Engine.MaterialExpressionTextureObjectParameter'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionTextureObjectParameter_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureObjectParameter Name="MaterialExpressionTextureObjectParameter_2" ExportPath="/Script/Engine.MaterialExpressionTextureObjectParameter'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionTextureObjectParameter_2'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVectorParameter Name="MaterialExpressionVectorParameter_0" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionVectorParameter_0'"
+   End Object
+   Begin Object Name="M_ForestGroundEditorOnlyData" ExportPath="/Script/Engine.MaterialEditorOnlyData'/Game/Environment/Materials/M_ForestGround.M_ForestGround:M_ForestGroundEditorOnlyData'"
+      BaseColor=(Expression="/Script/Engine.MaterialExpressionMultiply'M_ForestGround:MaterialExpressionMultiply_0'")
+      Metallic=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_ForestGround:MaterialExpressionComponentMask_2'")
+      Roughness=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_ForestGround:MaterialExpressionComponentMask_1'")
+      Normal=(Expression="/Script/Engine.MaterialExpressionMaterialFunctionCall'M_ForestGround:MaterialExpressionMaterialFunctionCall_1'",OutputIndex=1)
+      AmbientOcclusion=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_ForestGround:MaterialExpressionComponentMask_0'")
+      ExpressionCollection=(Expressions=("/Script/Engine.MaterialExpressionScalarParameter'M_ForestGround:MaterialExpressionScalarParameter_0'","/Script/Engine.MaterialExpressionTextureObjectParameter'M_ForestGround:MaterialExpressionTextureObjectParameter_0'","/Script/Engine.MaterialExpressionMaterialFunctionCall'M_ForestGround:MaterialExpressionMaterialFunctionCall_0'","/Script/Engine.MaterialExpressionTextureObjectParameter'M_ForestGround:MaterialExpressionTextureObjectParameter_1'","/Script/Engine.MaterialExpressionMaterialFunctionCall'M_ForestGround:MaterialExpressionMaterialFunctionCall_1'","/Script/Engine.MaterialExpressionStaticBool'M_ForestGround:MaterialExpressionStaticBool_0'","/Script/Engine.MaterialExpressionTextureObjectParameter'M_ForestGround:MaterialExpressionTextureObjectParameter_2'","/Script/Engine.MaterialExpressionMaterialFunctionCall'M_ForestGround:MaterialExpressionMaterialFunctionCall_2'","/Script/Engine.MaterialExpressionVectorParameter'M_ForestGround:MaterialExpressionVectorParameter_0'","/Script/Engine.MaterialExpressionMultiply'M_ForestGround:MaterialExpressionMultiply_0'","/Script/Engine.MaterialExpressionComponentMask'M_ForestGround:MaterialExpressionComponentMask_0'","/Script/Engine.MaterialExpressionComponentMask'M_ForestGround:MaterialExpressionComponentMask_1'","/Script/Engine.MaterialExpressionComponentMask'M_ForestGround:MaterialExpressionComponentMask_2'"))
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_0" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_0'"
+      Input=(Expression="/Script/Engine.MaterialExpressionMaterialFunctionCall'M_ForestGround:MaterialExpressionMaterialFunctionCall_2'",OutputIndex=2)
+      R=True
+      G=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=648
+      MaterialExpressionGuid=2991C5D255A14EDCB99843B138177304
+      Material="/Script/Engine.Material'M_ForestGround'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_1" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_1'"
+      Input=(Expression="/Script/Engine.MaterialExpressionMaterialFunctionCall'M_ForestGround:MaterialExpressionMaterialFunctionCall_2'",OutputIndex=2)
+      R=True
+      G=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=324
+      MaterialExpressionGuid=40A9E923D5A341A79F238E7235EE6CCC
+      Material="/Script/Engine.Material'M_ForestGround'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_2" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionComponentMask_2'"
+      Input=(Expression="/Script/Engine.MaterialExpressionMaterialFunctionCall'M_ForestGround:MaterialExpressionMaterialFunctionCall_2'",OutputIndex=2)
+      R=True
+      G=True
+      B=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=162
+      MaterialExpressionGuid=A17D0A45BC5A45B388AE518BA37140DE
+      Material="/Script/Engine.Material'M_ForestGround'"
+   End Object
+   Begin Object Name="MaterialExpressionMaterialFunctionCall_0" ExportPath="/Script/Engine.MaterialExpressionMaterialFunctionCall'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_0'"
+      MaterialFunction="/Script/Engine.MaterialFunction'/Engine/Functions/Engine_MaterialFunctions01/Texturing/WorldAlignedTexture.WorldAlignedTexture'"
+      FunctionInputs(0)=(ExpressionInputId=4EE64DD049AC714D089AD6AAB1BFA0C8,Input=(Expression="/Script/Engine.MaterialExpressionTextureObjectParameter'M_ForestGround:MaterialExpressionTextureObjectParameter_0'",InputName="TextureObject"))
+      FunctionInputs(1)=(ExpressionInputId=2C710AD6489D7B7213E379AD4846EBBB,Input=(Expression="/Script/Engine.MaterialExpressionScalarParameter'M_ForestGround:MaterialExpressionScalarParameter_0'",InputName="TextureSize"))
+      FunctionInputs(2)=(ExpressionInputId=F9CEA7574004FF6704D0C5B341DB8F50,Input=(OutputIndex=-1,InputName="WorldPosition"))
+      FunctionInputs(3)=(ExpressionInputId=041C58BB4D6D46D766DE40A41673ECD6,Input=(OutputIndex=-1,InputName="Export Float 4"))
+      FunctionInputs(4)=(ExpressionInputId=ABB498D643904DF08C37A0B911766DDB,Input=(OutputIndex=-1,InputName="World Space Normal"))
+      FunctionInputs(5)=(ExpressionInputId=D2134BC94ED09D2F619E9DBED3E550CD,Input=(OutputIndex=-1,InputName="ProjectionTransitionContrast"))
+      FunctionOutputs(0)=(ExpressionOutputId=C73948F34CBC303FB1D8F3A99E6B0324,Output=(OutputName="XY Texture"))
+      FunctionOutputs(1)=(ExpressionOutputId=DC35E13448C6765AA54072B08874BFD4,Output=(OutputName="Z Texture"))
+      FunctionOutputs(2)=(ExpressionOutputId=1B6AC1E04D115FD30866E4A895261285,Output=(OutputName="XYZ Texture"))
+      MaterialExpressionEditorX=-520
+      MaterialExpressionGuid=8BB1CE38776F4275970B1DE1DFF484DA
+      Material="/Script/Engine.Material'M_ForestGround'"
+      Outputs(0)=(OutputName="XY Texture")
+      Outputs(1)=(OutputName="Z Texture")
+      Outputs(2)=(OutputName="XYZ Texture")
+   End Object
+   Begin Object Name="MaterialExpressionMaterialFunctionCall_1" ExportPath="/Script/Engine.MaterialExpressionMaterialFunctionCall'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_1'"
+      MaterialFunction="/Script/Engine.MaterialFunction'/Engine/Functions/Engine_MaterialFunctions01/Texturing/WorldAlignedNormal.WorldAlignedNormal'"
+      FunctionInputs(0)=(ExpressionInputId=4EE64DD049AC714D089AD6AAB1BFA0C8,Input=(Expression="/Script/Engine.MaterialExpressionTextureObjectParameter'M_ForestGround:MaterialExpressionTextureObjectParameter_1'",InputName="TextureObject"))
+      FunctionInputs(1)=(ExpressionInputId=2C710AD6489D7B7213E379AD4846EBBB,Input=(Expression="/Script/Engine.MaterialExpressionScalarParameter'M_ForestGround:MaterialExpressionScalarParameter_0'",InputName="TextureSize"))
+      FunctionInputs(2)=(ExpressionInputId=C85A579A4E7775F89AC1CD843DB662E9,Input=(Expression="/Script/Engine.MaterialExpressionStaticBool'M_ForestGround:MaterialExpressionStaticBool_0'",InputName="WorldSpace"))
+      FunctionInputs(3)=(ExpressionInputId=ABB498D643904DF08C37A0B911766DDB,Input=(OutputIndex=-1,InputName="Normal"))
+      FunctionInputs(4)=(ExpressionInputId=1EC3C51D42E374A4492E28B1F38E7BB9,Input=(OutputIndex=-1,InputName="ProjectionTransitionContrast"))
+      FunctionInputs(5)=(ExpressionInputId=7DA24D334D9C0259A5CD2195EC73F358,Input=(OutputIndex=-1,InputName="WorldPosition"))
+      FunctionInputs(6)=(ExpressionInputId=2198114E4F46BF7257A16DB8BEDA1FAD,Input=(OutputIndex=-1,InputName="Use High Quality Normals"))
+      FunctionOutputs(0)=(ExpressionOutputId=C73948F34CBC303FB1D8F3A99E6B0324,Output=(OutputName="XY Texture"))
+      FunctionOutputs(1)=(ExpressionOutputId=1B6AC1E04D115FD30866E4A895261285,Output=(OutputName="XYZ Texture"))
+      FunctionOutputs(2)=(ExpressionOutputId=1B404A9F4D4F1AE703786498FE246AAA,Output=(OutputName="XYZFlatTop"))
+      FunctionOutputs(3)=(ExpressionOutputId=DC35E13448C6765AA54072B08874BFD4,Output=(OutputName="Z Texture"))
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=486
+      MaterialExpressionGuid=EEAE7807E5BA4986A27C8CDF2FE3E36F
+      Material="/Script/Engine.Material'M_ForestGround'"
+      Outputs(0)=(OutputName="XY Texture")
+      Outputs(1)=(OutputName="XYZ Texture")
+      Outputs(2)=(OutputName="XYZFlatTop")
+      Outputs(3)=(OutputName="Z Texture")
+   End Object
+   Begin Object Name="MaterialExpressionMaterialFunctionCall_2" ExportPath="/Script/Engine.MaterialExpressionMaterialFunctionCall'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMaterialFunctionCall_2'"
+      MaterialFunction="/Script/Engine.MaterialFunction'/Engine/Functions/Engine_MaterialFunctions01/Texturing/WorldAlignedTexture.WorldAlignedTexture'"
+      FunctionInputs(0)=(ExpressionInputId=4EE64DD049AC714D089AD6AAB1BFA0C8,Input=(Expression="/Script/Engine.MaterialExpressionTextureObjectParameter'M_ForestGround:MaterialExpressionTextureObjectParameter_2'",InputName="TextureObject"))
+      FunctionInputs(1)=(ExpressionInputId=2C710AD6489D7B7213E379AD4846EBBB,Input=(Expression="/Script/Engine.MaterialExpressionScalarParameter'M_ForestGround:MaterialExpressionScalarParameter_0'",InputName="TextureSize"))
+      FunctionInputs(2)=(ExpressionInputId=F9CEA7574004FF6704D0C5B341DB8F50,Input=(OutputIndex=-1,InputName="WorldPosition"))
+      FunctionInputs(3)=(ExpressionInputId=041C58BB4D6D46D766DE40A41673ECD6,Input=(OutputIndex=-1,InputName="Export Float 4"))
+      FunctionInputs(4)=(ExpressionInputId=ABB498D643904DF08C37A0B911766DDB,Input=(OutputIndex=-1,InputName="World Space Normal"))
+      FunctionInputs(5)=(ExpressionInputId=D2134BC94ED09D2F619E9DBED3E550CD,Input=(OutputIndex=-1,InputName="ProjectionTransitionContrast"))
+      FunctionOutputs(0)=(ExpressionOutputId=C73948F34CBC303FB1D8F3A99E6B0324,Output=(OutputName="XY Texture"))
+      FunctionOutputs(1)=(ExpressionOutputId=DC35E13448C6765AA54072B08874BFD4,Output=(OutputName="Z Texture"))
+      FunctionOutputs(2)=(ExpressionOutputId=1B6AC1E04D115FD30866E4A895261285,Output=(OutputName="XYZ Texture"))
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=338
+      MaterialExpressionGuid=7010A268DCF2471691D75B27849E3F72
+      Material="/Script/Engine.Material'M_ForestGround'"
+      Outputs(0)=(OutputName="XY Texture")
+      Outputs(1)=(OutputName="Z Texture")
+      Outputs(2)=(OutputName="XYZ Texture")
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_0" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionMultiply_0'"
+      A=(Expression="/Script/Engine.MaterialExpressionMaterialFunctionCall'M_ForestGround:MaterialExpressionMaterialFunctionCall_0'",OutputIndex=2)
+      B=(Expression="/Script/Engine.MaterialExpressionVectorParameter'M_ForestGround:MaterialExpressionVectorParameter_0'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      MaterialExpressionEditorX=-260
+      MaterialExpressionGuid=12C7E37161A34FEEB5F87E3F2A9A873F
+      Material="/Script/Engine.Material'M_ForestGround'"
+   End Object
+   Begin Object Name="MaterialExpressionScalarParameter_0" ExportPath="/Script/Engine.MaterialExpressionScalarParameter'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionScalarParameter_0'"
+      DefaultValue=200.000000
+      ParameterName="TextureScale"
+      ExpressionGUID=F686BBF7BDB143F487E1F6D905E95EC0
+      MaterialExpressionEditorX=-780
+      MaterialExpressionEditorY=162
+      MaterialExpressionGuid=1F45B0722D7442F2AFB3A360D3DAD3CF
+      Material="/Script/Engine.Material'M_ForestGround'"
+   End Object
+   Begin Object Name="MaterialExpressionStaticBool_0" ExportPath="/Script/Engine.MaterialExpressionStaticBool'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionStaticBool_0'"
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=662
+      MaterialExpressionGuid=261B3A2913EF493AB0499CF40DD0C395
+      Material="/Script/Engine.Material'M_ForestGround'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureObjectParameter_0" ExportPath="/Script/Engine.MaterialExpressionTextureObjectParameter'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionTextureObjectParameter_0'"
+      ParameterName="Diffuse"
+      ExpressionGUID=75FFCE98C3D44422998417ECBEBF37C9
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_ForestGround_Diffuse.T_ForestGround_Diffuse'"
+      MaterialExpressionEditorX=-780
+      MaterialExpressionGuid=13B693C050D5437290F8F89D8ADD4350
+      Material="/Script/Engine.Material'M_ForestGround'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureObjectParameter_1" ExportPath="/Script/Engine.MaterialExpressionTextureObjectParameter'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionTextureObjectParameter_1'"
+      ParameterName="nor_dx"
+      ExpressionGUID=59C90B00C703472692386AB53532576F
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_ForestGround_Normal.T_ForestGround_Normal'"
+      SamplerType=SAMPLERTYPE_Normal
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=500
+      MaterialExpressionGuid=C9FE1B5A80074891BE74AF05966AB758
+      Material="/Script/Engine.Material'M_ForestGround'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureObjectParameter_2" ExportPath="/Script/Engine.MaterialExpressionTextureObjectParameter'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionTextureObjectParameter_2'"
+      ParameterName="arm"
+      ExpressionGUID=61A43607ABA4408BA52588D1098DF508
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_ForestGround_ARM.T_ForestGround_ARM'"
+      SamplerType=SAMPLERTYPE_Masks
+      MaterialExpressionEditorX=-780
+      MaterialExpressionEditorY=338
+      MaterialExpressionGuid=D5D6216D3D17469EB371E078C2EC8E22
+      Material="/Script/Engine.Material'M_ForestGround'"
+   End Object
+   Begin Object Name="MaterialExpressionVectorParameter_0" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_ForestGround.M_ForestGround:MaterialExpressionVectorParameter_0'"
+      DefaultValue=(R=1.000000,G=1.000000,B=1.000000,A=1.000000)
+      ParameterName="ColorTint"
+      ExpressionGUID=4773C05CDC3D4647803FD611DC2EB5BD
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=162
+      MaterialExpressionGuid=DE38F26F647C45E7BB5C1516E226F272
+      Material="/Script/Engine.Material'M_ForestGround'"
+   End Object
+   bUsedWithInstancedStaticMeshes=True
+   bCanMaskedBeAssumedOpaque=True
+   StateId=21814F7729D94E0E878852839FD8BA3A
+   EditorOnlyData="/Script/Engine.MaterialEditorOnlyData'M_ForestGroundEditorOnlyData'"
+   LightingGuid=60F5B738B81348FA9D8213C394EB44E7
+End Object

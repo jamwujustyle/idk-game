@@ -1,0 +1,119 @@
+{
+  "provider": "Poly Haven",
+  "license": "CC0-1.0",
+  "license_url": "https://polyhaven.com/license",
+  "retrieved_at_utc": "2026-10-16T09:33:51.604837+00:00",
+  "download_bytes": 9902772,
+  "verification": "All three file sizes and MD5 checksums match official API metadata; SHA-256 records local bytes.",
+  "asset": {
+    "id": "forrest_ground_01",
+    "name": "Forest Ground 01",
+    "authors": {
+      "Rob Tuytel": "All"
+    },
+    "source": "https://polyhaven.com/a/forrest_ground_01",
+    "metadata_source": "https://api.polyhaven.com/files/forrest_ground_01",
+    "info_source": "https://api.polyhaven.com/info/forrest_ground_01",
+    "physical_size_cm": [
+      200.0,
+      200.0
+    ],
+    "selection_reason": "Natural earthy forest floor with leaf litter, twigs, subdued moss and dry grass; no paving pattern.",
+    "files": [
+      {
+        "role": "Diffuse",
+        "format": "jpg",
+        "resolution": "2k",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/forrest_ground_01/forrest_ground_01_diff_2k.jpg",
+        "size_bytes": 3077552,
+        "md5": "18fa30c294be21805159ca6e73a5e5fa",
+        "local_path": ".cache/ground/forrest_ground_01/forrest_ground_01_diff_2k.jpg",
+        "sha256": "e4d557ff61a0b42712a58e8a2e91c6010738977d4e172b7af47abd7d406ae735"
+      },
+      {
+        "role": "nor_dx",
+        "format": "jpg",
+        "resolution": "2k",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/forrest_ground_01/forrest_ground_01_nor_dx_2k.jpg",
+        "size_bytes": 5664401,
+        "md5": "e1b78b45dde854401d82cfc7d4dcf6e5",
+        "local_path": ".cache/ground/forrest_ground_01/forrest_ground_01_nor_dx_2k.jpg",
+        "sha256": "fcc8900b8f1d67d3ff242ad3111b91d2a72d8183c850f1d8ae21eaf9c67a5ba4"
+      },
+      {
+        "role": "arm",
+        "format": "jpg",
+        "resolution": "2k",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/forrest_ground_01/forrest_ground_01_arm_2k.jpg",
+        "size_bytes": 1160819,
+        "md5": "bb5d791e2697b0b4b8703963c42a70d4",
+        "local_path": ".cache/ground/forrest_ground_01/forrest_ground_01_arm_2k.jpg",
+        "sha256": "abc91717bc60c831f2cd86ad06a5c575ac0e5bd11870b1e7b6dcefc122fc64db"
+      }
+    ]
+  },
+  "prepared_import": {
+    "script": "scripts/import_ground.py",
+    "status": "imported; assigned by RoninArena at runtime",
+    "material_path": "/Game/Environment/Materials/M_ForestGround",
+    "texture_paths": {
+      "Diffuse": "/Game/Environment/Textures/T_ForestGround_Diffuse",
+      "nor_dx": "/Game/Environment/Textures/T_ForestGround_Normal",
+      "arm": "/Game/Environment/Textures/T_ForestGround_ARM"
+    },
+    "texture_scale_cm": 200,
+    "mapping": "world aligned",
+    "normal_convention": "DirectX source; WorldAlignedNormal tangent-space output",
+    "arm_channels": {
+      "R": "ambient occlusion",
+      "G": "roughness",
+      "B": "metallic"
+    }
+  },
+  "unreal_import": {
+    "imported_at_utc": "2026-10-16T09:40:43.203965+00:00",
+    "material": "/Game/Environment/Materials/M_ForestGround.M_ForestGround",
+    "textures": {
+      "Diffuse": "/Game/Environment/Textures/T_ForestGround_Diffuse.T_ForestGround_Diffuse",
+      "nor_dx": "/Game/Environment/Textures/T_ForestGround_Normal.T_ForestGround_Normal",
+      "arm": "/Game/Environment/Textures/T_ForestGround_ARM.T_ForestGround_ARM"
+    },
+    "asset_count": 4,
+    "material_channel_verification": {
+      "channels": {
+        "ambient_occlusion": "R",
+        "roughness": "G",
+        "metallic": "B"
+      },
+      "other_channels_enabled": false,
+      "repair_report": "reports/assets/surface-channels-20261016T100843085413Z/report.json",
+      "fresh_load_verification_report": "reports/assets/surface-channels-20261016T100924966245Z/report.json",
+      "scope": "Only connected ARM mask flags changed; other graph data preserved except engine material cache GUIDs."
+    }
+  },
+  "scene_assignment": {
+    "source": "Source/Ronin/Private/RoninArena.cpp",
+    "builder": "ARoninArena::BuildCourtyard -> BuildTerrain",
+    "component": "ForestTerrain",
+    "material": "/Game/Environment/Materials/M_ForestGround.M_ForestGround",
+    "color_tint_linear_rgb": [
+      0.28,
+      0.32,
+      0.24
+    ],
+    "texture_scale_cm": 200,
+    "terrain_size_cm": [
+      18000,
+      18000
+    ],
+    "terrain_cells_per_axis": 96,
+    "collision": "Visual terrain only; movement uses the separate courtyard floor and boundary boxes.",
+    "gpu_capture": "reports/visuals/parry-v1.png",
+    "observation": "Ground-covered ridges are visible in the saved in-game frame after the material-channel repair; the preceding broad white reflection is absent in that view.",
+    "validation_report": "reports/2026-10-16-environment.md"
+  },
+  "limitations": [
+    "The saved GPU frame covers one camera and lighting state, not sustained play or alternate viewpoints.",
+    "Surface repetition and sparse ground cover remain visible; representative GPU frame times and packaged Linux behavior have not been measured."
+  ]
+}

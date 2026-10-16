@@ -3,6 +3,7 @@ DerivedDataCache/
 Intermediate/
 Saved/
 Builds/
+Build/Linux/FileOpenOrder/
 .tools/
 .cache/
 .idea/

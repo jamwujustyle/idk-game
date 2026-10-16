@@ -1,0 +1,105 @@
+Begin Object Class=/Script/Engine.Material Name="M_FirMediumBark" ExportPath="/Script/Engine.Material'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark'"
+   Begin Object Class=/Script/Engine.MaterialEditorOnlyData Name="M_FirMediumBarkEditorOnlyData" ExportPath="/Script/Engine.MaterialEditorOnlyData'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:M_FirMediumBarkEditorOnlyData'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_0" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_1" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_2" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_2'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_0" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionMultiply_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_0" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_1" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_2" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVectorParameter Name="MaterialExpressionVectorParameter_0" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionVectorParameter_0'"
+   End Object
+   Begin Object Name="M_FirMediumBarkEditorOnlyData" ExportPath="/Script/Engine.MaterialEditorOnlyData'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:M_FirMediumBarkEditorOnlyData'"
+      BaseColor=(Expression="/Script/Engine.MaterialExpressionMultiply'M_FirMediumBark:MaterialExpressionMultiply_0'")
+      Metallic=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_FirMediumBark:MaterialExpressionComponentMask_2'")
+      Roughness=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_FirMediumBark:MaterialExpressionComponentMask_1'")
+      Normal=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_1'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      AmbientOcclusion=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_FirMediumBark:MaterialExpressionComponentMask_0'")
+      ExpressionCollection=(Expressions=("/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_0'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_1'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2'","/Script/Engine.MaterialExpressionVectorParameter'M_FirMediumBark:MaterialExpressionVectorParameter_0'","/Script/Engine.MaterialExpressionMultiply'M_FirMediumBark:MaterialExpressionMultiply_0'","/Script/Engine.MaterialExpressionComponentMask'M_FirMediumBark:MaterialExpressionComponentMask_0'","/Script/Engine.MaterialExpressionComponentMask'M_FirMediumBark:MaterialExpressionComponentMask_1'","/Script/Engine.MaterialExpressionComponentMask'M_FirMediumBark:MaterialExpressionComponentMask_2'"))
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_0" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_0'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      R=True
+      G=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=662
+      MaterialExpressionGuid=5E014547FEE84031821E4CDC93B437AD
+      Material="/Script/Engine.Material'M_FirMediumBark'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_1" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_1'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      R=True
+      G=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=324
+      MaterialExpressionGuid=392997A0C92948D699A1FC5D8E9FABA7
+      Material="/Script/Engine.Material'M_FirMediumBark'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_2" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionComponentMask_2'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      R=True
+      G=True
+      B=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=162
+      MaterialExpressionGuid=8BF735885B4E4ADC8CD114E36386FF6B
+      Material="/Script/Engine.Material'M_FirMediumBark'"
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_0" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionMultiply_0'"
+      A=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_0'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      B=(Expression="/Script/Engine.MaterialExpressionVectorParameter'M_FirMediumBark:MaterialExpressionVectorParameter_0'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      MaterialExpressionEditorX=-260
+      MaterialExpressionGuid=9733D2DDC85B46EBB4D4129C8C6D6B85
+      Material="/Script/Engine.Material'M_FirMediumBark'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_0" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_0'"
+      ParameterName="Diffuse"
+      ExpressionGUID=1FFEE7DA35DB46B4838EDEF19E33604D
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_FirMedium_branches_diff.T_FirMedium_branches_diff'"
+      MaterialExpressionEditorX=-520
+      MaterialExpressionGuid=D811F76E7C044FD292C5BF39D1543E92
+      Material="/Script/Engine.Material'M_FirMediumBark'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_1" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_1'"
+      ParameterName="Normal"
+      ExpressionGUID=66DFBDB1587448DBA50E700A2CD3DB3B
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_FirMedium_branches_nor_dx.T_FirMedium_branches_nor_dx'"
+      SamplerType=SAMPLERTYPE_Normal
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=486
+      MaterialExpressionGuid=F19047D7A5D24592BAEBC14780FA48DD
+      Material="/Script/Engine.Material'M_FirMediumBark'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_2" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionTextureSampleParameter2D_2'"
+      ParameterName="ARM"
+      ExpressionGUID=CFCBF3C0EB5A4B6F8CF8461BC467E0C6
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_FirMedium_branches_arm.T_FirMedium_branches_arm'"
+      SamplerType=SAMPLERTYPE_Masks
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=352
+      MaterialExpressionGuid=F7295D122DA44ECFB357149A1C760226
+      Material="/Script/Engine.Material'M_FirMediumBark'"
+   End Object
+   Begin Object Name="MaterialExpressionVectorParameter_0" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark:MaterialExpressionVectorParameter_0'"
+      DefaultValue=(R=1.000000,G=1.000000,B=1.000000,A=1.000000)
+      ParameterName="ColorTint"
+      ExpressionGUID=23955D6A47EB4034BA42F104C56ABC89
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=176
+      MaterialExpressionGuid=28B7E7C6B4644F41A247C71D9E4EAFB3
+      Material="/Script/Engine.Material'M_FirMediumBark'"
+   End Object
+   bUsedWithInstancedStaticMeshes=True
+   bCanMaskedBeAssumedOpaque=True
+   StateId=9EDB22A63F074543AB432B33DCF31308
+   EditorOnlyData="/Script/Engine.MaterialEditorOnlyData'M_FirMediumBarkEditorOnlyData'"
+   LightingGuid=6401BFF8E94146A1874BA946CE47E0DA
+End Object

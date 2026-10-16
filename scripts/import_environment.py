@@ -46,6 +46,11 @@ def save(asset):
 
 def node(material, kind, x=0, y=0, **properties):
     result = require(EDIT.create_material_expression(material, kind, x, y), f"Could not create {kind}")
+    if isinstance(result, unreal.MaterialExpressionComponentMask):
+        # UE's editing helper enables R and G by default. Start with no channels
+        # so the supplied flags select exactly the requested packed-map component.
+        for channel in "rgba":
+            result.set_editor_property(channel, False)
     for name, value in properties.items():
         result.set_editor_property(name, value)
     return result

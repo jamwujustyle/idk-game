@@ -1,0 +1,163 @@
+Begin Object Class=/Script/Engine.Material Name="M_ToriiCedar" ExportPath="/Script/Engine.Material'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar'"
+   Begin Object Class=/Script/Engine.MaterialEditorOnlyData Name="M_ToriiCedarEditorOnlyData" ExportPath="/Script/Engine.MaterialEditorOnlyData'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:M_ToriiCedarEditorOnlyData'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_0" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_3" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_3'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_4" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_4'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionComponentMask Name="MaterialExpressionComponentMask_5" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_5'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionDesaturation Name="MaterialExpressionDesaturation_0" ExportPath="/Script/Engine.MaterialExpressionDesaturation'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionDesaturation_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionDesaturation Name="MaterialExpressionDesaturation_1" ExportPath="/Script/Engine.MaterialExpressionDesaturation'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionDesaturation_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionMultiply Name="MaterialExpressionMultiply_1" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionMultiply_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionScalarParameter Name="MaterialExpressionScalarParameter_1" ExportPath="/Script/Engine.MaterialExpressionScalarParameter'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionScalarParameter_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_1" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_1'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_3" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_3'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_4" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_4'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionTextureSampleParameter2D Name="MaterialExpressionTextureSampleParameter2D_5" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVectorParameter Name="MaterialExpressionVectorParameter_0" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionVectorParameter_0'"
+   End Object
+   Begin Object Class=/Script/Engine.MaterialExpressionVectorParameter Name="MaterialExpressionVectorParameter_1" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionVectorParameter_1'"
+   End Object
+   Begin Object Name="M_ToriiCedarEditorOnlyData" ExportPath="/Script/Engine.MaterialEditorOnlyData'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:M_ToriiCedarEditorOnlyData'"
+      BaseColor=(Expression="/Script/Engine.MaterialExpressionMultiply'M_ToriiCedar:MaterialExpressionMultiply_1'")
+      Metallic=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_ToriiCedar:MaterialExpressionComponentMask_5'")
+      Roughness=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_ToriiCedar:MaterialExpressionComponentMask_4'")
+      Normal=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_4'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      AmbientOcclusion=(Expression="/Script/Engine.MaterialExpressionComponentMask'M_ToriiCedar:MaterialExpressionComponentMask_3'")
+      ExpressionCollection=(Expressions=("/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_1'","/Script/Engine.MaterialExpressionDesaturation'M_ToriiCedar:MaterialExpressionDesaturation_0'","/Script/Engine.MaterialExpressionVectorParameter'M_ToriiCedar:MaterialExpressionVectorParameter_0'","/Script/Engine.MaterialExpressionComponentMask'M_ToriiCedar:MaterialExpressionComponentMask_0'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_3'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_4'","/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5'","/Script/Engine.MaterialExpressionDesaturation'M_ToriiCedar:MaterialExpressionDesaturation_1'","/Script/Engine.MaterialExpressionScalarParameter'M_ToriiCedar:MaterialExpressionScalarParameter_1'","/Script/Engine.MaterialExpressionVectorParameter'M_ToriiCedar:MaterialExpressionVectorParameter_1'","/Script/Engine.MaterialExpressionMultiply'M_ToriiCedar:MaterialExpressionMultiply_1'","/Script/Engine.MaterialExpressionComponentMask'M_ToriiCedar:MaterialExpressionComponentMask_3'","/Script/Engine.MaterialExpressionComponentMask'M_ToriiCedar:MaterialExpressionComponentMask_4'","/Script/Engine.MaterialExpressionComponentMask'M_ToriiCedar:MaterialExpressionComponentMask_5'"))
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_0" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_0'"
+      Input=(Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      R=True
+      G=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=662
+      MaterialExpressionGuid=54F135209C224039BAA9D10DD4CBCD1C
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_3" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_3'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      R=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=662
+      MaterialExpressionGuid=0A655971BBB64AA6B47E5434FCC1C753
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_4" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_4'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      G=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=324
+      MaterialExpressionGuid=F59F04EFE5DE4270B2B5AEC0FDB3396F
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionComponentMask_5" ExportPath="/Script/Engine.MaterialExpressionComponentMask'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionComponentMask_5'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      B=True
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=162
+      MaterialExpressionGuid=9954E597CDFA4616B7F0CAC8A782CF4F
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionDesaturation_0" ExportPath="/Script/Engine.MaterialExpressionDesaturation'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionDesaturation_0'"
+      Input=(Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      MaterialExpressionEditorX=-520
+      MaterialExpressionGuid=0BD5008B2AF342AA9981CBBA295CF015
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionDesaturation_1" ExportPath="/Script/Engine.MaterialExpressionDesaturation'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionDesaturation_1'"
+      Input=(Expression="/Script/Engine.MaterialExpressionTextureSampleParameter2D'M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_3'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      Fraction=(Expression="/Script/Engine.MaterialExpressionScalarParameter'M_ToriiCedar:MaterialExpressionScalarParameter_1'")
+      MaterialExpressionEditorX=-520
+      MaterialExpressionGuid=5F0B9720D23149628B043260BC8F0B55
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionMultiply_1" ExportPath="/Script/Engine.MaterialExpressionMultiply'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionMultiply_1'"
+      A=(Expression="/Script/Engine.MaterialExpressionDesaturation'M_ToriiCedar:MaterialExpressionDesaturation_1'")
+      B=(Expression="/Script/Engine.MaterialExpressionVectorParameter'M_ToriiCedar:MaterialExpressionVectorParameter_1'",Mask=1,MaskR=1,MaskG=1,MaskB=1)
+      MaterialExpressionEditorX=-260
+      MaterialExpressionGuid=5378BBDBF4B44F5082F7CF654EEAE0FA
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionScalarParameter_1" ExportPath="/Script/Engine.MaterialExpressionScalarParameter'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionScalarParameter_1'"
+      DefaultValue=0.350000
+      ParameterName="Weathering"
+      ExpressionGUID=4568308EE7514CE59959ED82188FB331
+      MaterialExpressionEditorX=-780
+      MaterialExpressionEditorY=176
+      MaterialExpressionGuid=C61B730212644DBE98397EFA64AF1911
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_1" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_1'"
+      ParameterName="Normal"
+      ExpressionGUID=16218E470DCB4067A5A377A59E639EE1
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_Cedar_nor_dx.T_Cedar_nor_dx'"
+      SamplerType=SAMPLERTYPE_Normal
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=486
+      MaterialExpressionGuid=944BF87E4C134100A01A5388B97F4707
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_3" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_3'"
+      ParameterName="Diffuse"
+      ExpressionGUID=C41D0CA0195945EBA9BCD21F5DB89D89
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_Cedar_Diffuse.T_Cedar_Diffuse'"
+      MaterialExpressionEditorX=-780
+      MaterialExpressionGuid=639EC33937F4427C996381527E418D2C
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_4" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_4'"
+      ParameterName="Normal"
+      ExpressionGUID=0DBA7E18FE80431D8419344BD3611342
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_Cedar_nor_dx.T_Cedar_nor_dx'"
+      SamplerType=SAMPLERTYPE_Normal
+      MaterialExpressionEditorX=-260
+      MaterialExpressionEditorY=486
+      MaterialExpressionGuid=52B88044833E481ABA30805C1E49D8E9
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionTextureSampleParameter2D_5" ExportPath="/Script/Engine.MaterialExpressionTextureSampleParameter2D'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionTextureSampleParameter2D_5'"
+      ParameterName="ARM"
+      ExpressionGUID=918BB2FF3A41478481CB93620D1A621D
+      Texture="/Script/Engine.Texture2D'/Game/Environment/Textures/T_Cedar_arm.T_Cedar_arm'"
+      SamplerType=SAMPLERTYPE_Masks
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=338
+      MaterialExpressionGuid=A114CB636E794CF2A66CA4090E3B939C
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionVectorParameter_0" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionVectorParameter_0'"
+      DefaultValue=(R=0.720000,G=0.720000,B=0.720000,A=1.000000)
+      ParameterName="ColorTint"
+      ExpressionGUID=58D5AD42B7AF4F8BB64A208AB1E3B357
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=162
+      MaterialExpressionGuid=1DFEA9A8480642B6B5C91C0C98BBC000
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   Begin Object Name="MaterialExpressionVectorParameter_1" ExportPath="/Script/Engine.MaterialExpressionVectorParameter'/Game/Environment/Materials/M_ToriiCedar.M_ToriiCedar:MaterialExpressionVectorParameter_1'"
+      DefaultValue=(R=0.720000,G=0.720000,B=0.720000,A=1.000000)
+      ParameterName="ColorTint"
+      ExpressionGUID=B80EE3794F214334A2BED871223F3E1E
+      MaterialExpressionEditorX=-520
+      MaterialExpressionEditorY=162
+      MaterialExpressionGuid=9EA0050D472E4B5381776B40BDBDAD61
+      Material="/Script/Engine.Material'M_ToriiCedar'"
+   End Object
+   bUsedWithInstancedStaticMeshes=True
+   bCanMaskedBeAssumedOpaque=True
+   StateId=7CD68C7E2E6E4C4A931FBAC031291777
+   EditorOnlyData="/Script/Engine.MaterialEditorOnlyData'M_ToriiCedarEditorOnlyData'"
+   LightingGuid=FDB2CB4F5B8A458A81F488B4EF1343B4
+End Object

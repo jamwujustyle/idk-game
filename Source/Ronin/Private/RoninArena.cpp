@@ -16,8 +16,27 @@
 #include "Materials/MaterialInstanceDynamic.h"
 #include "Materials/MaterialInterface.h"
 #include "Math/RandomStream.h"
+#include "ProceduralMeshComponent.h"
 #include "UObject/ConstructorHelpers.h"
 #include "UObject/UObjectGlobals.h"
+
+namespace
+{
+// Keep the approach level, then lift the forest into two flanking ridges.
+// All scenery shares this height function so trunks stay planted on the terrain.
+double TerrainHeight(double X, double Y)
+{
+    const double Blend = FMath::SmoothStep(2400.0, 6600.0, FMath::Max(FMath::Abs(X), FMath::Abs(Y)));
+    const auto Hill = [X, Y](double CenterX, double CenterY, double Radius)
+    {
+        return FMath::Exp(-(FMath::Square(X-CenterX)+FMath::Square(Y-CenterY))/FMath::Square(Radius));
+    };
+    const double Height = 180.0 + 1100.0*Hill(6900.0, -4200.0, 3200.0)
+        + 850.0*Hill(7500.0, 4800.0, 3000.0)
+        + 80.0*FMath::Sin(X*.0011)*FMath::Cos(Y*.0013);
+    return -55.0 + Blend*Height;
+}
+}
 
 ARoninArena::ARoninArena()
 {
@@ -69,9 +88,9 @@ ARoninArena::ARoninArena()
     UDirectionalLightComponent* Key = CreateDefaultSubobject<UDirectionalLightComponent>(TEXT("CloudBreakLight"));
     Key->SetupAttachment(SceneRoot);
     Key->SetMobility(EComponentMobility::Movable);
-    Key->SetRelativeRotation(FRotator(-38.0, -42.0, 0.0));
-    Key->SetLightColor(FLinearColor(0.91f, 0.95f, 1.0f));
-    Key->SetIntensity(2.4f);
+    Key->SetRelativeRotation(FRotator(-28.0, -145.0, 0.0));
+    Key->SetLightColor(FLinearColor(1.0f, 0.91f, 0.8f));
+    Key->SetIntensity(2.8f);
     Key->SetCastShadows(true);
     Key->LightSourceAngle = 2.5f;
 
@@ -79,18 +98,18 @@ ARoninArena::ARoninArena()
     SkyLight->SetupAttachment(SceneRoot);
     SkyLight->SetMobility(EComponentMobility::Movable);
     SkyLight->SourceType = ESkyLightSourceType::SLS_SpecifiedCubemap;
-    SkyLight->SetIntensity(0.65f);
-    SkyLight->SetLightColor(FLinearColor::White);
+    SkyLight->SetIntensity(0.7f);
+    SkyLight->SetLightColor(FLinearColor(0.82f, 0.9f, 1.0f));
     SkyLight->bLowerHemisphereIsBlack = true;
 
     UExponentialHeightFogComponent* Fog = CreateDefaultSubobject<UExponentialHeightFogComponent>(TEXT("GardenMist"));
     Fog->SetupAttachment(SceneRoot);
     Fog->SetRelativeLocation(FVector(0.0, 0.0, -120.0));
-    Fog->SetFogDensity(0.028f);
-    Fog->SetFogHeightFalloff(0.2f);
-    Fog->SetFogInscatteringColor(FLinearColor(0.15f, 0.19f, 0.21f));
-    Fog->SetFogMaxOpacity(0.86f);
-    Fog->SetStartDistance(1100.0f);
+    Fog->SetFogDensity(0.065f);
+    Fog->SetFogHeightFalloff(0.12f);
+    Fog->SetFogInscatteringColor(FLinearColor(0.22f, 0.28f, 0.31f));
+    Fog->SetFogMaxOpacity(0.9f);
+    Fog->SetStartDistance(1800.0f);
     Fog->SetVolumetricFog(false);
 
     UPostProcessComponent* Grade = CreateDefaultSubobject<UPostProcessComponent>(TEXT("CourtyardGrade"));
@@ -221,6 +240,11 @@ void ARoninArena::BuildCourtyard()
         FLinearColor(0.1f, 0.12f, 0.13f));
     UMaterialInterface* Cedar = LoadSurface(TEXT("/Game/Environment/Materials/M_Cedar.M_Cedar"),
         FLinearColor(0.2f, 0.09f, 0.045f));
+    UMaterialInterface* GardenGround = LoadSurface(TEXT("/Game/Environment/Materials/M_ForestGround.M_ForestGround"),
+        FLinearColor(0.1f, 0.13f, 0.08f));
+    Floor = TintSurface(Floor, FLinearColor(0.52f, 0.65f, 0.78f));
+    Edge = TintSurface(Edge, FLinearColor(0.55f, 0.64f, 0.7f));
+    GardenGround = TintSurface(GardenGround, FLinearColor(0.28f, 0.32f, 0.24f));
     UMaterialInterface* Wood = TintSurface(Cedar, FLinearColor(0.7f, 0.42f, 0.32f));
     UMaterialInterface* DarkWood = TintSurface(Cedar, FLinearColor(0.24f, 0.27f, 0.28f));
     UMaterialInterface* Paper = MakeMaterial(FLinearColor(0.82f, 0.62f, 0.34f), 0.88f);
@@ -250,7 +274,7 @@ void ARoninArena::BuildCourtyard()
 
     // A continuous stone surface avoids repeated cube seams across the dueling ground.
     // Only the original invisible boundary boxes and the floor affect movement.
-    AddShape(CubeMesh, Edge, FVector(0.0, 0.0, -125.0), FVector(18000.0, 18000.0, 140.0));
+    BuildTerrain(GardenGround);
     for (int32 Side = -1; Side <= 1; Side += 2)
     {
         // Low garden walls retain the platform without closing the view of the opponent.
@@ -276,13 +300,13 @@ void ARoninArena::BuildCourtyard()
     {
         BuildLantern(FVector(1310.0, Side * 590.0, -40.0), Edge, DarkWood, Paper);
         BuildLantern(FVector(-1020.0, Side * 800.0, 20.0), Edge, DarkWood, Paper);
-        // A weathered timber screen behind the gate terminates the path at human scale.
-        AddShape(CubeMesh, Cedar, FVector(2260.0, Side * 500.0, 120.0), FVector(22.0, 1000.0, 330.0));
-        AddShape(CubeMesh, DarkWood, FVector(2260.0, Side * 500.0, 292.0), FVector(46.0, 1020.0, 24.0));
+        // The flank screens leave the gate open to the garden, rather than filling its silhouette.
+        AddShape(CubeMesh, Wood, FVector(2260.0, Side * 1050.0, 72.0), FVector(22.0, 880.0, 230.0));
+        AddShape(CubeMesh, DarkWood, FVector(2260.0, Side * 1050.0, 192.0), FVector(46.0, 900.0, 20.0));
         for (int32 Post = 0; Post < 4; ++Post)
         {
-            AddShape(CubeMesh, DarkWood, FVector(2245.0, Side * (80.0 + Post * 300.0), 120.0),
-                FVector(45.0, 45.0, 340.0));
+            AddShape(CubeMesh, DarkWood, FVector(2245.0, Side * (620.0 + Post * 285.0), 76.0),
+                FVector(38.0, 38.0, 240.0));
         }
     }
 
@@ -311,51 +335,125 @@ void ARoninArena::BuildCourtyard()
     FRandomStream Random(1729);
     if (!Rocks.IsEmpty())
     {
-        // Close scans provide readable chipped edges; the larger rear clusters overlap into a ridge.
+        // Close scans provide readable chipped edges, with space for vegetation between clusters.
         for (int32 Index = 0; Index < 28; ++Index)
         {
             const int32 Side = Index % 2 == 0 ? -1 : 1;
             const double X = Random.FRandRange(-1650.0f, 2550.0f);
             const double Y = Side * Random.FRandRange(1280.0f, 2100.0f);
-            AddNaturalMesh(Rocks[Index % Rocks.Num()], FVector(X, Y, -58.0),
-                Random.FRandRange(180.0f, 430.0f), false, Random.FRandRange(0.0f, 360.0f));
+            AddNaturalMesh(Rocks[Index % Rocks.Num()], FVector(X, Y, TerrainHeight(X,Y)-3.0),
+                Random.FRandRange(120.0f, 280.0f), false, Random.FRandRange(0.0f, 360.0f));
         }
-        for (int32 Index = 0; Index < 11; ++Index)
+        for (int32 Index = 0; Index < 9; ++Index)
         {
-            AddNaturalMesh(Rocks[Index % Rocks.Num()],
-                FVector(3100.0 + Random.FRandRange(-150.0f, 350.0f), -3600.0 + Index * 680.0, -110.0),
-                Random.FRandRange(950.0f, 1600.0f), false, Random.FRandRange(0.0f, 360.0f));
+            const double X = 5100.0 + Random.FRandRange(-350.0f, 600.0f);
+            const double Y = -4400.0 + Index * 1100.0;
+            AddNaturalMesh(Rocks[Index % Rocks.Num()], FVector(X,Y,TerrainHeight(X,Y)-60.0),
+                Random.FRandRange(650.0f, 1050.0f), false, Random.FRandRange(0.0f, 360.0f));
         }
     }
     if (!Firs.IsEmpty())
     {
-        // Preserve the scan's sapling proportions and anchor its lowest point to
-        // the outer ground's top surface (-125 cm center + 70 cm half-height).
-        constexpr double OuterGroundTopZ = -55.0;
+        // Preserve the scan's sapling proportions and anchor it to the terrain.
         auto PlantSapling = [this, &Firs, &Random](int32 Index, const FVector& GroundPosition)
         {
             UStaticMesh* Fir = Firs[Index % Firs.Num()];
             const double SourceHeight = Fir->GetBounds().BoxExtent.Z * 2.0;
             const float Height = static_cast<float>(SourceHeight * Random.FRandRange(0.95f, 1.5f));
-            AddNaturalMesh(Fir, GroundPosition, Height, true, Random.FRandRange(0.0f, 360.0f));
+            const FVector Planted(GroundPosition.X,GroundPosition.Y,TerrainHeight(GroundPosition.X,GroundPosition.Y));
+            AddNaturalMesh(Fir, Planted, Height, true, Random.FRandRange(0.0f, 360.0f));
         };
         for (int32 Index = 0; Index < 24; ++Index)
         {
             const int32 Side = Index % 2 == 0 ? -1 : 1;
             const double X = -1700.0 + (Index / 2) * 450.0;
-            const double Y = Side * Random.FRandRange(1680.0f, 2900.0f);
-            PlantSapling(Index, FVector(X, Y, OuterGroundTopZ));
+            const double Y = Side * Random.FRandRange(1150.0f, 1750.0f);
+            PlantSapling(Index, FVector(X, Y, 0.0));
         }
         for (int32 Index = 0; Index < 9; ++Index)
         {
-            PlantSapling(Index, FVector(2900.0, -3000.0 + Index * 750.0, OuterGroundTopZ));
+            PlantSapling(Index, FVector(2900.0, -3000.0 + Index * 750.0, 0.0));
         }
     }
+
+    // A small number of full-size scans frame the gate. Keep their trunks and
+    // foliage outside the playable floor and the initial line between fighters.
+    const TCHAR* MediumFirPaths[] = {
+        TEXT("/Game/Environment/FirsMedium/SM_FirMedium01.SM_FirMedium01"),
+        TEXT("/Game/Environment/FirsMedium/SM_FirMedium02.SM_FirMedium02"),
+        TEXT("/Game/Environment/FirsMedium/SM_FirMedium03.SM_FirMedium03")};
+    TArray<UStaticMesh*> MediumFirs;
+    for (const TCHAR* Path : MediumFirPaths)
+        if (UStaticMesh* Mesh = LoadObject<UStaticMesh>(nullptr, Path)) MediumFirs.Add(Mesh);
+    if (!MediumFirs.IsEmpty())
+    {
+        struct FTreePlacement { FVector Ground; float Height; float Yaw; };
+        const FTreePlacement Trees[] = {
+            {FVector(1650.0, -1650.0, -55.0), 900.f, 37.f},
+            {FVector(2250.0, 1750.0, -55.0), 930.f, 142.f},
+            {FVector(3500.0, -1200.0, -55.0), 830.f, 252.f},
+            {FVector(4100.0, 1250.0, -55.0), 780.f, 73.f},
+            {FVector(5050.0, 100.0, -55.0), 680.f, 188.f},
+            {FVector(5900.0, -2400.0, -55.0), 890.f, 317.f},
+            {FVector(6250.0, 2300.0, -55.0), 900.f, 118.f},
+        };
+        for (int32 Index = 0; Index < UE_ARRAY_COUNT(Trees); ++Index)
+        {
+            FVector Ground = Trees[Index].Ground;
+            Ground.Z = TerrainHeight(Ground.X,Ground.Y);
+            AddNaturalMesh(MediumFirs[Index % MediumFirs.Num()], Ground,
+                Trees[Index].Height, true, Trees[Index].Yaw);
+        }
+    }
+}
+
+void ARoninArena::BuildTerrain(UMaterialInterface* Material)
+{
+    constexpr int32 Cells = 96;
+    constexpr double HalfSize = 9000.0;
+    constexpr double Step = 2.0*HalfSize/Cells;
+    TArray<FVector> Vertices, Normals;
+    TArray<FVector2D> UVs;
+    TArray<FProcMeshTangent> Tangents;
+    TArray<int32> Triangles;
+    for (int32 Y=0; Y<=Cells; ++Y)
+    {
+        for (int32 X=0; X<=Cells; ++X)
+        {
+            const double WX = X*Step-HalfSize, WY = Y*Step-HalfSize;
+            const double DX = (TerrainHeight(WX+10,WY)-TerrainHeight(WX-10,WY))/20.0;
+            const double DY = (TerrainHeight(WX,WY+10)-TerrainHeight(WX,WY-10))/20.0;
+            Vertices.Add(FVector(WX,WY,TerrainHeight(WX,WY)));
+            Normals.Add(FVector(-DX,-DY,1).GetSafeNormal());
+            Tangents.Add(FProcMeshTangent(FVector(1,0,DX).GetSafeNormal(),false));
+            UVs.Add(FVector2D(WX/200.0,WY/200.0));
+            if (X<Cells && Y<Cells)
+            {
+                const int32 A=Y*(Cells+1)+X, B=A+1, C=A+Cells+1, D=C+1;
+                Triangles.Append({A,C,B,B,C,D});
+            }
+        }
+    }
+    UProceduralMeshComponent* Terrain = NewObject<UProceduralMeshComponent>(this,TEXT("ForestTerrain"));
+    AddInstanceComponent(Terrain);
+    Terrain->SetupAttachment(GetRootComponent());
+    Terrain->SetMobility(EComponentMobility::Static);
+    Terrain->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Terrain->SetCanEverAffectNavigation(false);
+    Terrain->CreateMeshSection_LinearColor(0,Vertices,Triangles,Normals,UVs,{},Tangents,false);
+    Terrain->SetMaterial(0,Material);
+    Terrain->RegisterComponent();
 }
 
 void ARoninArena::BuildGate(float X, UMaterialInterface* Wood, UMaterialInterface* DarkWood,
     UMaterialInterface* Stone)
 {
+    if (UStaticMesh* Gate = LoadObject<UStaticMesh>(nullptr,
+        TEXT("/Game/Environment/Torii/SM_ToriiGate.SM_ToriiGate")))
+    {
+        AddGeometry(Gate,nullptr,FTransform(FRotator(0,90,0),FVector(X,0,-55.0)));
+        return;
+    }
     for (int32 Side = -1; Side <= 1; Side += 2)
     {
         AddShape(CylinderMesh, Stone, FVector(X, Side * 330.0, -5.0), FVector(115.0, 115.0, 100.0));

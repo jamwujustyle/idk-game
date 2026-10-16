@@ -1,0 +1,532 @@
+{
+  "provider": "Poly Haven",
+  "license": "CC0-1.0",
+  "license_url": "https://polyhaven.com/license",
+  "retrieved_at_utc": "2026-10-16T09:38:38.029844+00:00",
+  "download_bytes": 55891112,
+  "verification": "All eight source sizes and MD5 checksums match official API metadata; local SHA-256 recorded. FBX binary geometry inspection agrees with official glTF accessor counts.",
+  "asset": {
+    "id": "fir_sapling_medium",
+    "name": "Fir Sapling Medium",
+    "authors": {
+      "Rob Tuytel": "photography",
+      "Rico Cilliers": "modeling"
+    },
+    "source": "https://polyhaven.com/a/fir_sapling_medium",
+    "info_source": "https://api.polyhaven.com/info/fir_sapling_medium",
+    "metadata_source": "https://api.polyhaven.com/files/fir_sapling_medium",
+    "provider_collection_dimensions_m": [
+      26.091576099395752,
+      5.434919834136963,
+      9.16389086842537
+    ],
+    "provider_aggregate_triangle_count": 2308249,
+    "files": [
+      {
+        "role": "fbx",
+        "format": "fbx",
+        "resolution": "1k",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/1k/fir_sapling_medium/fir_sapling_medium_1k.fbx",
+        "size_bytes": 51634508,
+        "md5": "82d67e5714eab0c493c8c9260bba8d28",
+        "sha256": "f09677355367e2a4a29b9542474049fcee311a2cc8aa561f9d316153cf5c33c4",
+        "local_path": ".cache/forest/fir_sapling_medium/fir_sapling_medium_1k.fbx"
+      },
+      {
+        "role": "branches_diff",
+        "format": "jpg",
+        "resolution": "1k",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling_medium/fir_sapling_medium_branches_diff_1k.jpg",
+        "size_bytes": 776567,
+        "md5": "93265c0d9fbd3cf17deabdb68aa8b5e9",
+        "sha256": "a5d25150ba1bee10008c039f98aa3c73b4477a404d6715c511ca9b5b0f4a9077",
+        "local_path": ".cache/forest/fir_sapling_medium/fir_sapling_medium_branches_diff_1k.jpg"
+      },
+      {
+        "role": "branches_nor_dx",
+        "format": "jpg",
+        "resolution": "1k",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling_medium/fir_sapling_medium_branches_nor_dx_1k.jpg",
+        "size_bytes": 1130471,
+        "md5": "b8c436263ae278c759afab1be2a7ed30",
+        "sha256": "20a52a20b052f88a008d5cd19d5df26c0b6c6e2f1b26bce7065692c58a909d5b",
+        "local_path": ".cache/forest/fir_sapling_medium/fir_sapling_medium_branches_nor_dx_1k.jpg"
+      },
+      {
+        "role": "branches_arm",
+        "format": "jpg",
+        "resolution": "1k",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling_medium/fir_sapling_medium_branches_arm_1k.jpg",
+        "size_bytes": 789264,
+        "md5": "4e48a7fa876a1ad47401fe86277a4373",
+        "sha256": "95d4e9e62cd309fbc38a175e2306379c76c062425b09c0fb72c5b7356a719123",
+        "local_path": ".cache/forest/fir_sapling_medium/fir_sapling_medium_branches_arm_1k.jpg"
+      },
+      {
+        "role": "twigs_diff",
+        "format": "jpg",
+        "resolution": "1k",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling_medium/fir_sapling_medium_twigs_diff_1k.jpg",
+        "size_bytes": 297200,
+        "md5": "0b51f775416af4fac5222ac96d91a289",
+        "sha256": "db1113d37d68d960b84eb14ce67a4022d02bf10d6f0c078d689063f6296eaa1d",
+        "local_path": ".cache/forest/fir_sapling_medium/fir_sapling_medium_twigs_diff_1k.jpg"
+      },
+      {
+        "role": "twigs_nor_dx",
+        "format": "jpg",
+        "resolution": "1k",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling_medium/fir_sapling_medium_twigs_nor_dx_1k.jpg",
+        "size_bytes": 484767,
+        "md5": "afe88ecbdd4ca78ce7a8627f5d53f69d",
+        "sha256": "4c1831b2c14072ebcb61ec4604b38a947db995d6efc710b60eaf5628e6e99e17",
+        "local_path": ".cache/forest/fir_sapling_medium/fir_sapling_medium_twigs_nor_dx_1k.jpg"
+      },
+      {
+        "role": "twigs_arm",
+        "format": "jpg",
+        "resolution": "1k",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling_medium/fir_sapling_medium_twigs_arm_1k.jpg",
+        "size_bytes": 407309,
+        "md5": "b0d09189350cb716533c1590fec8f8a4",
+        "sha256": "d66c81fc073ee7ea97a76b6da2399769f16944e50ef0e007f09c95619f597c79",
+        "local_path": ".cache/forest/fir_sapling_medium/fir_sapling_medium_twigs_arm_1k.jpg"
+      },
+      {
+        "role": "twigs_alpha",
+        "format": "png",
+        "resolution": "1k",
+        "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/fir_sapling_medium/fir_sapling_medium_twigs_alpha_1k.png",
+        "size_bytes": 371026,
+        "md5": "02ab808c8b2ff77ad9fdb2f92892db80",
+        "sha256": "3f399629337e7ac3af27a01b08ffb9c0d60224a9dd374a1427761a5c2eea9d6e",
+        "local_path": ".cache/forest/fir_sapling_medium/fir_sapling_medium_twigs_alpha_1k.png"
+      }
+    ]
+  },
+  "source_inspection": {
+    "fbx_version": 7400,
+    "mesh_count": 3,
+    "meshes": [
+      {
+        "name": "fir_sapling_medium_a_LOD0",
+        "triangles": 685046,
+        "control_points": 767387,
+        "local_bounds_min_m": [
+          -2.5522518157958984,
+          -2.720205783843994,
+          -0.08824774622917175
+        ],
+        "local_bounds_max_m": [
+          2.4356377124786377,
+          2.5556671619415283,
+          8.738079071044922
+        ],
+        "height_m": 8.826326817274094,
+        "width_m": 5.2758729457855225,
+        "fbx_node_transform": {
+          "Lcl Rotation": [
+            -90.00000933466734,
+            0.0,
+            0.0
+          ],
+          "Lcl Scaling": [
+            100.0,
+            100.0,
+            100.0
+          ]
+        },
+        "material_slots": [
+          "fir_sapling_medium_branches",
+          "fir_sapling_medium_twigs",
+          "fir_sapling_medium_branches_dead"
+        ],
+        "planned_object_path": "/Game/Environment/FirsMedium/SM_FirMedium01"
+      },
+      {
+        "name": "fir_sapling_medium_b_LOD0",
+        "triangles": 420822,
+        "control_points": 472166,
+        "local_bounds_min_m": [
+          -2.0442657470703125,
+          -2.0210678577423096,
+          -0.1179756447672844
+        ],
+        "local_bounds_max_m": [
+          2.2243492603302,
+          1.9368314743041992,
+          7.677277565002441
+        ],
+        "height_m": 7.795253209769726,
+        "width_m": 4.268615007400513,
+        "fbx_node_transform": {
+          "Lcl Translation": [
+            500.0,
+            0.0,
+            0.0
+          ],
+          "Lcl Rotation": [
+            -90.00000933466734,
+            0.0,
+            0.0
+          ],
+          "Lcl Scaling": [
+            100.0,
+            100.0,
+            100.0
+          ]
+        },
+        "material_slots": [
+          "fir_sapling_medium_branches",
+          "fir_sapling_medium_twigs",
+          "fir_sapling_medium_branches_dead"
+        ],
+        "planned_object_path": "/Game/Environment/FirsMedium/SM_FirMedium02"
+      },
+      {
+        "name": "fir_sapling_medium_c_LOD0",
+        "triangles": 427645,
+        "control_points": 479804,
+        "local_bounds_min_m": [
+          -2.0658557415008545,
+          -2.0708866119384766,
+          -0.15227434039115906
+        ],
+        "local_bounds_max_m": [
+          2.240671157836914,
+          1.9424171447753906,
+          5.7544779777526855
+        ],
+        "height_m": 5.906752318143845,
+        "width_m": 4.3065268993377686,
+        "fbx_node_transform": {
+          "Lcl Translation": [
+            1000.0,
+            0.0,
+            0.0
+          ],
+          "Lcl Rotation": [
+            -90.00000933466734,
+            0.0,
+            0.0
+          ],
+          "Lcl Scaling": [
+            100.0,
+            100.0,
+            100.0
+          ]
+        },
+        "material_slots": [
+          "fir_sapling_medium_branches",
+          "fir_sapling_medium_twigs",
+          "fir_sapling_medium_branches_dead"
+        ],
+        "planned_object_path": "/Game/Environment/FirsMedium/SM_FirMedium03"
+      }
+    ],
+    "total_triangles": 1533513,
+    "available_lods": "The selected FBX contains only the three LOD0 meshes; no lower LOD meshes were exported.",
+    "method": "Read FBX Geometry Vertices/PolygonVertexIndex arrays, Model transforms and material connections without an engine process. Triangle count is polygon index count minus twice the polygon count; official glTF triangle-index accessors independently agree.",
+    "crosscheck_source": {
+      "url": "https://dl.polyhaven.org/file/ph-assets/Models/gltf/1k/fir_sapling_medium/fir_sapling_medium_1k.gltf",
+      "size_bytes": 17059,
+      "md5": "19e16469d9f085b6f9a8034ddab1c010",
+      "local_path": ".cache/forest/fir_sapling_medium/fir_sapling_medium_1k.gltf"
+    },
+    "suitability": "Tree heights 5.9–8.8 m fit the courtyard vista. Each source has 421–685k triangles, so use a small number of visible trees and validate GPU cost before wider instancing. API aggregate count differs from selected exported geometry.",
+    "import_warnings": [
+      "FBX export has no smoothing-group information.",
+      "All three medium-fir variants report degenerate tangent bases and nearly zero binormals; rendered tangent shading remains to be reviewed."
+    ]
+  },
+  "prepared_import": {
+    "script": "scripts/import_forest.py",
+    "status": "imported; seven instances assigned by RoninArena at runtime",
+    "helper_script": "scripts/import_environment.py (read-only reuse)",
+    "mesh_folder": "/Game/Environment/FirsMedium",
+    "mesh_paths": [
+      "/Game/Environment/FirsMedium/SM_FirMedium01",
+      "/Game/Environment/FirsMedium/SM_FirMedium02",
+      "/Game/Environment/FirsMedium/SM_FirMedium03"
+    ],
+    "materials": {
+      "bark": "/Game/Environment/Materials/M_FirMediumBark",
+      "needles": "/Game/Environment/Materials/M_FirMediumNeedles"
+    },
+    "texture_prefix": "/Game/Environment/Textures/T_FirMedium_",
+    "texture_max_size": 1024,
+    "mapping": "original mesh UVs",
+    "normal_convention": "DirectX; no green-channel flip",
+    "needles": {
+      "source": "fir_sapling_medium",
+      "mapping": "original mesh UVs",
+      "masked": true,
+      "two_sided": true,
+      "opacity_mask_clip": 0.3499999940395355,
+      "shading_model": "Two Sided Foliage",
+      "subsurface_color": "tinted diffuse RGB multiplied by SubsurfaceStrength",
+      "subsurface_strength": 0.35,
+      "alpha_source": "/Game/Environment/Textures/T_FirMedium_twigs_alpha.T_FirMedium_twigs_alpha",
+      "verification": "Saved graph verified with NullRHI; foliage appears in the recorded in-game frame. Dedicated backlighting, close-up tangent shading, and motion review remain pending; see scene_assignment and the environment report."
+    },
+    "fbx_import": {
+      "transform_vertex_to_absolute": true,
+      "import_uniform_scale": 1,
+      "combine_meshes": false,
+      "import_materials": false,
+      "import_textures": false,
+      "build_nanite": false
+    },
+    "asset_count": 12
+  },
+  "unreal_import": {
+    "imported_at_utc": "2026-10-16T09:41:46.824489+00:00",
+    "engine": "5.7.4-51494982+++UE5+Release-5.7",
+    "textures": {
+      "branches_diff": "/Game/Environment/Textures/T_FirMedium_branches_diff.T_FirMedium_branches_diff",
+      "branches_nor_dx": "/Game/Environment/Textures/T_FirMedium_branches_nor_dx.T_FirMedium_branches_nor_dx",
+      "branches_arm": "/Game/Environment/Textures/T_FirMedium_branches_arm.T_FirMedium_branches_arm",
+      "twigs_diff": "/Game/Environment/Textures/T_FirMedium_twigs_diff.T_FirMedium_twigs_diff",
+      "twigs_nor_dx": "/Game/Environment/Textures/T_FirMedium_twigs_nor_dx.T_FirMedium_twigs_nor_dx",
+      "twigs_arm": "/Game/Environment/Textures/T_FirMedium_twigs_arm.T_FirMedium_twigs_arm",
+      "twigs_alpha": "/Game/Environment/Textures/T_FirMedium_twigs_alpha.T_FirMedium_twigs_alpha"
+    },
+    "materials": {
+      "bark": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark",
+      "needles": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles"
+    },
+    "meshes": [
+      {
+        "object_path": "/Game/Environment/FirsMedium/SM_FirMedium01.SM_FirMedium01",
+        "bounds_min_cm": [
+          -255.2252,
+          -255.5668,
+          -8.8248
+        ],
+        "bounds_max_cm": [
+          243.5638,
+          272.0205,
+          873.8079
+        ],
+        "triangles_lod0": 685046,
+        "vertices_lod0": 767387,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 3,
+        "slots": [
+          {
+            "name": "fir_sapling_medium_branches",
+            "imported_name": "fir_sapling_medium_branches",
+            "material": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark"
+          },
+          {
+            "name": "fir_sapling_medium_twigs",
+            "imported_name": "fir_sapling_medium_twigs",
+            "material": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles"
+          },
+          {
+            "name": "fir_sapling_medium_branches_dead",
+            "imported_name": "fir_sapling_medium_branches_dead",
+            "material": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark"
+          }
+        ]
+      },
+      {
+        "object_path": "/Game/Environment/FirsMedium/SM_FirMedium02.SM_FirMedium02",
+        "bounds_min_cm": [
+          295.5734,
+          -193.6832,
+          -11.7976
+        ],
+        "bounds_max_cm": [
+          722.4349,
+          202.1067,
+          767.7278
+        ],
+        "triangles_lod0": 420822,
+        "vertices_lod0": 472166,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 3,
+        "slots": [
+          {
+            "name": "fir_sapling_medium_branches",
+            "imported_name": "fir_sapling_medium_branches",
+            "material": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark"
+          },
+          {
+            "name": "fir_sapling_medium_twigs",
+            "imported_name": "fir_sapling_medium_twigs",
+            "material": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles"
+          },
+          {
+            "name": "fir_sapling_medium_branches_dead",
+            "imported_name": "fir_sapling_medium_branches_dead",
+            "material": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark"
+          }
+        ]
+      },
+      {
+        "object_path": "/Game/Environment/FirsMedium/SM_FirMedium03.SM_FirMedium03",
+        "bounds_min_cm": [
+          793.4144,
+          -194.2417,
+          -15.2274
+        ],
+        "bounds_max_cm": [
+          1224.0671,
+          207.0887,
+          575.4478
+        ],
+        "triangles_lod0": 427645,
+        "vertices_lod0": 479804,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 3,
+        "slots": [
+          {
+            "name": "fir_sapling_medium_branches",
+            "imported_name": "fir_sapling_medium_branches",
+            "material": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark"
+          },
+          {
+            "name": "fir_sapling_medium_twigs",
+            "imported_name": "fir_sapling_medium_twigs",
+            "material": "/Game/Environment/Materials/M_FirMediumNeedles.M_FirMediumNeedles"
+          },
+          {
+            "name": "fir_sapling_medium_branches_dead",
+            "imported_name": "fir_sapling_medium_branches_dead",
+            "material": "/Game/Environment/Materials/M_FirMediumBark.M_FirMediumBark"
+          }
+        ]
+      }
+    ],
+    "asset_count": 12,
+    "material_metadata": {
+      "M_FirMediumNeedles": {
+        "source": "fir_sapling_medium",
+        "mapping": "original mesh UVs",
+        "masked": true,
+        "two_sided": true,
+        "opacity_mask_clip": 0.3499999940395355,
+        "shading_model": "Two Sided Foliage",
+        "subsurface_color": "tinted diffuse RGB multiplied by SubsurfaceStrength",
+        "subsurface_strength": 0.35,
+        "alpha_source": "/Game/Environment/Textures/T_FirMedium_twigs_alpha.T_FirMedium_twigs_alpha",
+        "verification": "Saved graph verified with NullRHI; foliage appears in the recorded in-game frame. Dedicated backlighting, close-up tangent shading, and motion review remain pending; see scene_assignment and the environment report."
+      }
+    },
+    "material_updated_at_utc": "2026-10-16T09:49:37.463457+00:00",
+    "material_update_verification": {
+      "commandlet_exit_code": 0,
+      "completion_marker": "FOREST_MATERIAL_UPDATE_COMPLETE material=M_FirMediumNeedles meshes_rebuilt=0 textures_written=0",
+      "changed_packages": [
+        "Content/Environment/Materials/M_FirMediumNeedles.uasset"
+      ],
+      "environment_packages_hash_checked": 49,
+      "errors": 0,
+      "warnings": [
+        "Unrelated existing Paragon_Proto_Retarget references the removed Rig class."
+      ],
+      "gpu_appearance": "Not observed by this historical NullRHI update; subsequent GPU evidence is recorded in scene_assignment.",
+      "post_summary_warnings": [
+        "Two shutdown messages reported lower-priority Interchange import flag restoration being ignored; material-only mode now leaves import flags untouched."
+      ]
+    },
+    "material_channel_verification": {
+      "channels": {
+        "ambient_occlusion": "R",
+        "roughness": "G",
+        "metallic": "B"
+      },
+      "other_channels_enabled": false,
+      "repair_report": "reports/assets/surface-channels-20261016T100843085413Z/report.json",
+      "fresh_load_verification_report": "reports/assets/surface-channels-20261016T100924966245Z/report.json",
+      "scope": "Only connected ARM mask flags changed; other graph data preserved except engine material cache GUIDs."
+    }
+  },
+  "scene_assignment": {
+    "source": "Source/Ronin/Private/RoninArena.cpp",
+    "builder": "ARoninArena::BuildCourtyard -> AddNaturalMesh",
+    "instance_count": 7,
+    "placements": [
+      {
+        "mesh_variant": 1,
+        "ground_xy_cm": [
+          1650,
+          -1650
+        ],
+        "target_height_cm": 900,
+        "yaw_degrees": 37
+      },
+      {
+        "mesh_variant": 2,
+        "ground_xy_cm": [
+          2250,
+          1750
+        ],
+        "target_height_cm": 930,
+        "yaw_degrees": 142
+      },
+      {
+        "mesh_variant": 3,
+        "ground_xy_cm": [
+          3500,
+          -1200
+        ],
+        "target_height_cm": 830,
+        "yaw_degrees": 252
+      },
+      {
+        "mesh_variant": 1,
+        "ground_xy_cm": [
+          4100,
+          1250
+        ],
+        "target_height_cm": 780,
+        "yaw_degrees": 73
+      },
+      {
+        "mesh_variant": 2,
+        "ground_xy_cm": [
+          5050,
+          100
+        ],
+        "target_height_cm": 680,
+        "yaw_degrees": 188
+      },
+      {
+        "mesh_variant": 3,
+        "ground_xy_cm": [
+          5900,
+          -2400
+        ],
+        "target_height_cm": 890,
+        "yaw_degrees": 317
+      },
+      {
+        "mesh_variant": 1,
+        "ground_xy_cm": [
+          6250,
+          2300
+        ],
+        "target_height_cm": 900,
+        "yaw_degrees": 118
+      }
+    ],
+    "ground_anchor": "TerrainHeight(x,y); AddNaturalMesh centers the imported bounds and places their minimum Z at that height.",
+    "collision": "Decorative instanced meshes; no collision or navigation contribution.",
+    "lod0_triangles_across_placed_instances": 3752072,
+    "triangle_count_scope": "Sum of source LOD0 triangles for seven placements, not a measured visible or submitted GPU triangle count.",
+    "gpu_capture": "reports/visuals/parry-v1.png",
+    "observation": "Imported fir silhouettes and needles are visible around the torii and outer ridges in the saved in-game frame; this does not check every tree or close-up shading.",
+    "validation_report": "reports/2026-10-16-environment.md"
+  },
+  "limitations": [
+    "The selected meshes have one LOD each and Nanite is disabled in the importer; representative frame-time cost remains unmeasured.",
+    "Source smoothing-group, tangent-basis and near-zero-binormal import warnings remain unresolved.",
+    "Analytic terrain-height anchors do not establish contact quality across each full footprint on the triangulated slopes; inspect roots and rocks from additional views.",
+    "The recorded view remains sparse; dedicated foliage backlighting and sustained-motion review remain pending."
+  ]
+}
