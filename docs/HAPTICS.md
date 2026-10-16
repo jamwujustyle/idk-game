@@ -56,3 +56,18 @@ interruption priority, output bounds, scaling, disable/stop behavior, invalid
 inputs, and frame-size equivalence. `CXX` can select a C++17 compiler executable.
 Controller feel, device mapping, and disconnect handling require engine and
 hardware playtesting.
+
+On Linux, the optional driver diagnostic can distinguish device support from
+game integration. It probes the connected Xbox event device without reading
+input events. Only the explicit `--rumble` option plays a gentle 250 ms pulse,
+then stops and removes the effect:
+
+```sh
+g++ -std=c++17 -O2 -Wall -Wextra -Wpedantic -Werror scripts/controller-rumble.cpp -o /tmp/ronin-controller-rumble
+/tmp/ronin-controller-rumble
+/tmp/ronin-controller-rumble --rumble
+```
+
+Use `--device /dev/input/eventN` if multiple Xbox controllers are connected.
+A successful driver pulse does not establish that Unreal delivers gameplay
+feedback correctly; verify that separately in the game.
