@@ -1,0 +1,73 @@
+{
+  "source": "meshy-6-lite-textured-v1.glb",
+  "bytes": 15905932,
+  "sha256": "aef8171435f1a111067ca79b19ea1da1bde932d868bdc42754a37ce096bd0ca5",
+  "generator": "pygltflib@v1.16.5",
+  "vertices": 166055,
+  "triangles": 288176,
+  "position_bounds_gltf": {
+    "min": [
+      -0.5151010155677795,
+      -0.9512450098991394,
+      -0.213811993598938
+    ],
+    "max": [
+      0.511322021484375,
+      0.9400990009307861,
+      0.21060900390148163
+    ],
+    "extent": [
+      1.0264230370521545,
+      1.8913440108299255,
+      0.4244209975004196
+    ]
+  },
+  "finite_positions": true,
+  "indices_in_range": true,
+  "near_zero_area_triangles": 0,
+  "squared_cross_threshold": 1e-24,
+  "boundary_edges": 42188,
+  "edges_with_more_than_two_faces": 0,
+  "attributes": [
+    "NORMAL",
+    "POSITION",
+    "TEXCOORD_0"
+  ],
+  "materials": 1,
+  "images": 3,
+  "textures": 3,
+  "skins": 0,
+  "animations": 0,
+  "surface": {
+    "max_normal_length_error": 1.229524984047714e-07,
+    "uv0_bounds": [
+      [
+        7.999999979801942e-06,
+        0.00104600191116333
+      ],
+      [
+        1.0,
+        1.0
+      ]
+    ]
+  },
+  "embedded_images": [
+    {
+      "mime_type": "image/jpeg",
+      "bytes": 2778859,
+      "sha256": "2c7c2a2600fe311af3c28b3903917059bee585cc45f915accfb0a3db418e0bc6"
+    },
+    {
+      "mime_type": "image/jpeg",
+      "bytes": 2170168,
+      "sha256": "96b08fc29bbacfb952798faeabad7cf6a8381b0ce721964bf31407845da4a80b"
+    },
+    {
+      "mime_type": "image/jpeg",
+      "bytes": 2182739,
+      "sha256": "a228b0c2d4812f9410148bbb3c0408a7bc5b60b1e6d96129b583f7ec6538b200"
+    }
+  ],
+  "limitations": "Edge counts use exported vertex indices; UV/normal seams can appear as boundaries. Counts do not detect self-intersections or certify manifold vertices. No visual, deformation, rig or engine validation.",
+  "ready_for_character_integration": false
+}

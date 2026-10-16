@@ -1,6 +1,6 @@
 {
   "purpose": "Selected original armored samurai reference and future humanoid modeling brief",
-  "status": "2D reference selected and locally verified; no character mesh, rig, animation, or Unreal integration has been produced from it",
+  "status": "Selected 2D reference; a corresponding textured static model has been received and structurally audited. Rigging and Unreal character integration remain pending.",
   "selected_image": {
     "path": "assets/generated/ronin-character/reference-samurai-front-v2.png",
     "sha256": "f2fea1e89b62a4c8fe2822e4191d9eeafbb67138450ccd2332aad91a8b2a3e8d",
@@ -30,7 +30,7 @@
   },
   "delivery_state": {
     "reference_image": true,
-    "textured_character_mesh": false,
+    "textured_character_mesh": true,
     "rigged_character": false,
     "animation_clips": false,
     "unreal_character_integration": false
@@ -40,5 +40,6 @@
     "paths": "Both referenced PNG files exist at the recorded repository-relative paths",
     "hashes": "SHA-256 calculated from file bytes; selected hash matches its prior recorded value",
     "images": "Both 1024 x 1536 PNGs visually inspected; selected v2 is armored and v1 is superseded"
-  }
+  },
+  "model_manifest": "assets/generated/samurai-character/manifest.json"
 }

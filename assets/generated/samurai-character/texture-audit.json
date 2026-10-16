@@ -1,0 +1,58 @@
+{
+  "images": [
+    {
+      "role": "base-color",
+      "size": [
+        2048,
+        2048
+      ],
+      "mode": "RGB",
+      "sha256": "2c7c2a2600fe311af3c28b3903917059bee585cc45f915accfb0a3db418e0bc6"
+    },
+    {
+      "role": "metallic-roughness",
+      "size": [
+        2048,
+        2048
+      ],
+      "mode": "RGB",
+      "sha256": "96b08fc29bbacfb952798faeabad7cf6a8381b0ce721964bf31407845da4a80b"
+    },
+    {
+      "role": "normal",
+      "size": [
+        2048,
+        2048
+      ],
+      "mode": "RGB",
+      "sha256": "a228b0c2d4812f9410148bbb3c0408a7bc5b60b1e6d96129b583f7ec6538b200"
+    }
+  ],
+  "material": {
+    "pbrMetallicRoughness": {
+      "baseColorFactor": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "metallicFactor": 1.0,
+      "roughnessFactor": 1.0,
+      "baseColorTexture": {
+        "index": 0,
+        "texCoord": 0
+      },
+      "metallicRoughnessTexture": {
+        "index": 1,
+        "texCoord": 0
+      }
+    },
+    "normalTexture": {
+      "index": 2,
+      "texCoord": 0
+    },
+    "alphaMode": "OPAQUE",
+    "doubleSided": true
+  },
+  "verification": "All three embedded JPEGs decoded successfully; shader appearance not yet verified."
+}

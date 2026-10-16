@@ -1,0 +1,43 @@
+{
+  "source": "meshy-6-lite-geometry-v1.glb",
+  "bytes": 5185340,
+  "sha256": "5978b993951293d59ac87356b7ff4b4e75657f383d085f0af984a1ac27a9e954",
+  "generator": "meshy-scene",
+  "vertices": 143870,
+  "triangles": 288176,
+  "position_bounds_gltf": {
+    "min": [
+      -0.5151011943817139,
+      -0.9512450695037842,
+      -0.21381203830242157
+    ],
+    "max": [
+      0.5113222002983093,
+      0.9400992393493652,
+      0.21060939133167267
+    ],
+    "extent": [
+      1.0264233946800232,
+      1.8913443088531494,
+      0.42442142963409424
+    ]
+  },
+  "finite_positions": true,
+  "indices_in_range": true,
+  "near_zero_area_triangles": 0,
+  "squared_cross_threshold": 1e-24,
+  "boundary_edges": 0,
+  "edges_with_more_than_two_faces": 0,
+  "attributes": [
+    "POSITION"
+  ],
+  "materials": 0,
+  "images": 0,
+  "textures": 0,
+  "skins": 0,
+  "animations": 0,
+  "surface": {},
+  "embedded_images": [],
+  "limitations": "Edge counts use exported vertex indices; UV/normal seams can appear as boundaries. Counts do not detect self-intersections or certify manifold vertices. No visual, deformation, rig or engine validation.",
+  "ready_for_character_integration": false
+}

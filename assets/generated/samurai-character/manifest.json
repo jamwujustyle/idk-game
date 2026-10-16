@@ -1,0 +1,36 @@
+{
+  "title": "Samurai Sentinel",
+  "provider": "Meshy",
+  "model_version": "Meshy 6 Lite, as reported by the user for this download; GLB metadata does not encode a model version",
+  "received_date": "2026-10-16",
+  "reference": "assets/generated/ronin-character/reference-samurai-front-v2.png",
+  "reference_sha256": "f2fea1e89b62a4c8fe2822e4191d9eeafbb67138450ccd2332aad91a8b2a3e8d",
+  "license": {
+    "identifier": "CC-BY-4.0",
+    "evidence": "CC BY 4.0 selected in the user-supplied Meshy generation/download screenshots; free-plan output license also listed by provider",
+    "terms": "https://creativecommons.org/licenses/by/4.0/",
+    "provider_source": "https://www.meshy.ai/pricing",
+    "attribution": "Samurai Sentinel \u2014 generated with Meshy from this project\u2019s original armored samurai reference. CC BY 4.0. Original received GLBs are unmodified."
+  },
+  "exports": [
+    {
+      "path": "assets/generated/samurai-character/meshy-6-lite-geometry-v1.glb",
+      "bytes": 5185340,
+      "sha256": "5978b993951293d59ac87356b7ff4b4e75657f383d085f0af984a1ac27a9e954",
+      "stage": "geometry only"
+    },
+    {
+      "path": "assets/generated/samurai-character/meshy-6-lite-textured-v1.glb",
+      "bytes": 15905932,
+      "sha256": "aef8171435f1a111067ca79b19ea1da1bde932d868bdc42754a37ce096bd0ca5",
+      "stage": "textured; no skin or animations"
+    }
+  ],
+  "selected_export": "assets/generated/samurai-character/meshy-6-lite-textured-v1.glb",
+  "verification": [
+    "geometry-audit.json",
+    "textured-audit.json",
+    "texture-audit.json"
+  ],
+  "status": "Textured static character received and structurally audited; skeleton, skin weights, retargeting and gameplay replacement pending."
+}

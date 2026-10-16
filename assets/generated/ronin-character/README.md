@@ -2,7 +2,7 @@
 
 Use [`reference-samurai-front-v2.png`](reference-samurai-front-v2.png) for the selected design: practical dark lacquer lamellar cuirass and kusazuri, broad layered shoulder guards, forearm and shin armor, muted oxblood lacing, and worn indigo cloth. The front view shows the full body in an A-pose with open hands and separate limbs. [`reference-front-v1.png`](reference-front-v1.png) is the superseded unarmored ronin design; do not use it for modeling or generation.
 
-This is a **2D reference only**. No character mesh, skeleton, skin weights, animation clips, or Unreal character integration has been delivered from either image. The folder name is a technical working path, not the selected character identity or game title. Both PNGs are 1024 × 1536 pixels; their verified paths, SHA-256 hashes, and selection state are recorded in [`reference-request.json`](reference-request.json). Its `selected_prompt` is a descriptive modeling brief checked against v2, while the old prompt is explicitly superseded.
+This folder contains the **2D references**. A corresponding [textured static samurai model](../samurai-character/README.md) has been received and structurally audited; its skeleton, skin weights, animations, and Unreal character integration remain pending. The folder name is a technical working path, not the selected character identity or game title. Both PNGs are 1024 × 1536 pixels; their verified paths, SHA-256 hashes, and selection state are recorded in [`reference-request.json`](reference-request.json). Its `selected_prompt` is a descriptive modeling brief checked against v2, while the old prompt is explicitly superseded.
 
 ## Validate the eventual model
 
@@ -10,7 +10,7 @@ This is a **2D reference only**. No character mesh, skeleton, skin weights, anim
 2. Inspect the actual skeleton, bind pose, joint names, inverse bind matrices, and skin weights. Test shoulders, wrists, elbows, knees, and hanging armor through movement; a successful automatic rig is not proof that deformation is usable.
 3. Build retarget mappings from the delivered bone hierarchy, then verify locomotion, attack, guard, dodge, foot contact, root motion, and weapon-hand alignment in Unreal before replacing the active character. Judge the resulting gameplay capture separately from this reference image.
 
-[`inspect_model.py`](inspect_model.py) is a preparatory structural GLB inspector. It requires skeleton/skin data and geometry, normal, UV, joint, and weight attributes; reports actual bone names, triangle counts, materials, images, animations, and weight-sum errors; and rejects unweighted vertices or out-of-range skin joints. It does not create a model or validate appearance, topology, deformation, or retargeting. No character GLB exists here to inspect yet.
+[`inspect_model.py`](inspect_model.py) is a preparatory structural GLB inspector. It requires skeleton/skin data and geometry, normal, UV, joint, and weight attributes; reports actual bone names, triangle counts, materials, images, animations, and weight-sum errors; and rejects unweighted vertices or out-of-range skin joints. It does not create a model or validate appearance, topology, deformation, or retargeting. The received static exports cannot pass its rig requirement yet.
 
 ## Optional web workflow
 

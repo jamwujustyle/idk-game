@@ -119,6 +119,8 @@ than trusting UE 5.7's always-false vector-parameter setter return value.
 
 ## Character
 
+The original replacement is the [Samurai Sentinel Meshy export](../assets/generated/samurai-character/README.md), generated from the project's armored samurai reference. Its selected GLB has 288,176 triangles and three embedded 2K PBR maps, with UVs and normals. The received files are preserved under CC BY 4.0 with provenance and attribution in their manifest. They have no skeleton or skin weights yet and are not used by gameplay; rigging, deformation, retargeting and engine validation are required before replacement.
+
 [Paragon: Kwang](https://www.fab.com/listings/f4c67e92-b976-4b5b-ab9f-4c25b010f6f3)
 is provided by Epic Games through Fab, under the listing's
 [Fab Standard License](https://www.fab.com/eula). It supplies the rigged character,
