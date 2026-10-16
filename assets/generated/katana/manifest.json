@@ -1,0 +1,446 @@
+{
+  "name": "Original katana and saya",
+  "provider": "Higgsfield 3D Jutsu / Blender 5.2",
+  "project_id": "1bd6c6a6-bfce-4ee8-a546-c1890270d2d8",
+  "project_url": "https://higgsfield.ai/3d-jutsu/1bd6c6a6-bfce-4ee8-a546-c1890270d2d8",
+  "revision": 3,
+  "scene_sequence": 0,
+  "authorship": "Original procedural mesh and mathematical texture code included in source/",
+  "third_party_assets": [],
+  "paid_ai_generation_used": false,
+  "source_units": "metres",
+  "sword": {
+    "overall_length_m": 1.02,
+    "blade_length_m": 0.72,
+    "pivot": "Grip center",
+    "tip_axis": "+Z",
+    "cutting_edge_axis": "-X",
+    "triangles": 21938,
+    "parts": 11,
+    "unreal_path": "/Game/Weapons/Katana/SM_Katana"
+  },
+  "saya": {
+    "length_m": 0.761,
+    "pivot": "Mouth center",
+    "tip_axis": "+Z",
+    "triangles": 19968,
+    "parts": 4,
+    "unreal_path": "/Game/Weapons/Katana/SM_Saya"
+  },
+  "material_slots": {
+    "Blade_SatinSteel": {
+      "texture": "textures/T_Blade_SatinSteel.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 1,
+      "roughness": 0.27000001072883606,
+      "double_sided": false
+    },
+    "Blade_PolishedEdge": {
+      "texture": "textures/T_Blade_PolishedEdge.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 1,
+      "roughness": 0.1899999976158142,
+      "double_sided": false
+    },
+    "Blade_SpineSteel": {
+      "texture": "textures/T_Blade_SpineSteel.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 1,
+      "roughness": 0.3400000035762787,
+      "double_sided": false
+    },
+    "Fittings_BlackIron": {
+      "texture": "textures/T_Fittings_BlackIron.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0.8500000238418579,
+      "roughness": 0.5299999713897705,
+      "double_sided": false
+    },
+    "Grip_DarkSamegawa": {
+      "texture": "textures/T_Grip_DarkSamegawa.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0,
+      "roughness": 0.8600000143051147,
+      "double_sided": false
+    },
+    "Habaki_WornCopper": {
+      "texture": "textures/T_Habaki_WornCopper.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0.8799999952316284,
+      "roughness": 0.3799999952316284,
+      "double_sided": false
+    },
+    "Wrap_WornIndigo": {
+      "texture": "textures/T_Wrap_WornIndigo.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0,
+      "roughness": 0.8799999952316284,
+      "double_sided": false
+    },
+    "Peg_SmokedBamboo": {
+      "texture": "textures/T_Peg_SmokedBamboo.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0,
+      "roughness": 0.7400000095367432,
+      "double_sided": false
+    },
+    "Saya_CharcoalLacquer": {
+      "texture": "textures/T_Saya_CharcoalLacquer.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0,
+      "roughness": 0.36000001430511475,
+      "double_sided": false
+    }
+  },
+  "exports": {
+    "KatanaAndSaya.glb": {
+      "bytes": 4745968,
+      "sha256": "8deadb566fe5172c9968845f2cce5a918853fa493a3c41733f26a8deb5efcf9a"
+    },
+    "KatanaAndSaya.blend": {
+      "bytes": 5707836,
+      "sha256": "35e364e3aef6a244a471868f1bad85bbd5ef75253bcf3b4ec8295374333254ba"
+    },
+    "SM_Katana.glb": {
+      "bytes": 4743656,
+      "sha256": "3cba24207ba4327bfc372de0c8dd6c08ba3653b32a5435a5083d542fc77353a3"
+    },
+    "SM_Saya.glb": {
+      "bytes": 4741664,
+      "sha256": "26e03d40d2a9aba0010c428e26ce102026f82934e0abc7955543aac213742f36"
+    }
+  },
+  "verification": {
+    "glb": "Indexed triangles, unit normals, UV0, embedded PNG textures, and material parameters verified",
+    "blender": "Revision 3 full and hilt renders inspected; all 15 mesh parts have positive volume, zero nonmanifold edges, zero zero-area faces, and zero degenerate UV triangles",
+    "unreal": "Fresh-load NullRHI metadata/material verification passed; imported normals retained, one full-precision UV channel, expected bounds/triangles/slots. In-game GPU appearance and attachment alignment remain unverified."
+  },
+  "rights_source": "https://higgsfield.ai/terms-of-use-agreement",
+  "rights_sections": [
+    "4.2",
+    "4.4"
+  ],
+  "renders": [
+    {
+      "name": "katana-full-review.png",
+      "operation_id": "katana-final-revision3-review",
+      "artifact_id": "f6e9632f1960c48b6fb28f6fcda38cab",
+      "revision": 3,
+      "width": 1000,
+      "height": 1000,
+      "bytes": 989884
+    },
+    {
+      "name": "katana-hilt-detail.png",
+      "operation_id": "katana-final-revision3-review",
+      "artifact_id": "0b6bd730f202b179346ec3dc6241d64b",
+      "revision": 3,
+      "width": 1000,
+      "height": 850,
+      "bytes": 881325
+    }
+  ],
+  "local_renders": {
+    "preview.png": {
+      "sha256": "3e4c9c784f46861b62ab78254f0295e1bf561126aa90b8c09de01d89f253b0b1",
+      "bytes": 989884
+    },
+    "hilt-detail.png": {
+      "sha256": "a2d771cc9a6947ce4e24b1a73255088ca3212c09502a65d1bcd709a00ea07142",
+      "bytes": 881325
+    }
+  },
+  "unreal_import": {
+    "engine": "5.7.4-51494982+++UE5+Release-5.7",
+    "read_only_verification": true,
+    "meshes": [
+      {
+        "path": "/Game/Weapons/Katana/SM_Katana.SM_Katana",
+        "triangles": 21938,
+        "slots": [
+          "Blade_SatinSteel",
+          "Blade_PolishedEdge",
+          "Blade_SpineSteel",
+          "Fittings_BlackIron",
+          "Grip_DarkSamegawa",
+          "Habaki_WornCopper",
+          "Wrap_WornIndigo",
+          "Peg_SmokedBamboo"
+        ],
+        "bounds_min_cm": [
+          -3.8,
+          -3.2,
+          -12.0
+        ],
+        "bounds_max_cm": [
+          3.8,
+          3.2,
+          90.0
+        ],
+        "uv_channels": 1,
+        "build_settings": {
+          "recompute_normals": false,
+          "recompute_tangents": true,
+          "use_mikk_t_space": true,
+          "use_full_precision_u_vs": true
+        },
+        "normal_verification": "Source GLB unit normals verified; Unreal preserves imported normals",
+        "source_forward": "+Z toward tip",
+        "cutting_edge": "-X",
+        "pivot": "Grip center"
+      },
+      {
+        "path": "/Game/Weapons/Katana/SM_Saya.SM_Saya",
+        "triangles": 19968,
+        "slots": [
+          "Fittings_BlackIron",
+          "Saya_CharcoalLacquer",
+          "Wrap_WornIndigo"
+        ],
+        "bounds_min_cm": [
+          -2.125,
+          -1.02,
+          -0.3
+        ],
+        "bounds_max_cm": [
+          3.5946,
+          1.02,
+          75.8
+        ],
+        "uv_channels": 1,
+        "build_settings": {
+          "recompute_normals": false,
+          "recompute_tangents": true,
+          "use_mikk_t_space": true,
+          "use_full_precision_u_vs": true
+        },
+        "normal_verification": "Source GLB unit normals verified; Unreal preserves imported normals",
+        "source_forward": "+Z toward tip",
+        "cutting_edge": "-X",
+        "pivot": "Scabbard mouth center"
+      }
+    ],
+    "materials": {
+      "Blade_SatinSteel": {
+        "material": "/Game/Weapons/Katana/Materials/M_Blade_SatinSteel.M_Blade_SatinSteel",
+        "texture": "/Game/Weapons/Katana/Textures/T_Blade_SatinSteel.T_Blade_SatinSteel",
+        "texture_size": [
+          512,
+          512
+        ],
+        "srgb": true,
+        "base_color_factor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallic": 1.0,
+        "roughness": 0.27000001072883606
+      },
+      "Blade_PolishedEdge": {
+        "material": "/Game/Weapons/Katana/Materials/M_Blade_PolishedEdge.M_Blade_PolishedEdge",
+        "texture": "/Game/Weapons/Katana/Textures/T_Blade_PolishedEdge.T_Blade_PolishedEdge",
+        "texture_size": [
+          512,
+          512
+        ],
+        "srgb": true,
+        "base_color_factor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallic": 1.0,
+        "roughness": 0.1899999976158142
+      },
+      "Blade_SpineSteel": {
+        "material": "/Game/Weapons/Katana/Materials/M_Blade_SpineSteel.M_Blade_SpineSteel",
+        "texture": "/Game/Weapons/Katana/Textures/T_Blade_SpineSteel.T_Blade_SpineSteel",
+        "texture_size": [
+          512,
+          512
+        ],
+        "srgb": true,
+        "base_color_factor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallic": 1.0,
+        "roughness": 0.3400000035762787
+      },
+      "Fittings_BlackIron": {
+        "material": "/Game/Weapons/Katana/Materials/M_Fittings_BlackIron.M_Fittings_BlackIron",
+        "texture": "/Game/Weapons/Katana/Textures/T_Fittings_BlackIron.T_Fittings_BlackIron",
+        "texture_size": [
+          512,
+          512
+        ],
+        "srgb": true,
+        "base_color_factor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallic": 0.8500000238418579,
+        "roughness": 0.5299999713897705
+      },
+      "Grip_DarkSamegawa": {
+        "material": "/Game/Weapons/Katana/Materials/M_Grip_DarkSamegawa.M_Grip_DarkSamegawa",
+        "texture": "/Game/Weapons/Katana/Textures/T_Grip_DarkSamegawa.T_Grip_DarkSamegawa",
+        "texture_size": [
+          512,
+          512
+        ],
+        "srgb": true,
+        "base_color_factor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallic": 0.0,
+        "roughness": 0.8600000143051147
+      },
+      "Habaki_WornCopper": {
+        "material": "/Game/Weapons/Katana/Materials/M_Habaki_WornCopper.M_Habaki_WornCopper",
+        "texture": "/Game/Weapons/Katana/Textures/T_Habaki_WornCopper.T_Habaki_WornCopper",
+        "texture_size": [
+          512,
+          512
+        ],
+        "srgb": true,
+        "base_color_factor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallic": 0.8799999952316284,
+        "roughness": 0.3799999952316284
+      },
+      "Wrap_WornIndigo": {
+        "material": "/Game/Weapons/Katana/Materials/M_Wrap_WornIndigo.M_Wrap_WornIndigo",
+        "texture": "/Game/Weapons/Katana/Textures/T_Wrap_WornIndigo.T_Wrap_WornIndigo",
+        "texture_size": [
+          512,
+          512
+        ],
+        "srgb": true,
+        "base_color_factor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallic": 0.0,
+        "roughness": 0.8799999952316284
+      },
+      "Peg_SmokedBamboo": {
+        "material": "/Game/Weapons/Katana/Materials/M_Peg_SmokedBamboo.M_Peg_SmokedBamboo",
+        "texture": "/Game/Weapons/Katana/Textures/T_Peg_SmokedBamboo.T_Peg_SmokedBamboo",
+        "texture_size": [
+          512,
+          512
+        ],
+        "srgb": true,
+        "base_color_factor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallic": 0.0,
+        "roughness": 0.7400000095367432
+      },
+      "Saya_CharcoalLacquer": {
+        "material": "/Game/Weapons/Katana/Materials/M_Saya_CharcoalLacquer.M_Saya_CharcoalLacquer",
+        "texture": "/Game/Weapons/Katana/Textures/T_Saya_CharcoalLacquer.T_Saya_CharcoalLacquer",
+        "texture_size": [
+          512,
+          512
+        ],
+        "srgb": true,
+        "base_color_factor": [
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "metallic": 0.0,
+        "roughness": 0.36000001430511475
+      }
+    },
+    "content_sha256": {
+      "Content/Weapons/Katana/Materials/M_Blade_PolishedEdge.uasset": "df97d43b7f921711b199b8ac183475a4ae3d12f234f31b9decb499f23a61150e",
+      "Content/Weapons/Katana/Materials/M_Blade_SatinSteel.uasset": "8a42765accc706a6a1bb81d1f1466335a296d480f26da38448cd1ce7b9ad1673",
+      "Content/Weapons/Katana/Materials/M_Blade_SpineSteel.uasset": "d815642929656c40b484706cd28d042519cd8f2061926f42f252bdf061c14a50",
+      "Content/Weapons/Katana/Materials/M_Fittings_BlackIron.uasset": "f6aa6df6a51d63df9d9c0d138c4aa5354c9de5d6ee15a7cd40f3f15d1cabfed9",
+      "Content/Weapons/Katana/Materials/M_Grip_DarkSamegawa.uasset": "df176e6832bdd07387de73125a9ea341d49c515939572bddcee833520b4adad4",
+      "Content/Weapons/Katana/Materials/M_Habaki_WornCopper.uasset": "8a69f9dfc31f5ccbdd3a2544b2fa372711b920ea068d804bd8290684849468a3",
+      "Content/Weapons/Katana/Materials/M_Peg_SmokedBamboo.uasset": "8840d370ca513b2d357c3420a9a5551d092777a4e7376489563da08fb29ffe86",
+      "Content/Weapons/Katana/Materials/M_Saya_CharcoalLacquer.uasset": "5969456c386c7999cd70ef6a4397d338a02ecc6aea6f4a8a1f1c3a11383f9236",
+      "Content/Weapons/Katana/Materials/M_Wrap_WornIndigo.uasset": "26158c331050b5858f66a4c98adb0b0ca4a9919c5cb872d35dd7a2afe6f91822",
+      "Content/Weapons/Katana/SM_Katana.uasset": "5358d7eeb8110a25d9dd52396c9e5e9e45ca54a44b9091a42d0e4b6a688325d5",
+      "Content/Weapons/Katana/SM_Saya.uasset": "46c04d5827aadf10e4ae945f56306ee66ca18da78601b3552c0672b653c8c7c8",
+      "Content/Weapons/Katana/Textures/T_Blade_PolishedEdge.uasset": "2df55330ff84d3f21625409215d90f24d3fc4ee2fb350584fbdebea5ab79e043",
+      "Content/Weapons/Katana/Textures/T_Blade_SatinSteel.uasset": "665850dbcc9703e52393a98a04ab5ab0d5f43f80a30597726155b392b9e3ddd4",
+      "Content/Weapons/Katana/Textures/T_Blade_SpineSteel.uasset": "a0af0cf55c301fe0032d1a96f22e08f8a92208dbd6aca4af763ddc6b19648d30",
+      "Content/Weapons/Katana/Textures/T_Fittings_BlackIron.uasset": "dbe80976307f10ea4bddf15fc2896a2c8b040ab42385ce23c160d9eb844c4d98",
+      "Content/Weapons/Katana/Textures/T_Grip_DarkSamegawa.uasset": "4c481ce11c75e193a4b490fff634453ebf45e5bad8469849181d4db2d42b4373",
+      "Content/Weapons/Katana/Textures/T_Habaki_WornCopper.uasset": "cafc4b1e04cda1a392a6502b21f53369317c197ebf073892be76d4371b4c2114",
+      "Content/Weapons/Katana/Textures/T_Peg_SmokedBamboo.uasset": "b647ebb351fe618484fdaa8c3a489c45f24308a2623df20e0f2662c04a717d2a",
+      "Content/Weapons/Katana/Textures/T_Saya_CharcoalLacquer.uasset": "6b66fa09d8dc70d9098a2f1edfde678f5cd3ab2a666f9585ed7ff2154f0ae70d",
+      "Content/Weapons/Katana/Textures/T_Wrap_WornIndigo.uasset": "841e2df869df7f0cb9699b29c8ac0cc5d1248eb6562e1b81c92f7727c6cdde9e"
+    }
+  }
+}

@@ -1,0 +1,376 @@
+{
+  "meshes": [
+    {
+      "name": "KATANA_Blade",
+      "vertices": 679,
+      "triangles": 1354,
+      "dimensions_m": [
+        0.04907199740409851,
+        0.006599999964237213,
+        0.7199999690055847
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "KATANA_Root",
+      "materials": [
+        "Blade_SatinSteel",
+        "Blade_PolishedEdge",
+        "Blade_SpineSteel"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.00007633070091918563,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "KATANA_GripCore",
+      "vertices": 1200,
+      "triangles": 2396,
+      "dimensions_m": [
+        0.028999999165534973,
+        0.020400000736117363,
+        0.23800000548362732
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "KATANA_Root",
+      "materials": [
+        "Grip_DarkSamegawa"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.00009874949069684459,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "KATANA_ItoWrap_A",
+      "vertices": 2740,
+      "triangles": 5476,
+      "dimensions_m": [
+        0.031700000166893005,
+        0.02191917598247528,
+        0.21700000762939453
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "KATANA_Root",
+      "materials": [
+        "Wrap_WornIndigo"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.000005382085730309273,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "KATANA_ItoWrap_B",
+      "vertices": 2740,
+      "triangles": 5476,
+      "dimensions_m": [
+        0.030799999833106995,
+        0.02281917631626129,
+        0.21700000762939453
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "KATANA_Root",
+      "materials": [
+        "Wrap_WornIndigo"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.000005353891351216832,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "KATANA_Tsuba",
+      "vertices": 1024,
+      "triangles": 2048,
+      "dimensions_m": [
+        0.07599999755620956,
+        0.06400000303983688,
+        0.004999995231628418
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "KATANA_Root",
+      "materials": [
+        "Fittings_BlackIron"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.000017446533406587165,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "KATANA_Fuchi",
+      "vertices": 576,
+      "triangles": 1152,
+      "dimensions_m": [
+        0.03060000017285347,
+        0.02199999988079071,
+        0.013999998569488525
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "KATANA_Root",
+      "materials": [
+        "Fittings_BlackIron"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.000001620273794155396,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "KATANA_Kashira",
+      "vertices": 416,
+      "triangles": 828,
+      "dimensions_m": [
+        0.029999999329447746,
+        0.020999999716877937,
+        0.013999998569488525
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "KATANA_Root",
+      "materials": [
+        "Fittings_BlackIron"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.0000066828769830392736,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "KATANA_Seppa_Grip",
+      "vertices": 576,
+      "triangles": 1152,
+      "dimensions_m": [
+        0.03799999877810478,
+        0.02500000037252903,
+        0.0014999955892562866
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "KATANA_Root",
+      "materials": [
+        "Habaki_WornCopper"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 8.634545890786158e-7,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "KATANA_Seppa_Blade",
+      "vertices": 576,
+      "triangles": 1152,
+      "dimensions_m": [
+        0.03799999877810478,
+        0.02500000037252903,
+        0.0015000104904174805
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "KATANA_Root",
+      "materials": [
+        "Habaki_WornCopper"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 8.634638414022268e-7,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "KATANA_Habaki",
+      "vertices": 336,
+      "triangles": 668,
+      "dimensions_m": [
+        0.03558091074228287,
+        0.010993637144565582,
+        0.04800000786781311
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "KATANA_Root",
+      "materials": [
+        "Habaki_WornCopper"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.00001291935219214131,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "KATANA_Mekugi",
+      "vertices": 120,
+      "triangles": 236,
+      "dimensions_m": [
+        0.004600000102072954,
+        0.02280000038444996,
+        0.004600001033395529
+      ],
+      "origin_m": [
+        0,
+        0,
+        -0.006000000052154064
+      ],
+      "parent": "KATANA_Root",
+      "materials": [
+        "Peg_SmokedBamboo"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 3.7197935166416134e-7,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "SAYA_LacquerShell",
+      "vertices": 7776,
+      "triangles": 15552,
+      "dimensions_m": [
+        0.056044530123472214,
+        0.017999999225139618,
+        0.7540000081062317
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "SAYA_Root",
+      "materials": [
+        "Saya_CharcoalLacquer"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.00014272302355251073,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "SAYA_Koiguchi",
+      "vertices": 576,
+      "triangles": 1152,
+      "dimensions_m": [
+        0.04179999977350235,
+        0.01940000057220459,
+        0.015000000596046448
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "SAYA_Root",
+      "materials": [
+        "Fittings_BlackIron"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.000004186870823851803,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "SAYA_Kojiri",
+      "vertices": 336,
+      "triangles": 668,
+      "dimensions_m": [
+        0.03142740577459335,
+        0.013917086645960808,
+        0.020000040531158447
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "SAYA_Root",
+      "materials": [
+        "Fittings_BlackIron"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.0000049861367303780685,
+      "zero_uv_triangles": 0
+    },
+    {
+      "name": "SAYA_SageoWrap",
+      "vertices": 1300,
+      "triangles": 2596,
+      "dimensions_m": [
+        0.042500000447034836,
+        0.020400000736117363,
+        0.07099998742341995
+      ],
+      "origin_m": [
+        0,
+        0,
+        0
+      ],
+      "parent": "SAYA_Root",
+      "materials": [
+        "Wrap_WornIndigo"
+      ],
+      "nonmanifold_edges": 0,
+      "zero_faces": 0,
+      "signed_volume_m3": 0.0000035628729954114494,
+      "zero_uv_triangles": 0
+    }
+  ],
+  "total_triangles": 41906,
+  "sword_bounds_m": [
+    [
+      -0.03799999877810478,
+      -0.03200000151991844,
+      -0.11999999731779099
+    ],
+    [
+      0.03799999877810478,
+      0.03200000151991844,
+      0.8999999761581421
+    ]
+  ],
+  "sword_dimensions_m": [
+    0.07599999755620956,
+    0.06400000303983688,
+    1.019999973475933
+  ],
+  "source_units": "metres",
+  "render": "actual Blender EEVEE scene, no generated image",
+  "detail": {
+    "view": "Hilt construction, woven geometry, thin tsuba, habaki, and saya mouth",
+    "temporary_camera": true,
+    "model_changes": false
+  }
+}

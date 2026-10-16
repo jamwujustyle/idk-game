@@ -1,0 +1,242 @@
+{
+  "meshes": [
+    {
+      "name": "KATANA_Blade_Mesh",
+      "triangles": 1354,
+      "slots": [
+        "Blade_SatinSteel",
+        "Blade_PolishedEdge",
+        "Blade_SpineSteel"
+      ]
+    },
+    {
+      "name": "KATANA_Fuchi_Mesh",
+      "triangles": 1152,
+      "slots": [
+        "Fittings_BlackIron"
+      ]
+    },
+    {
+      "name": "KATANA_GripCore_Mesh",
+      "triangles": 2396,
+      "slots": [
+        "Grip_DarkSamegawa"
+      ]
+    },
+    {
+      "name": "KATANA_Habaki_Mesh",
+      "triangles": 668,
+      "slots": [
+        "Habaki_WornCopper"
+      ]
+    },
+    {
+      "name": "KATANA_ItoWrap_A_Mesh",
+      "triangles": 5476,
+      "slots": [
+        "Wrap_WornIndigo"
+      ]
+    },
+    {
+      "name": "KATANA_ItoWrap_B_Mesh",
+      "triangles": 5476,
+      "slots": [
+        "Wrap_WornIndigo"
+      ]
+    },
+    {
+      "name": "KATANA_Kashira_Mesh",
+      "triangles": 828,
+      "slots": [
+        "Fittings_BlackIron"
+      ]
+    },
+    {
+      "name": "KATANA_Mekugi_Mesh",
+      "triangles": 236,
+      "slots": [
+        "Peg_SmokedBamboo"
+      ]
+    },
+    {
+      "name": "KATANA_Seppa_Blade_Mesh",
+      "triangles": 1152,
+      "slots": [
+        "Habaki_WornCopper"
+      ]
+    },
+    {
+      "name": "KATANA_Seppa_Grip_Mesh",
+      "triangles": 1152,
+      "slots": [
+        "Habaki_WornCopper"
+      ]
+    },
+    {
+      "name": "KATANA_Tsuba_Mesh",
+      "triangles": 2048,
+      "slots": [
+        "Fittings_BlackIron"
+      ]
+    },
+    {
+      "name": "SAYA_Koiguchi_Mesh",
+      "triangles": 1152,
+      "slots": [
+        "Fittings_BlackIron"
+      ]
+    },
+    {
+      "name": "SAYA_Kojiri_Mesh",
+      "triangles": 668,
+      "slots": [
+        "Fittings_BlackIron"
+      ]
+    },
+    {
+      "name": "SAYA_LacquerShell_Mesh",
+      "triangles": 15552,
+      "slots": [
+        "Saya_CharcoalLacquer"
+      ]
+    },
+    {
+      "name": "SAYA_SageoWrap_Mesh",
+      "triangles": 2596,
+      "slots": [
+        "Wrap_WornIndigo"
+      ]
+    }
+  ],
+  "total_triangles": 41906,
+  "materials": {
+    "Blade_SatinSteel": {
+      "texture": "textures/T_Blade_SatinSteel.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 1,
+      "roughness": 0.27000001072883606,
+      "double_sided": false
+    },
+    "Blade_PolishedEdge": {
+      "texture": "textures/T_Blade_PolishedEdge.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 1,
+      "roughness": 0.1899999976158142,
+      "double_sided": false
+    },
+    "Blade_SpineSteel": {
+      "texture": "textures/T_Blade_SpineSteel.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 1,
+      "roughness": 0.3400000035762787,
+      "double_sided": false
+    },
+    "Fittings_BlackIron": {
+      "texture": "textures/T_Fittings_BlackIron.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0.8500000238418579,
+      "roughness": 0.5299999713897705,
+      "double_sided": false
+    },
+    "Grip_DarkSamegawa": {
+      "texture": "textures/T_Grip_DarkSamegawa.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0,
+      "roughness": 0.8600000143051147,
+      "double_sided": false
+    },
+    "Habaki_WornCopper": {
+      "texture": "textures/T_Habaki_WornCopper.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0.8799999952316284,
+      "roughness": 0.3799999952316284,
+      "double_sided": false
+    },
+    "Wrap_WornIndigo": {
+      "texture": "textures/T_Wrap_WornIndigo.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0,
+      "roughness": 0.8799999952316284,
+      "double_sided": false
+    },
+    "Peg_SmokedBamboo": {
+      "texture": "textures/T_Peg_SmokedBamboo.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0,
+      "roughness": 0.7400000095367432,
+      "double_sided": false
+    },
+    "Saya_CharcoalLacquer": {
+      "texture": "textures/T_Saya_CharcoalLacquer.png",
+      "base_color_factor": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "metallic": 0,
+      "roughness": 0.36000001430511475,
+      "double_sided": false
+    }
+  },
+  "embedded_images": 9,
+  "validation": "All indexed triangles, unit normals, and UV0 exported; exact semantic part names retained.",
+  "exports": {
+    "KatanaAndSaya.glb": {
+      "bytes": 4745968,
+      "sha256": "8deadb566fe5172c9968845f2cce5a918853fa493a3c41733f26a8deb5efcf9a"
+    },
+    "KatanaAndSaya.blend": {
+      "bytes": 5707836,
+      "sha256": "35e364e3aef6a244a471868f1bad85bbd5ef75253bcf3b4ec8295374333254ba"
+    },
+    "SM_Katana.glb": {
+      "bytes": 4743656,
+      "sha256": "3cba24207ba4327bfc372de0c8dd6c08ba3653b32a5435a5083d542fc77353a3"
+    },
+    "SM_Saya.glb": {
+      "bytes": 4741664,
+      "sha256": "26e03d40d2a9aba0010c428e26ce102026f82934e0abc7955543aac213742f36"
+    }
+  }
+}
