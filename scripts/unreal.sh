@@ -8,7 +8,7 @@ usage() {
     cat <<'HELP'
 Usage: scripts/unreal.sh <command> [Unreal arguments...]
 
-  setup          Download/setup the selected engine's native C++ toolchain
+  setup          Validate bundled C++ tools, or initialize a source-tree toolchain
   build          Build RoninEditor (Development, Linux)
   bootstrap      Generate/import audio, material, and empty arena map; no GPU needed
   play           Run the arena in a game window
@@ -54,10 +54,37 @@ require_content() {
 
 case "$command_name" in
     setup)
-        TOOLCHAIN="$ENGINE_ROOT/Engine/Build/BatchFiles/Linux/SetupToolchain.sh"
-        require_executable "$TOOLCHAIN"
-        cd -- "$ENGINE_ROOT"
-        exec "$TOOLCHAIN" "$@"
+        SDK_CONFIG="$ENGINE_ROOT/Engine/Config/Linux/Linux_SDK.json"
+        SDK_ROOT="$ENGINE_ROOT/Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64"
+        BUNDLED_SDK=''
+        if [[ -f "$SDK_CONFIG" ]]; then
+            command -v python3 >/dev/null || die "python3 is required to read the engine SDK metadata."
+            SDK_VERSION="$(python3 - "$SDK_CONFIG" <<'PY'
+import json
+import re
+import sys
+with open(sys.argv[1], encoding='utf-8-sig') as source:
+    version = json.load(source)['MainVersion']
+if not isinstance(version, str) or not re.fullmatch(r'[A-Za-z0-9_.+\-]+', version):
+    raise ValueError('Invalid MainVersion in Linux SDK metadata')
+print(version)
+PY
+            )" || die "Could not read the required native SDK version from $SDK_CONFIG."
+            BUNDLED_SDK="$SDK_ROOT/$SDK_VERSION/x86_64-unknown-linux-gnu"
+        fi
+        if [[ -n "$BUNDLED_SDK" && -x "$BUNDLED_SDK/bin/clang" && -x "$BUNDLED_SDK/bin/clang++" && -x "$BUNDLED_SDK/bin/ld.lld" ]]; then
+            (( $# == 0 )) || die "Bundled toolchain validation takes no extra arguments."
+            printf 'RONIN: validating bundled native SDK: %s\n' "$BUNDLED_SDK"
+            "$BUNDLED_SDK/bin/clang" --version || die "Bundled clang could not run; check the complete engine extraction."
+            "$BUNDLED_SDK/bin/clang++" --version >/dev/null || die "Bundled clang++ could not run."
+            "$BUNDLED_SDK/bin/ld.lld" --version || die "Bundled linker could not run."
+            printf 'RONIN: native tools are executable; UnrealBuildTool discovers this SDK from engine metadata.\n'
+        else
+            TOOLCHAIN="$ENGINE_ROOT/Engine/Build/BatchFiles/Linux/SetupToolchain.sh"
+            [[ -x "$TOOLCHAIN" ]] || die "The bundled x86_64 SDK is incomplete or missing ($BUNDLED_SDK), and this engine has no SetupToolchain.sh. Finish extracting the official Linux ZIP."
+            cd -- "$ENGINE_ROOT"
+            exec "$TOOLCHAIN" "$@"
+        fi
         ;;
     build)
         require_executable "$BUILD"
@@ -86,7 +113,21 @@ case "$command_name" in
         "$PROJECT_ROOT/scripts/check-environment.sh" --require-gpu
         launch_args=("$PROJECT" /Game/Maps/Arena -log)
         if [[ "$command_name" == play ]]; then
-            launch_args+=(-game -windowed -ResX=1600 -ResY=1000)
+            has_window_mode=false
+            has_res_x=false
+            has_res_y=false
+            for argument in "$@"; do
+                case "${argument,,}" in
+                    -windowed|-fullscreen) has_window_mode=true ;;
+                    -resx=*) has_res_x=true ;;
+                    -resy=*) has_res_y=true ;;
+                esac
+            done
+            launch_args+=(-game)
+            # Unreal uses the first matching value, so omit defaults when supplied.
+            if ! "$has_window_mode"; then launch_args+=(-windowed); fi
+            if ! "$has_res_x"; then launch_args+=(-ResX=1600); fi
+            if ! "$has_res_y"; then launch_args+=(-ResY=1000); fi
         fi
         exec "$EDITOR" "${launch_args[@]}" "$@"
         ;;

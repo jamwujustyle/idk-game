@@ -1,6 +1,6 @@
 # Build and run on Linux
 
-The project targets the official **Unreal Engine 5.7 Linux installed build**. Compilation and editor/play verification remain pending. Run commands from the repository root unless an engine directory is explicitly specified.
+The project targets the official **Unreal Engine 5.7 Linux installed build**. The 5.7.4 editor build, asset bootstrap, and all five engine integration tests passed on 2026-10-16; see the [dated verification report](../reports/2026-10-16-verification.md) and [Unreal test results](../reports/unreal-tests/run-20261016T080105Z-U0gArY/index.json). Rendered gameplay and a packaged Linux build still require validation. Run commands from the repository root unless an engine directory is explicitly specified.
 
 ## 1. Prepare the workstation
 
@@ -21,7 +21,7 @@ Use the engine's matching native toolchain for Unreal C++; a distribution compil
 
 ## 2. Install and select Unreal Engine
 
-Download the Linux ZIP from [Epic's Linux page](https://www.unrealengine.com/en-US/linux) while signed into your Epic account. Select the stable 5.7 release, and inspect its archive size and available disk space before downloading/extracting. Allow room for the ZIP and extracted engine together, the toolchain, shader caches, and project build output. The current archive and expanded sizes have not been verified.
+Download the Linux ZIP from [Epic's Linux page](https://www.unrealengine.com/en-US/linux) while signed into your Epic account. Select the stable 5.7 release, and inspect its archive size and available disk space before downloading/extracting. Allow room for the ZIP and extracted engine together, the toolchain, shader caches, and project build output.
 
 Extract it into a dedicated engine directory outside the repository. Select that directory in the shell:
 
@@ -38,13 +38,15 @@ ln -s "/absolute/path/to/UnrealEngine" .tools/unreal
 
 Use either method; `UE_ROOT` takes precedence. The scripts reject missing/non-executable engine launchers and do not download an engine implicitly.
 
-Initialize the engine's native C++ toolchain once:
+Validate the engine's native C++ toolchain:
 
 ```sh
 ./scripts/unreal.sh setup
 ```
 
-This explicitly runs the engine's `Engine/Build/BatchFiles/Linux/SetupToolchain.sh` and can download its dependencies. [Epic's requirements](https://dev.epicgames.com/documentation/en-us/unreal-engine/linux-development-requirements-for-unreal-engine) map UE 5.7 to the v26 clang 20.1.8 native toolchain. The setup command is separate; ordinary build/play commands do not repeat it.
+The official Linux 5.7.4 ZIP bundles its native SDK and has no `SetupToolchain.sh`. The command reads `Engine/Config/Linux/Linux_SDK.json`, finds the matching x86_64 SDK under `Engine/Extras/ThirdPartyNotUE/SDKs/HostLinux/Linux_x64`, and checks that clang, clang++, and the linker execute. UnrealBuildTool discovers that same SDK automatically. Complete the ZIP extraction first: the SDK and runtime files occur near the archive's end.
+
+For a source tree without a bundled SDK, the command falls back to `Engine/Build/BatchFiles/Linux/SetupToolchain.sh` if present; that fallback may download dependencies. [Epic's requirements](https://dev.epicgames.com/documentation/en-us/unreal-engine/linux-development-requirements-for-unreal-engine) map UE 5.7 to v26 / clang 20.1.8. Setup is explicit; ordinary build/play commands do not repeat it.
 
 ## 3. Build code and bootstrap assets
 
@@ -58,12 +60,12 @@ This explicitly runs the engine's `Engine/Build/BatchFiles/Linux/SetupToolchain.
 `bootstrap` first generates five deterministic mono 48 kHz/16-bit PCM WAVs in ignored `.cache/audio`, using only Python's standard library. It then runs the project's Python script in `UnrealEditor-Cmd` with `-run=pythonscript`, `-nullrhi`, and `-unattended`. The script creates:
 
 - `/Game/Maps/Arena`: a blank persistent level; runtime code builds the playable scene.
-- `/Game/Materials/M_Combat`: opaque material with `Color`, `Roughness`, and `Metallic` parameters.
+- `/Game/Materials/M_Combat`: opaque material with `Color`, `Roughness`, and `Metallic` parameters and instanced-static-mesh shader support for the courtyard.
 - `/Game/Audio/Slash`, `Clash`, `Hit`, `Dodge`, and `Execute`: imported sound waves.
 
-The Python Script Plugin is enabled for Editor targets in `Ronin.uproject`. Bootstrap preserves existing assets, including a map you have edited, and validates the material's parameters and the imported sound types. To regenerate a particular imported asset after modifying a generator, remove that asset deliberately in Unreal Editor, then rerun bootstrap. Generation of WAV source files itself is repeatable and overwrites `.cache/audio/*.wav`.
+The Python Script Plugin is enabled for Editor targets in `Ronin.uproject`. Bootstrap explicitly loads the Bink decoder module so sound assets can initialize without an audio output device. It preserves existing assets, including a map you have edited, and validates the material's parameters and the imported sound types. It enables instanced-static-mesh usage on an existing combat material if missing, preserving its other edits. To regenerate a particular imported asset after modifying a generator, remove that asset deliberately in Unreal Editor, then rerun bootstrap. Generation of WAV source files itself is repeatable and overwrites `.cache/audio/*.wav`.
 
-A completion marker and on-disk asset checks guard against a commandlet returning without completing the script. Check `Saved/Logs/Ronin.log` if bootstrap fails. This automation has been syntax-checked but still needs execution with the actual engine.
+A completion marker and on-disk asset checks guard against a commandlet returning without completing the script. Check `Saved/Logs/Ronin.log` if bootstrap fails. Run `./scripts/test-unreal.sh` after bootstrap to verify the generated assets and live gameplay world with NullRHI; see [VERIFICATION.md](VERIFICATION.md) for its scope and the separate live acceptance pass.
 
 ## 4. Play or edit
 
@@ -72,12 +74,14 @@ A completion marker and on-disk asset checks guard against a commandlet returnin
 ./scripts/unreal.sh editor
 ```
 
-`play` launches a 1600 × 1000 window by default, matching a 16:10 display. Additional arguments are passed as distinct arguments to Unreal, including quoted paths or console commands:
+`play` launches a 1600 × 1000 window by default, matching a 16:10 display. Explicit `-windowed`/`-fullscreen`, `-ResX=...`, and `-ResY=...` replace their corresponding defaults; each resolution dimension can be supplied independently. Additional arguments are passed as distinct arguments to Unreal, including quoted paths or console commands:
 
 ```sh
 ./scripts/unreal.sh play -windowed -ResX=1920 -ResY=1200
 ./scripts/unreal.sh editor -NoSplash
 ```
+
+Unreal can clamp the requested resolution to display bounds. For an offscreen capture that requires an exact size, pass `-RenderOffscreen -ForceRes` alongside the resolution arguments.
 
 Interactive commands check NVIDIA/Vulkan first and set NVIDIA's offload environment variables. Verify the GPU selected in Unreal's log after the first launch. Both commands require the generated assets; neither silently rebuilds code. Find the controls in the [README](../README.md#controls).
 

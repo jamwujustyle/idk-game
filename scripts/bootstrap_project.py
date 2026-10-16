@@ -13,6 +13,15 @@ SOUNDS = ("Slash", "Clash", "Hit", "Dodge", "Execute")
 
 def ensure_material(assets, tools):
     if assets.does_asset_exist(MATERIAL):
+        material = assets.load_asset(MATERIAL)
+        if not isinstance(material, unreal.Material):
+            raise RuntimeError(f"Expected a Material at {MATERIAL}")
+        # Runtime-created courtyard instances cannot enable missing shader usage in a game build.
+        if not material.get_editor_property("used_with_instanced_static_meshes"):
+            material.set_editor_property("used_with_instanced_static_meshes", True)
+            unreal.MaterialEditingLibrary.recompile_material(material)
+            if not assets.save_loaded_asset(material):
+                raise RuntimeError(f"Could not save instanced-mesh usage for {MATERIAL}")
         unreal.log(f"Preserving existing {MATERIAL}")
         return
     material = tools.create_asset("M_Combat", "/Game/Materials", unreal.Material, unreal.MaterialFactoryNew())
@@ -20,6 +29,7 @@ def ensure_material(assets, tools):
         raise RuntimeError(f"Could not create {MATERIAL}")
     material.set_editor_property("blend_mode", unreal.BlendMode.BLEND_OPAQUE)
     material.set_editor_property("two_sided", False)
+    material.set_editor_property("used_with_instanced_static_meshes", True)
     editing = unreal.MaterialEditingLibrary
     color = editing.create_material_expression(material, unreal.MaterialExpressionVectorParameter, -400, -120)
     color.set_editor_property("parameter_name", "Color")
@@ -78,12 +88,18 @@ def validate_material(assets):
         raise RuntimeError(f"{MATERIAL} lacks required parameters; repair it in the editor or remove it deliberately and rerun bootstrap")
     if material.get_editor_property("blend_mode") != unreal.BlendMode.BLEND_OPAQUE:
         raise RuntimeError(f"{MATERIAL} must use opaque blending")
+    if not material.get_editor_property("used_with_instanced_static_meshes"):
+        raise RuntimeError(f"{MATERIAL} must support the courtyard's instanced static meshes")
 
 
 def main():
     active_project = Path(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_dir())).resolve()
     if active_project != ROOT:
         raise RuntimeError(f"Wrong project open: {active_project}; expected {ROOT}")
+    # Commandlets skip the audio device manager, which normally registers decoders.
+    # SoundFactory and SoundWave loading still need the project-default BINKA factory.
+    # Loading the decoder module registers it without opening an audio output device.
+    unreal.load_module("BinkAudioDecoder")
     assets = unreal.get_editor_subsystem(unreal.EditorAssetSubsystem)
     levels = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
     tools = unreal.AssetToolsHelpers.get_asset_tools()

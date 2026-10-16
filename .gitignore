@@ -1,0 +1,13 @@
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Builds/
+.tools/
+.cache/
+.idea/
+.vscode/
+*.sln
+*.suo
+*.code-workspace
+__pycache__/
