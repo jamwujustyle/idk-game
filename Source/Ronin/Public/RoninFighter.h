@@ -9,6 +9,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class UParticleSystemComponent;
 class USkeletalMesh;
+class UStaticMeshComponent;
 class ARoninGameMode;
 struct FRoninAnimationState;
 
@@ -30,6 +31,7 @@ public:
     void SetFrozen(bool bFrozen);
     // Copied by the animation proxy on the game thread, never read from a worker.
     void GetAnimationState(FRoninAnimationState& OutState) const;
+    UStaticMeshComponent* GetKatana() const { return Katana; }
 
 private:
     ARoninGameMode* Game() const;
@@ -48,6 +50,8 @@ private:
     UPROPERTY() TObjectPtr<UCameraComponent> Camera;
     UPROPERTY() TObjectPtr<USkeletalMesh> PlayerMesh;
     UPROPERTY() TObjectPtr<USkeletalMesh> EnemyMesh;
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> Katana;
+    UPROPERTY() TObjectPtr<UStaticMeshComponent> Saya;
     UPROPERTY() TObjectPtr<UParticleSystemComponent> BladeTrail;
     FVector DodgeDirection = FVector::ForwardVector;
     float DodgeDistance = 180.f;

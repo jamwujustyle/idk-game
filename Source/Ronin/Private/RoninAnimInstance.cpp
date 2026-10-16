@@ -28,10 +28,29 @@ struct FExplicitSequence : FAnimNode_SequenceEvaluator_Standalone
 struct FRootLockedPose : FAnimNode_Base
 {
     FPoseLink Source;
+    FBoneReference Hands[2], WristBranches[2], WristTips[2];
+    FRootLockedPose()
+    {
+        Hands[0].BoneName = TEXT("mixamorig_RightHand");
+        Hands[1].BoneName = TEXT("mixamorig_LeftHand");
+        WristBranches[0].BoneName = TEXT("Bone_020");
+        WristBranches[1].BoneName = TEXT("Bone_025");
+        WristTips[0].BoneName = TEXT("Bone_019");
+        WristTips[1].BoneName = TEXT("Bone_024");
+    }
     virtual void Initialize_AnyThread(const FAnimationInitializeContext& Context) override
     { Source.Initialize(Context); }
     virtual void CacheBones_AnyThread(const FAnimationCacheBonesContext& Context) override
-    { Source.CacheBones(Context); }
+    {
+        Source.CacheBones(Context);
+        const FBoneContainer& Bones = Context.AnimInstanceProxy->GetRequiredBones();
+        for (int32 Side = 0; Side < 2; ++Side)
+        {
+            Hands[Side].Initialize(Bones);
+            WristBranches[Side].Initialize(Bones);
+            WristTips[Side].Initialize(Bones);
+        }
+    }
     virtual void Update_AnyThread(const FAnimationUpdateContext& Context) override
     { Source.Update(Context); }
     virtual void Evaluate_AnyThread(FPoseContext& Output) override
@@ -40,7 +59,27 @@ struct FRootLockedPose : FAnimNode_Base
         if (Output.Pose.GetNumBones() > 0)
         {
             const FCompactPoseBoneIndex Root(0);
-            Output.Pose[Root].SetTranslation(Output.Pose.GetRefPose(Root).GetTranslation());
+            // This rig starts at the pelvis. Preserve crouch/bob/fall height while
+            // preventing animation root travel from moving it outside the capsule.
+            FVector Position = Output.Pose[Root].GetTranslation();
+            const FVector Bind = Output.Pose.GetRefPose(Root).GetTranslation();
+            Position.X = Bind.X;
+            Position.Y = Bind.Y;
+            Output.Pose[Root].SetTranslation(Position);
+        }
+        const FBoneContainer& Bones = Output.Pose.GetBoneContainer();
+        for (int32 Side = 0; Side < 2; ++Side)
+        {
+            if (!Hands[Side].IsValidToEvaluate(Bones) || !WristBranches[Side].IsValidToEvaluate(Bones)
+                || !WristTips[Side].IsValidToEvaluate(Bones)) continue;
+            const auto Hand = Hands[Side].GetCompactPoseIndex(Bones);
+            const auto Branch = WristBranches[Side].GetCompactPoseIndex(Bones);
+            const auto Tip = WristTips[Side].GetCompactPoseIndex(Bones);
+            // Meshy's weighted auxiliary wrist is a sibling of Hand. Let it share
+            // the hand delta instead of shearing skin between independent rotations.
+            const FTransform BindOffset = Output.Pose.GetRefPose(Branch).GetRelativeTransform(Output.Pose.GetRefPose(Hand));
+            Output.Pose[Branch] = BindOffset * Output.Pose[Hand];
+            Output.Pose[Tip] = Output.Pose.GetRefPose(Tip);
         }
     }
 };
@@ -61,7 +100,7 @@ struct FRoninAnimProxy : FAnimInstanceProxy
         GuardBlend.AddPose();
         GuardBlend.BlendPoses[0].SetLinkNode(&GuardPlayer);
         FBranchFilter UpperBody;
-        UpperBody.BoneName = TEXT("spine_01");
+        UpperBody.BoneName = TEXT("mixamorig_Spine");
         UpperBody.BlendDepth = 3;
         GuardBlend.LayerSetup[0].BranchFilters.Add(UpperBody);
         GuardBlend.bMeshSpaceRotationBlend = true;
@@ -184,7 +223,7 @@ struct FRoninAnimProxy : FAnimInstanceProxy
             Selected = Combat.currentAttack == ronin::AttackKind::Unblockable ? Clip::AttackD :
                 Combat.currentAttack == ronin::AttackKind::Heavy ? Clip::AttackC :
                 (Combat.attackId % 2 == 0 ? Clip::AttackB : Clip::AttackA);
-            // At 30 Hz, weapon_r reaches its forward sweep at frame 6, then exits by frame 9.
+            // Source sword attacks reach their forward sweep at .2 s, then exit by .3 s.
             // These are visual phase anchors; animation notifies never resolve gameplay hits.
             Time = URoninAnimInstance::MapAttackPhase(Combat, Length(Selected), .2f, .3f);
             if (Action == ronin::Action::Recovery && Selected != Clip::AttackD)
@@ -286,7 +325,7 @@ URoninAnimInstance::URoninAnimInstance()
     static_assert(UE_ARRAY_COUNT(Names) == ClipCount);
     for (const TCHAR* Name : Names)
     {
-        const FString Path = FString::Printf(TEXT("/Game/ParagonKwang/Characters/Heroes/Kwang/Animations/%s.%s"), Name, Name);
+        const FString Path = FString::Printf(TEXT("/Game/Retargeted/KwangSamurai/Animations/A_%s.A_%s"), Name, Name);
         ConstructorHelpers::FObjectFinder<UAnimSequence> Found(*Path);
         Clips.Add(Found.Object);
     }

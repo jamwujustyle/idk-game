@@ -53,11 +53,28 @@ require_content() {
 }
 
 require_character() {
-    local mesh
-    for mesh in Kwang_GDC KwangRosewood; do
-        [[ -f "$PROJECT_ROOT/Content/ParagonKwang/Characters/Heroes/Kwang/Meshes/$mesh.uasset" ]] ||
-            die "Paragon: Kwang is missing. Open the editor, add the pack through Window → Fab, then retry. See docs/ASSETS.md."
+    local asset
+    for asset in Characters/Samurai/SK_Samurai.uasset Weapons/Katana/SM_Katana.uasset Weapons/Katana/SM_Saya.uasset ParagonKwang/FX/Particles/Abilities/Primary/FX/P_Kwang_Primary_Trail.uasset; do
+        [[ -f "$PROJECT_ROOT/Content/$asset" ]] ||
+            die "Required character asset is missing: Content/$asset. Follow the samurai import and combat-retarget setup in docs/ASSETS.md."
     done
+    command -v python3 >/dev/null || die "python3 is required to validate the local animation set."
+    python3 - "$PROJECT_ROOT" <<'PY' || die "Complete the combat retarget setup in docs/ASSETS.md."
+from pathlib import Path
+import runpy
+import sys
+from types import SimpleNamespace
+root = Path(sys.argv[1])
+pipeline = runpy.run_path(str(root / 'scripts/retarget_samurai.py'))
+plan = pipeline['plan'](SimpleNamespace(revision='', target=pipeline['TARGET'], clip=None))
+missing = []
+for asset in plan['animations'].values():
+    path = root / 'Content' / (asset.removeprefix('/Game/').split('.')[0] + '.uasset')
+    if not path.is_file():
+        missing.append(str(path.relative_to(root)))
+if missing:
+    sys.exit('Missing combat animations:\n' + '\n'.join(missing))
+PY
 }
 
 case "$command_name" in

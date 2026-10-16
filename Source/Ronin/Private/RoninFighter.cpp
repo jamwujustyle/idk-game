@@ -6,13 +6,16 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
+#include "Engine/StaticMesh.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/RotationMatrix.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -30,11 +33,9 @@ ARoninFighter::ARoninFighter()
     GetCharacterMovement()->bRunPhysicsWithNoController = true;
 
     static ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerAsset(
-        TEXT("/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/Kwang_GDC.Kwang_GDC"));
-    static ConstructorHelpers::FObjectFinder<USkeletalMesh> EnemyAsset(
-        TEXT("/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/KwangRosewood.KwangRosewood"));
+        TEXT("/Game/Characters/Samurai/SK_Samurai.SK_Samurai"));
     PlayerMesh = PlayerAsset.Object;
-    EnemyMesh = EnemyAsset.Object;
+    EnemyMesh = PlayerAsset.Object;
     GetMesh()->SetSkeletalMesh(PlayerMesh);
     GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
     GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
@@ -43,10 +44,33 @@ ARoninFighter::ARoninFighter()
     GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
     GetMesh()->SetAnimInstanceClass(URoninAnimInstance::StaticClass());
 
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> KatanaAsset(
+        TEXT("/Game/Weapons/Katana/SM_Katana.SM_Katana"));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> SayaAsset(
+        TEXT("/Game/Weapons/Katana/SM_Saya.SM_Saya"));
+    Katana = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Katana"));
+    Katana->SetupAttachment(GetMesh(), TEXT("mixamorig_RightHand"));
+    Katana->SetStaticMesh(KatanaAsset.Object);
+    // Original blade: grip-centre pivot, local +Z tip and -X cutting edge.
+    Katana->SetRelativeTransform(FTransform(
+        FQuat(-.597783623, .197935307, .528157378, .569671957),
+        FVector(-.246960336, -.247584995, 9.169885795)));
+    Saya = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Saya"));
+    Saya->SetupAttachment(GetMesh(), TEXT("mixamorig_Hips"));
+    Saya->SetStaticMesh(SayaAsset.Object);
+    Saya->SetRelativeTransform(FTransform(
+        FQuat(.558554594, .552298262, -.437216237, .437978718),
+        FVector(18.798893836, 11.483722529, 2.198725012)));
+    for (UStaticMeshComponent* Weapon : {Katana.Get(), Saya.Get()})
+    {
+        Weapon->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        Weapon->SetGenerateOverlapEvents(false);
+    }
+
     static ConstructorHelpers::FObjectFinder<UParticleSystem> TrailAsset(
         TEXT("/Game/ParagonKwang/FX/Particles/Abilities/Primary/FX/P_Kwang_Primary_Trail.P_Kwang_Primary_Trail"));
     BladeTrail = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("BladeTrail"));
-    BladeTrail->SetupAttachment(GetMesh());
+    BladeTrail->SetupAttachment(Katana);
     BladeTrail->bAutoActivate = false;
     BladeTrail->bAutoDestroy = false;
     BladeTrail->SecondsBeforeInactive = 0.f;
@@ -70,6 +94,9 @@ void ARoninFighter::BeginPlay()
 {
     Super::BeginPlay();
     GetMesh()->SetSkeletalMesh(Identity == ronin::FighterId::Enemy ? EnemyMesh : PlayerMesh);
+    if (UMaterialInstanceDynamic* Armor = GetMesh()->CreateAndSetMaterialInstanceDynamic(0))
+        Armor->SetVectorParameterValue(TEXT("ColorTint"), Identity == ronin::FighterId::Enemy
+            ? FLinearColor(.72f, .43f, .34f) : FLinearColor::White);
     // GameMode precedes Fighter; the skeletal pose must see this frame's combat and movement.
     GetMesh()->AddTickPrerequisiteActor(this);
     GetMesh()->AddTickPrerequisiteComponent(GetCharacterMovement());
@@ -77,7 +104,7 @@ void ARoninFighter::BeginPlay()
     BladeTrail->AddTickPrerequisiteActor(this);
     BladeTrail->AddTickPrerequisiteComponent(GetMesh());
     if (!GetMesh()->GetSkeletalMeshAsset())
-        UE_LOG(LogTemp, Error, TEXT("Kwang is missing. Install the licensed Paragon: Kwang content before playing."));
+        UE_LOG(LogTemp, Error, TEXT("Original samurai mesh is missing. Run scripts/import_samurai.py before playing."));
 
 }
 

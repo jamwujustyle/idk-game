@@ -18,6 +18,7 @@
 #include "Engine/Engine.h"
 #include "Engine/SkeletalMesh.h"
 #include "Engine/StaticMesh.h"
+#include "Engine/StaticMeshSocket.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -45,6 +46,75 @@ constexpr const TCHAR* BladeTrailAssetPath =
     TEXT("/Game/ParagonKwang/FX/Particles/Abilities/Primary/FX/P_Kwang_Primary_Trail.P_Kwang_Primary_Trail");
 constexpr const TCHAR* ContactSparkAssetPath =
     TEXT("/Game/ParagonKwang/FX/Particles/Abilities/Primary/FX/P_Kwang_Primary_Impact.P_Kwang_Primary_Impact");
+
+UStaticMeshComponent* FindWeapon(const ARoninFighter* Fighter, FName Name)
+{
+    TArray<UStaticMeshComponent*> Components;
+    Fighter->GetComponents(Components);
+    for (UStaticMeshComponent* Component : Components)
+        if (Component->GetFName() == Name) return Component;
+    return nullptr;
+}
+
+TArray<FTransform> ReferenceComponentPose(const FReferenceSkeleton& Skeleton)
+{
+    TArray<FTransform> Result = Skeleton.GetRefBonePose();
+    for (int32 Bone = 0; Bone < Result.Num(); ++Bone)
+    {
+        const int32 Parent = Skeleton.GetParentIndex(Bone);
+        if (Parent != INDEX_NONE) Result[Bone] = Result[Bone] * Result[Parent];
+    }
+    return Result;
+}
+
+// Check the observable skinning relationship, rather than duplicating the
+// native node's local-space correction. This also catches composition mistakes.
+bool CheckEquippedPose(FAutomationTestBase& Test, ARoninFighter* Fighter, const FString& Label)
+{
+    USkeletalMeshComponent* Body = Fighter->GetMesh();
+    if (!Test.TestNotNull(Label + TEXT(" has a skeletal asset"), Body->GetSkeletalMeshAsset())) return false;
+    const FReferenceSkeleton& Skeleton = Body->GetSkeletalMeshAsset()->GetRefSkeleton();
+    const TArray<FTransform> Reference = ReferenceComponentPose(Skeleton);
+    bool bOk = true;
+    for (int32 Side = 0; Side < 2; ++Side)
+    {
+        const FName Hand(Side == 0 ? TEXT("mixamorig_RightHand") : TEXT("mixamorig_LeftHand"));
+        const FName Branch(Side == 0 ? TEXT("Bone_020") : TEXT("Bone_025"));
+        const FName Tip(Side == 0 ? TEXT("Bone_019") : TEXT("Bone_024"));
+        const int32 H = Skeleton.FindBoneIndex(Hand), A = Skeleton.FindBoneIndex(Branch), C = Skeleton.FindBoneIndex(Tip);
+        if (!Test.TestTrue(Label + TEXT(" has all weighted wrist bones"), H != INDEX_NONE && A != INDEX_NONE && C != INDEX_NONE))
+        { bOk = false; continue; }
+        const FTransform HandPose = Body->GetSocketTransform(Hand, RTS_Component);
+        const FTransform BranchPose = Body->GetSocketTransform(Branch, RTS_Component);
+        const FTransform TipPose = Body->GetSocketTransform(Tip, RTS_Component);
+        bOk &= Test.TestTrue(Label + TEXT(" keeps weighted wrist branches coherent with the hand"),
+            BranchPose.GetRelativeTransform(HandPose).Equals(Reference[A].GetRelativeTransform(Reference[H]), .002));
+        bOk &= Test.TestTrue(Label + TEXT(" preserves the coarse finger branch's bind shape"),
+            TipPose.GetRelativeTransform(BranchPose).Equals(Skeleton.GetRefBonePose()[C], .002));
+    }
+    const FName Hips(TEXT("mixamorig_Hips"));
+    const int32 HipIndex = Skeleton.FindBoneIndex(Hips);
+    if (Test.TestTrue(Label + TEXT(" has a pelvis root"), HipIndex == 0))
+    {
+        const FVector Pelvis = Body->GetSocketTransform(Hips, RTS_Component).GetTranslation();
+        bOk &= Test.TestFalse(Label + TEXT(" has a finite pelvis pose"), Pelvis.ContainsNaN());
+        bOk &= Test.TestTrue(Label + TEXT(" keeps an upright pelvis above the feet"), Pelvis.Z > 30. && Pelvis.Z < 135.);
+        bOk &= Test.TestTrue(Label + TEXT(" leaves horizontal travel to the capsule"),
+            FVector::Dist2D(Pelvis, Reference[HipIndex].GetTranslation()) < .01);
+    }
+    else bOk = false;
+    for (const TCHAR* Name : {TEXT("Katana"), TEXT("Saya")})
+    {
+        const UStaticMeshComponent* Weapon = FindWeapon(Fighter, Name);
+        if (!Test.TestNotNull(Label + TEXT(" retains ") + Name, Weapon)) { bOk = false; continue; }
+        bOk &= Test.TestTrue(Label + TEXT(" keeps its weapon attached to the evaluated bone"),
+            Weapon->GetComponentTransform().GetRelativeTransform(Body->GetSocketTransform(Weapon->GetAttachSocketName()))
+                .Equals(Weapon->GetRelativeTransform(), .002));
+        bOk &= Test.TestTrue(Label + TEXT(" preserves physical weapon scale"),
+            Weapon->GetComponentTransform().GetScale3D().Equals(FVector::OneVector, .001));
+    }
+    return bOk;
+}
 
 // Snapshot the source graph and the settings altered by runtime filtering.
 // Compare observed values instead of duplicating the pack's original tuning.
@@ -137,11 +207,43 @@ bool FRoninClassDefaultsTest::RunTest(const FString& Parameters)
         bOk &= TestTrue(TEXT("Skeletal poses update without a rendered viewport"),
             Body->VisibilityBasedAnimTickOption == EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones);
     }
+    for (const TCHAR* Name : {TEXT("Katana"), TEXT("Saya")})
+    {
+        const UStaticMeshComponent* Weapon = FindWeapon(Fighter, Name);
+        if (!TestNotNull(FString(Name) + TEXT(" component exists"), Weapon)) { bOk = false; continue; }
+        bOk &= TestNotNull(FString(Name) + TEXT(" resolves its original mesh"), Weapon->GetStaticMesh().Get());
+        const FName ParentBone(FCString::Strcmp(Name, TEXT("Katana")) == 0 ? TEXT("mixamorig_RightHand") : TEXT("mixamorig_Hips"));
+        bOk &= TestTrue(FString(Name) + TEXT(" is attached to the intended body bone"),
+            Weapon->GetAttachParent() == Body && Weapon->GetAttachSocketName() == ParentBone);
+        bOk &= TestTrue(FString(Name) + TEXT(" leaves collision to deterministic combat"),
+            Weapon->GetCollisionEnabled() == ECollisionEnabled::NoCollision && !Weapon->GetGenerateOverlapEvents());
+        if (!Body || !Body->GetSkeletalMeshAsset()) continue;
+        const FReferenceSkeleton& Skeleton = Body->GetSkeletalMeshAsset()->GetRefSkeleton();
+        const int32 ParentIndex = Skeleton.FindBoneIndex(ParentBone);
+        if (!TestTrue(FString(Name) + TEXT(" attachment bone resolves"), ParentIndex != INDEX_NONE)) { bOk = false; continue; }
+        const FTransform BindWeapon = Weapon->GetRelativeTransform() * ReferenceComponentPose(Skeleton)[ParentIndex];
+        const FVector TipDirection = BindWeapon.TransformVectorNoScale(FVector::UpVector);
+        if (FCString::Strcmp(Name, TEXT("Katana")) == 0)
+        {
+            bOk &= TestTrue(TEXT("Neutral katana points forward with its edge down in imported mesh space"),
+                TipDirection.Equals(FVector::RightVector, .001)
+                && BindWeapon.TransformVectorNoScale(-FVector::ForwardVector).Equals(-FVector::UpVector, .001));
+            bOk &= TestTrue(TEXT("Katana grip pivot is within a hand length of the wrist"),
+                Weapon->GetRelativeLocation().Size() > 2. && Weapon->GetRelativeLocation().Size() < 14.);
+        }
+        else
+        {
+            const FVector Mouth = BindWeapon.GetTranslation();
+            bOk &= TestTrue(TEXT("Saya mouth sits at the left hip and its tip points back/down"),
+                Mouth.X > 10. && Mouth.X < 30. && Mouth.Z > 85. && Mouth.Z < 110.
+                && TipDirection.Y < -.8 && TipDirection.Z < 0.);
+        }
+    }
     const UParticleSystemComponent* Trail = Fighter->FindComponentByClass<UParticleSystemComponent>();
     bOk &= TestNotNull(TEXT("Fighter owns its reusable blade trail component"), Trail);
     if (Trail)
     {
-        bOk &= TestTrue(TEXT("Blade trail samples the authored skeletal body"), Trail->GetAttachParent() == Body);
+        bOk &= TestTrue(TEXT("Blade trail samples the original katana"), Trail->GetAttachParent() == Fighter->GetKatana());
         bOk &= TestFalse(TEXT("Blade trail does not activate on spawn"), Trail->bAutoActivate);
         bOk &= TestFalse(TEXT("Blade trail starts inactive"), Trail->IsActive());
         bOk &= TestFalse(TEXT("Blade trail survives for later attacks and rematches"), Trail->bAutoDestroy);
@@ -208,19 +310,33 @@ bool FRoninAssetsTest::RunTest(const FString& Parameters)
         }
     }
     const URoninAnimInstance* Animation = GetDefault<URoninAnimInstance>();
-    for (const TCHAR* Name : {TEXT("Kwang_GDC"), TEXT("KwangRosewood")})
+    for (const TCHAR* Name : {TEXT("SK_Samurai")})
     {
-        const FString Path = FString::Printf(TEXT("/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/%s.%s"), Name, Name);
+        const FString Path = FString::Printf(TEXT("/Game/Characters/Samurai/%s.%s"), Name, Name);
         USkeletalMesh* Mesh = LoadObject<USkeletalMesh>(nullptr, *Path);
         bOk &= TestNotNull(FString::Printf(TEXT("Authored fighter mesh loads: %s"), Name), Mesh);
         if (!Mesh) continue;
         bOk &= TestNotNull(FString::Printf(TEXT("Fighter skeleton resolves: %s"), Name), Mesh->GetSkeleton());
-        for (const FName Bone : {FName(TEXT("weapon_r")), FName(TEXT("spine_01"))})
+        for (const FName Bone : {FName(TEXT("mixamorig_RightHand")), FName(TEXT("mixamorig_Spine"))})
             bOk &= TestTrue(FString::Printf(TEXT("%s has required pose bone %s"), Name, *Bone.ToString()),
                 Mesh->GetRefSkeleton().FindBoneIndex(Bone) != INDEX_NONE);
-        for (const FName Socket : {FName(TEXT("FX_weapon_base")), FName(TEXT("FX_weapon_tip"))})
-            bOk &= TestNotNull(FString::Printf(TEXT("%s resolves blade trail socket %s"), Name, *Socket.ToString()),
-                Mesh->FindSocket(Socket));
+        bOk &= TestTrue(TEXT("Original samurai has adult human dimensions"),
+            Mesh->GetBounds().BoxExtent.Z > 80.f && Mesh->GetBounds().BoxExtent.Z < 100.f);
+        bOk &= TestTrue(TEXT("Original samurai has its textured material"),
+            Mesh->GetMaterials().Num() == 1 && Mesh->GetMaterials()[0].MaterialInterface
+            && Mesh->GetMaterials()[0].MaterialInterface->GetPathName().StartsWith(TEXT("/Game/Characters/Samurai/")));
+        const FReferenceSkeleton& Skeleton = Mesh->GetRefSkeleton();
+        bOk &= TestEqual(TEXT("Samurai pelvis is bone zero"), Skeleton.FindBoneIndex(TEXT("mixamorig_Hips")), 0);
+        for (int32 Side = 0; Side < 2; ++Side)
+        {
+            const int32 Hand = Skeleton.FindBoneIndex(Side == 0 ? TEXT("mixamorig_RightHand") : TEXT("mixamorig_LeftHand"));
+            const int32 Branch = Skeleton.FindBoneIndex(Side == 0 ? TEXT("Bone_020") : TEXT("Bone_025"));
+            const int32 Tip = Skeleton.FindBoneIndex(Side == 0 ? TEXT("Bone_019") : TEXT("Bone_024"));
+            if (!TestTrue(TEXT("All weighted wrist joints survive import"), Hand != INDEX_NONE && Branch != INDEX_NONE && Tip != INDEX_NONE))
+            { bOk = false; continue; }
+            bOk &= TestTrue(TEXT("Hand and weighted helper are siblings, with a helper child"),
+                Skeleton.GetParentIndex(Hand) == Skeleton.GetParentIndex(Branch) && Skeleton.GetParentIndex(Tip) == Branch);
+        }
         for (int32 Index = 0; Index < static_cast<int32>(ERoninAnimationClip::Count); ++Index)
         {
             UAnimSequence* Sequence = Animation->GetClip(static_cast<ERoninAnimationClip>(Index));
@@ -230,7 +346,31 @@ bool FRoninAssetsTest::RunTest(const FString& Parameters)
             bOk &= TestTrue(Label + TEXT(" uses the fighter skeleton"), Sequence->GetSkeleton() == Mesh->GetSkeleton());
             bOk &= TestTrue(Label + TEXT(" has a playable authored duration"), Sequence->GetPlayLength() > 0.f);
             bOk &= TestTrue(Label + TEXT(" is a full pose suitable for sequence evaluation"), Sequence->GetAdditiveAnimType() == AAT_None);
+            bOk &= TestFalse(Label + TEXT(" preserves animated pelvis height instead of locking all root axes"), Sequence->bForceRootLock);
         }
+    }
+    for (const TCHAR* Name : {TEXT("Katana"), TEXT("Saya")})
+    {
+        const FString Path = FString::Printf(TEXT("/Game/Weapons/Katana/SM_%s.SM_%s"), Name, Name);
+        UStaticMesh* Weapon = LoadObject<UStaticMesh>(nullptr, *Path);
+        if (!TestNotNull(FString(Name) + TEXT(" original asset loads"), Weapon)) { bOk = false; continue; }
+        const FBox Bounds = Weapon->GetBoundingBox();
+        bOk &= TestTrue(FString(Name) + TEXT(" has centimetre-scale physical bounds"),
+            Bounds.IsValid && Bounds.GetSize().Z > 70. && Bounds.GetSize().Z < 110.
+            && Bounds.GetSize().X < 10. && Bounds.GetSize().Y < 10.);
+        if (FCString::Strcmp(Name, TEXT("Katana")) != 0) continue;
+        const UStaticMeshSocket* Base = Weapon->FindSocket(TEXT("FX_weapon_base"));
+        const UStaticMeshSocket* Tip = Weapon->FindSocket(TEXT("FX_weapon_tip"));
+        if (!TestNotNull(TEXT("Katana exposes its blade base for trails"), Base)
+            || !TestNotNull(TEXT("Katana exposes its actual blade tip for trails"), Tip)) { bOk = false; continue; }
+        bOk &= TestTrue(TEXT("Trail endpoints remain inside the original blade bounds"),
+            Bounds.ExpandBy(.01).IsInsideOrOn(Base->RelativeLocation) && Bounds.ExpandBy(.01).IsInsideOrOn(Tip->RelativeLocation));
+        bOk &= TestTrue(TEXT("Trail follows the exposed blade and its curved tip"),
+            Base->RelativeLocation.Equals(FVector(0, 0, 18), .01)
+            && Tip->RelativeLocation.Equals(FVector(3.3, 0, 90), .01));
+        bOk &= TestTrue(TEXT("Trail spans the blade forward from the grip, ending at the real tip"),
+            Base->RelativeLocation.Z > 0. && Tip->RelativeLocation.Z - Base->RelativeLocation.Z > 65.
+            && FMath::Abs(Tip->RelativeLocation.Z - Bounds.Max.Z) < 1.);
     }
     UParticleSystem* Trail = LoadObject<UParticleSystem>(nullptr, BladeTrailAssetPath);
     bOk &= TestNotNull(TEXT("Authored blade trail loads as a Cascade particle system"), Trail);
@@ -385,9 +525,9 @@ bool FRoninCookConfigurationTest::RunTest(const FString& Parameters)
     TArray<UObject*> FighterReferences;
     FReferenceFinder FighterFinder(FighterReferences, nullptr, false, true, false, true);
     FighterFinder.FindReferences(GetMutableDefault<ARoninFighter>());
-    for (const TCHAR* Name : {TEXT("Kwang_GDC"), TEXT("KwangRosewood")})
+    for (const TCHAR* Name : {TEXT("SK_Samurai")})
     {
-        const FString Path = FString::Printf(TEXT("/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/%s.%s"), Name, Name);
+        const FString Path = FString::Printf(TEXT("/Game/Characters/Samurai/%s.%s"), Name, Name);
         UObject* Mesh = LoadObject<USkeletalMesh>(nullptr, *Path);
         bOk &= TestTrue(FString::Printf(TEXT("Runtime default retains cookable mesh reference: %s"), Name),
             Mesh && FighterReferences.Contains(Mesh));
@@ -401,6 +541,20 @@ bool FRoninCookConfigurationTest::RunTest(const FString& Parameters)
         TrailFinder.FindReferences(Trail);
         UParticleSystem* Template = LoadObject<UParticleSystem>(nullptr, BladeTrailAssetPath);
         bOk &= TestTrue(TEXT("Trail component retains the selected cookable effect"), Template && TrailReferences.Contains(Template));
+    }
+    for (const TCHAR* Name : {TEXT("Katana"), TEXT("Saya")})
+    {
+        UStaticMeshComponent* Weapon = FindWeapon(GetDefault<ARoninFighter>(), Name);
+        bOk &= TestTrue(FString(Name) + TEXT(" component remains reachable from the fighter default"),
+            Weapon && FighterReferences.Contains(Weapon));
+        if (!Weapon) continue;
+        TArray<UObject*> WeaponReferences;
+        FReferenceFinder WeaponFinder(WeaponReferences, nullptr, false, true, false, true);
+        WeaponFinder.FindReferences(Weapon);
+        const FString Path = FString::Printf(TEXT("/Game/Weapons/Katana/SM_%s.SM_%s"), Name, Name);
+        UStaticMesh* Mesh = LoadObject<UStaticMesh>(nullptr, *Path);
+        bOk &= TestTrue(FString(Name) + TEXT(" original mesh is retained by a cookable hard reference"),
+            Mesh && Weapon->GetStaticMesh() == Mesh && WeaponReferences.Contains(Mesh));
     }
     TArray<UObject*> AnimationReferences;
     FReferenceFinder AnimationFinder(AnimationReferences, nullptr, false, true, false, true);
@@ -520,10 +674,16 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
     URoninAnimInstance* EnemyAnimation = Cast<URoninAnimInstance>(Enemy->GetMesh()->GetAnimInstance());
     if (!TestNotNull(TEXT("Player creates a live native animation instance"), PlayerAnimation)
         || !TestNotNull(TEXT("Enemy creates a live native animation instance"), EnemyAnimation)) return false;
-    bOk &= TestTrue(TEXT("Enemy uses its distinct authored appearance"),
-        Player->GetMesh()->GetSkeletalMeshAsset() != Enemy->GetMesh()->GetSkeletalMeshAsset());
-    const FName WeaponBone(TEXT("weapon_r"));
+    FLinearColor PlayerTint, EnemyTint;
+    bOk &= TestTrue(TEXT("Both fighters use the original samurai with distinct armor tints"),
+        Player->GetMesh()->GetSkeletalMeshAsset() == Enemy->GetMesh()->GetSkeletalMeshAsset()
+        && Player->GetMesh()->GetMaterial(0)->GetVectorParameterValue(FMaterialParameterInfo(TEXT("ColorTint")), PlayerTint)
+        && Enemy->GetMesh()->GetMaterial(0)->GetVectorParameterValue(FMaterialParameterInfo(TEXT("ColorTint")), EnemyTint)
+        && !PlayerTint.Equals(EnemyTint));
+    const FName WeaponBone(TEXT("mixamorig_RightHand"));
     bOk &= TestTrue(TEXT("Live player exposes the animated weapon bone"), Player->GetMesh()->GetBoneIndex(WeaponBone) != INDEX_NONE);
+    UStaticMeshComponent* PlayerKatana = Player->GetKatana();
+    if (!TestNotNull(TEXT("Live player equips the original katana"), PlayerKatana)) return false;
     TArray<UParticleSystemComponent*> BladeTrails;
     for (ARoninFighter* Fighter : {Player, Enemy})
     {
@@ -641,12 +801,23 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
     bOk &= TestEqual(TEXT("Repeated start does not reset an active duel"), Game->GetRoundTime(), StartedTime);
     bOk &= InvokeAction(TEXT("Stone"), IE_Pressed);
     bOk &= TestTrue(TEXT("Bound stance action reaches the combat runtime"), Game->Combat.Get(ronin::FighterId::Player).stance == ronin::Stance::Stone);
+    const FTransform HandBeforeGuard = Player->GetMesh()->GetSocketTransform(WeaponBone, RTS_Component);
     bOk &= InvokeAction(TEXT("Guard"), IE_Pressed);
     bOk &= TestTrue(TEXT("Bound guard press raises guard"), Game->Combat.Get(ronin::FighterId::Player).guarding);
+    for (int32 Frame = 0; Frame < 12; ++Frame)
+    {
+        TestWorld.TickTestWorld(Step);
+        if (Frame == 5 || Frame == 11)
+            bOk &= CheckEquippedPose(*this, Player, FString::Printf(TEXT("Guard frame %d"), Frame));
+    }
+    bOk &= TestFalse(TEXT("Guard evaluates a raised-hand pose through the native graph"),
+        Player->GetMesh()->GetSocketTransform(WeaponBone, RTS_Component).Equals(HandBeforeGuard, .01));
+    bOk &= CheckEquippedPose(*this, Enemy, TEXT("Enemy idle"));
     bOk &= InvokeAction(TEXT("Guard"), IE_Released);
     bOk &= TestFalse(TEXT("Bound guard release clears guard"), Game->Combat.Get(ronin::FighterId::Player).guarding);
     const FRoninAnimationPlayback BeforePause = PlayerAnimation->GetPlaybackState();
     const FTransform WeaponBeforePause = Player->GetMesh()->GetSocketTransform(WeaponBone, RTS_Component);
+    const FVector TipBeforePause = PlayerKatana->GetSocketLocation(TEXT("FX_weapon_tip"));
     bOk &= TestTrue(TEXT("Native idle graph advances in the live world"), BeforePause.IdleTime > .5f);
     bOk &= InvokeAction(TEXT("Pause"), IE_Pressed);
     bOk &= TestTrue(TEXT("Bound pause action pauses combat"), Game->bCombatPaused);
@@ -661,17 +832,26 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
     bOk &= TestEqual(TEXT("Pause freezes the native idle clock"), PausedAnimation.IdleTime, BeforePause.IdleTime);
     bOk &= TestTrue(TEXT("Pause preserves the evaluated weapon pose"),
         Player->GetMesh()->GetSocketTransform(WeaponBone, RTS_Component).Equals(WeaponBeforePause, .001));
+    bOk &= TestTrue(TEXT("Pause also freezes the attached original blade tip"),
+        PlayerKatana->GetSocketLocation(TEXT("FX_weapon_tip")).Equals(TipBeforePause, .001));
     bOk &= InvokeAction(TEXT("Pause"), IE_Pressed);
     bOk &= TestFalse(TEXT("Bound pause action resumes combat"), Game->bCombatPaused);
     bOk &= InvokeAction(TEXT("Light"), IE_Pressed);
     bOk &= TestTrue(TEXT("Bound light attack starts the runtime attack"), Game->Combat.Get(ronin::FighterId::Player).action == ronin::Action::Windup);
-    for (int32 Frame = 0; Frame < 12; ++Frame) TestWorld.TickTestWorld(Step);
+    for (int32 Frame = 0; Frame < 12; ++Frame)
+    {
+        TestWorld.TickTestWorld(Step);
+        if (Frame == 3 || Frame == 7 || Frame == 11)
+            bOk &= CheckEquippedPose(*this, Player, FString::Printf(TEXT("Attack frame %d"), Frame));
+    }
     const FRoninAnimationPlayback AttackAnimation = PlayerAnimation->GetPlaybackState();
     const FTransform AttackingWeapon = Player->GetMesh()->GetSocketTransform(WeaponBone, RTS_Component);
     bOk &= TestTrue(TEXT("Attack blends in a real authored action clip"), AttackAnimation.ActionSequence
         && AttackAnimation.ActionSequence != PlayerAnimation->GetClip(ERoninAnimationClip::Idle)
         && AttackAnimation.ActionTime > 0.f && AttackAnimation.ActionWeight > .5f);
-    bOk &= TestFalse(TEXT("Authored attack moves weapon_r in component space"), AttackingWeapon.Equals(WeaponBeforePause, .01));
+    bOk &= TestFalse(TEXT("Retargeted attack moves the sword hand in component space"), AttackingWeapon.Equals(WeaponBeforePause, .01));
+    bOk &= TestFalse(TEXT("The attached katana tip follows the attack in world space"),
+        PlayerKatana->GetSocketLocation(TEXT("FX_weapon_tip")).Equals(TipBeforePause, .01));
     bOk &= InvokeAction(TEXT("Pause"), IE_Pressed);
     for (int32 Frame = 0; Frame < 12; ++Frame) TestWorld.TickTestWorld(Step);
     const FRoninAnimationPlayback PausedAttack = PlayerAnimation->GetPlaybackState();
@@ -711,6 +891,7 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
     bOk &= TestTrue(TEXT("Actual combat contact enters animation hit-stop"), bObservedHitStop);
     if (bObservedHitStop)
     {
+        bOk &= CheckEquippedPose(*this, Player, TEXT("Actual contact pose"));
         const FRoninAnimationPlayback Contact = PlayerAnimation->GetPlaybackState();
         const FTransform ContactWeapon = Player->GetMesh()->GetSocketTransform(WeaponBone, RTS_Component);
         const float ContactRoundTime = Game->GetRoundTime();

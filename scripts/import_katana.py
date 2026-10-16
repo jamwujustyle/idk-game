@@ -2,6 +2,7 @@
 
 Run through UnrealEditor-Cmd -run=pythonscript -nullrhi -corelimit=2.
 --verify only reads existing asset metadata. Run source/prepare_exports.py first.
+--sockets-only adds the original blade endpoints without reimporting materials.
 """
 import argparse
 import hashlib
@@ -16,6 +17,28 @@ import import_environment as env
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT/'assets/generated/katana'
 DESTINATION = '/Game/Weapons/Katana'
+TRAIL_SOCKETS = {'FX_weapon_base':[0,0,18], 'FX_weapon_tip':[3.3,0,90]}
+
+
+def trail_sockets(mesh, create=False):
+    """Sample the original blade itself, independently of the character rig."""
+    result = {}
+    for name, endpoint in TRAIL_SOCKETS.items():
+        socket = mesh.find_socket(name)
+        if create:
+            if socket is None:
+                socket = unreal.new_object(unreal.StaticMeshSocket, outer=mesh)
+                socket.set_editor_property('socket_name', name)
+                mesh.add_socket(socket)
+            socket.set_editor_property('relative_location', unreal.Vector(*endpoint))
+            socket.set_editor_property('relative_rotation', unreal.Rotator(0,0,0))
+            socket.set_editor_property('relative_scale', unreal.Vector(1,1,1))
+        env.require(socket is not None,'Missing blade trail socket '+name)
+        location = env.vector_list(socket.get_editor_property('relative_location'))
+        env.require(all(abs(a-b)<1e-5 for a,b in zip(location,endpoint)),
+                    'Incorrect blade endpoint '+name)
+        result[name] = location
+    return result
 
 
 def content_hashes():
@@ -168,18 +191,22 @@ def inspect(mesh, name, audit, assigned=None):
     env.require(build_settings['recompute_tangents'] and build_settings['use_mikk_t_space'],
                 'Expected UV-derived MikkTSpace tangents '+name)
     env.require(build_settings['use_full_precision_u_vs'],'Expected full precision UV0 '+name)
+    sockets = trail_sockets(mesh,create=bool(assigned)) if name=='SM_Katana' else {}
     if assigned: env.save(mesh)
     return {'path':mesh.get_path_name(),'triangles':expected_triangles,'slots':slots,
             'bounds_min_cm':env.vector_list(box.min),'bounds_max_cm':env.vector_list(box.max),
             'uv_channels':channels,'build_settings':build_settings,
             'normal_verification':'Source GLB unit normals verified; Unreal preserves imported normals',
             'source_forward':'+Z toward tip','cutting_edge':'-X',
-            'pivot':'Grip center' if name=='SM_Katana' else 'Scabbard mouth center'}
+            'pivot':'Grip center' if name=='SM_Katana' else 'Scabbard mouth center',
+            'trail_sockets_cm':sockets}
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--verify',action='store_true')
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument('--verify',action='store_true')
+    mode.add_argument('--sockets-only',action='store_true')
     args = parser.parse_args()
     hashes_before = content_hashes() if args.verify else None
     env.require(Path(unreal.Paths.convert_relative_path_to_full(unreal.Paths.project_dir())).resolve()==ROOT,
@@ -190,7 +217,7 @@ def main():
         env.require(hashlib.sha256(p.read_bytes()).hexdigest()==audit['exports'][p.name]['sha256'],
                     'Source checksum mismatch '+name)
     assigned = None
-    if not args.verify:
+    if not args.verify and not args.sockets_only:
         unreal.load_module('BinkAudioDecoder')
         world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
         unreal.SystemLibrary.execute_console_command(world,'Interchange.FeatureFlags.Import.Enable 1')
@@ -198,7 +225,10 @@ def main():
         assigned = materials(audit['materials'])
     results = []
     for name in ['SM_Katana','SM_Saya']:
-        mesh = env.ASSETS.load_asset(DESTINATION+'/'+name) if args.verify else import_mesh(name)
+        mesh = env.ASSETS.load_asset(DESTINATION+'/'+name) if args.verify or args.sockets_only else import_mesh(name)
+        if args.sockets_only and name=='SM_Katana':
+            trail_sockets(mesh,create=True)
+            env.save(mesh)
         results.append(inspect(mesh,name,audit,assigned))
     material_report = inspect_materials(audit['materials'])
     hashes_after = content_hashes()

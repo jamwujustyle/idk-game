@@ -14,3 +14,6 @@ Build/Linux/FileOpenOrder/
 __pycache__/
 # Fab character packs are acquired per developer; do not redistribute raw assets.
 Content/ParagonKwang/
+# Locally retargeted Fab animations retain their source license.
+Content/Retargeted/KwangSamurai/
+Content/SAMURAI_RT_STAGE_*.uasset

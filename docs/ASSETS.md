@@ -119,12 +119,21 @@ than trusting UE 5.7's always-false vector-parameter setter return value.
 
 ## Character
 
-The original replacement is the [Samurai Sentinel Meshy export](../assets/generated/samurai-character/README.md), generated from the project's armored samurai reference. Its selected GLB has 288,176 triangles and three embedded 2K PBR maps, with UVs and normals. The received files are preserved under CC BY 4.0 with provenance and attribution in their manifest. They have no skeleton or skin weights yet and are not used by gameplay; rigging, deformation, retargeting and engine validation are required before replacement.
+The playable body is [Samurai Sentinel](../assets/generated/samurai-character/README.md), generated from this project's original armored samurai reference. The selected GLB contains 288,176 triangles, three 2K PBR maps, a 32-bone skeleton and two locomotion clips. Received exports are preserved with CC BY 4.0 attribution. The native fighter attaches the original katana to the right hand and its saya to the left hip; the opponent uses a darker armor tint.
+
+Original Unreal assets are included in `Content/Characters/Samurai` and `Content/Weapons/Katana`. To reproduce the character import, run the script with the engine selected for this checkout:
+
+```sh
+.tools/unreal/Engine/Binaries/Linux/UnrealEditor-Cmd "$PWD/Ronin.uproject" \
+  -run=pythonscript "-script=$PWD/scripts/import_samurai.py" \
+  -nullrhi -corelimit=2 -EnablePlugins=GeometryScripting -unattended -nop4 -nosplash
+```
+
+Repeat with `--verify` inside the `-script` argument for read-only fresh-load checks. The importer preserves normals and weights, uses exact 24 Hz source clip ranges, and binds packed roughness/metallic to G/B. It does not create sword animations. The rig lacks individual fingers and armor bones; a final native pose correction keeps weighted wrist helper chains coherent with Hand, but it does not produce a closed grip or rigid armor simulation.
 
 [Paragon: Kwang](https://www.fab.com/listings/f4c67e92-b976-4b5b-ab9f-4c25b010f6f3)
 is provided by Epic Games through Fab, under the listing's
-[Fab Standard License](https://www.fab.com/eula). It supplies the rigged character,
-material variants, and authored animations. Developers must acquire the pack in
+[Fab Standard License](https://www.fab.com/eula). It supplies the source combat animations and blade/contact effects. Developers must acquire the pack in
 their own Fab library and use **Window → Fab → My Library → Paragon: Kwang → Add
 to Project** to populate `Content/ParagonKwang`.
 
@@ -133,11 +142,19 @@ source repository. Keep its original asset paths so code references resolve.
 Distributable game builds should contain cooked assets required by gameplay;
 acquiring this pack does not make its source assets CC0.
 
-The player uses `Kwang_GDC` and the sentinel uses `KwangRosewood`, both on the
-original Kwang skeleton. `URoninAnimInstance` blends the authored cardinal jog
-clips, maps sword swings onto the combat system's windup/contact/recovery
+Twenty source clips are retargeted locally onto the samurai skeleton. `URoninAnimInstance` blends the retargeted cardinal jog clips, maps sword swings onto the combat system's windup/contact/recovery
 phases, and plays the separate recovery, stagger, and death clips. Capsule
-movement remains authoritative; animation root translation is removed.
+movement remains authoritative; horizontal root travel is removed while the pelvis retains vertical bob and crouching.
+
+Generate local combat derivatives after acquiring Kwang:
+
+```sh
+SDL_VIDEO_DRIVER=x11 .tools/unreal/Engine/Binaries/Linux/UnrealEditor-Cmd "$PWD/Ronin.uproject" \
+  -nullrhi -RenderOffscreen -corelimit=2 -NoSaveConfig -unattended -nosound -nop4 -nosplash \
+  "-ExecutePythonScript=$PWD/scripts/retarget_samurai.py --retarget"
+```
+
+The batch retarget API needs editor/Slate initialization; a `-run=pythonscript` commandlet can crash after conversion. Confirm `RONIN_SAMURAI_RETARGET_COMPLETE` and the generated JSON success status, since the editor process can return zero after a Python error. Use the script's `--verify` mode for fresh-load checks. The script refuses output collisions; use a separate `--revision` when iterating, then explicitly update gameplay paths. Generated clips/rigs stay ignored under `Content/Retargeted/KwangSamurai` and retain the Kwang source license. The checked-in pipeline and audit summaries contain no copied animation keys.
 
 The pack has no dedicated guard or dodge roll. Guard adapts the upper body of
 `Ability_RMB`; evasions use the directional jog-start clips as steps. These
@@ -146,7 +163,7 @@ on the pack's example character or animation Blueprints. Cook only gameplay
 references, rather than adding the entire pack to `DirectoriesToAlwaysCook`.
 
 Blade motion uses the pack's base `P_Kwang_Primary_Trail` effect with the authored
-`FX_weapon_base` and `FX_weapon_tip` sockets. Emission is limited to the combat
+`FX_weapon_base` and `FX_weapon_tip` sockets on the original katana mesh at local (0,0,18) cm and the curved tip (3.3,0,90) cm. Emission is limited to the combat
 system's Active phase, samples follow bone evaluation, and the existing tail
 can fade after the swing. Pause and hit-stop freeze its samples and age; rematch
 discards the ribbon before teleporting either fighter. The L/R variants with

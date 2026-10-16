@@ -158,7 +158,7 @@
   "verification": {
     "glb": "Indexed triangles, unit normals, UV0, embedded PNG textures, and material parameters verified",
     "blender": "Revision 3 full and hilt renders inspected; all 15 mesh parts have positive volume, zero nonmanifold edges, zero zero-area faces, and zero degenerate UV triangles",
-    "unreal": "Fresh-load NullRHI metadata/material verification passed; imported normals retained, one full-precision UV channel, expected bounds/triangles/slots. In-game GPU appearance and attachment alignment remain unverified."
+    "unreal": "Fresh-load verification passed under NullRHI; imported normals retained, one full-precision UV channel, expected bounds/triangles/slots. In-game GPU appearance and attachment alignment remain unverified."
   },
   "rights_source": "https://higgsfield.ai/terms-of-use-agreement",
   "rights_sections": [
@@ -232,7 +232,19 @@
         "normal_verification": "Source GLB unit normals verified; Unreal preserves imported normals",
         "source_forward": "+Z toward tip",
         "cutting_edge": "-X",
-        "pivot": "Grip center"
+        "pivot": "Grip center",
+        "trail_sockets_cm": {
+          "FX_weapon_base": [
+            0.0,
+            0.0,
+            18.0
+          ],
+          "FX_weapon_tip": [
+            3.3,
+            0.0,
+            90.0
+          ]
+        }
       },
       {
         "path": "/Game/Weapons/Katana/SM_Saya.SM_Saya",
@@ -262,7 +274,8 @@
         "normal_verification": "Source GLB unit normals verified; Unreal preserves imported normals",
         "source_forward": "+Z toward tip",
         "cutting_edge": "-X",
-        "pivot": "Scabbard mouth center"
+        "pivot": "Scabbard mouth center",
+        "trail_sockets_cm": {}
       }
     ],
     "materials": {
@@ -430,7 +443,7 @@
       "Content/Weapons/Katana/Materials/M_Peg_SmokedBamboo.uasset": "8840d370ca513b2d357c3420a9a5551d092777a4e7376489563da08fb29ffe86",
       "Content/Weapons/Katana/Materials/M_Saya_CharcoalLacquer.uasset": "5969456c386c7999cd70ef6a4397d338a02ecc6aea6f4a8a1f1c3a11383f9236",
       "Content/Weapons/Katana/Materials/M_Wrap_WornIndigo.uasset": "26158c331050b5858f66a4c98adb0b0ca4a9919c5cb872d35dd7a2afe6f91822",
-      "Content/Weapons/Katana/SM_Katana.uasset": "5358d7eeb8110a25d9dd52396c9e5e9e45ca54a44b9091a42d0e4b6a688325d5",
+      "Content/Weapons/Katana/SM_Katana.uasset": "989cb62dc211243af68b0391995040d207e7ce2d17365145ee86f26090d50aa8",
       "Content/Weapons/Katana/SM_Saya.uasset": "46c04d5827aadf10e4ae945f56306ee66ca18da78601b3552c0672b653c8c7c8",
       "Content/Weapons/Katana/Textures/T_Blade_PolishedEdge.uasset": "2df55330ff84d3f21625409215d90f24d3fc4ee2fb350584fbdebea5ab79e043",
       "Content/Weapons/Katana/Textures/T_Blade_SatinSteel.uasset": "665850dbcc9703e52393a98a04ab5ab0d5f43f80a30597726155b392b9e3ddd4",

@@ -1,0 +1,1423 @@
+{
+  "created_utc": "20261016T112119Z",
+  "mode": "verify",
+  "contract": {
+    "source_mesh": "/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/Kwang_GDC.Kwang_GDC",
+    "target_mesh": "/Game/Characters/Samurai/SK_Samurai.SK_Samurai",
+    "output_folder": "/Game/Retargeted/KwangSamurai",
+    "rigs": {
+      "IK_Kwang": "/Game/Retargeted/KwangSamurai/Rigs/IK_Kwang.IK_Kwang",
+      "IK_Samurai": "/Game/Retargeted/KwangSamurai/Rigs/IK_Samurai.IK_Samurai",
+      "RTG_KwangToSamurai": "/Game/Retargeted/KwangSamurai/Rigs/RTG_KwangToSamurai.RTG_KwangToSamurai"
+    },
+    "animations": {
+      "Idle": "/Game/Retargeted/KwangSamurai/Animations/A_Idle.A_Idle",
+      "Jog_Fwd": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Fwd.A_Jog_Fwd",
+      "Jog_Bwd": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Bwd.A_Jog_Bwd",
+      "Jog_Left": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Left.A_Jog_Left",
+      "Jog_Right": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Right.A_Jog_Right",
+      "PrimaryAttack_A_Slow": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_A_Slow.A_PrimaryAttack_A_Slow",
+      "PrimaryAttack_B_Slow": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_B_Slow.A_PrimaryAttack_B_Slow",
+      "PrimaryAttack_C_Slow": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_C_Slow.A_PrimaryAttack_C_Slow",
+      "PrimaryAttack_D_Slow": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_D_Slow.A_PrimaryAttack_D_Slow",
+      "PrimaryAttack_A_Slow_Recovery": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_A_Slow_Recovery.A_PrimaryAttack_A_Slow_Recovery",
+      "PrimaryAttack_B_Slow_Recovery": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_B_Slow_Recovery.A_PrimaryAttack_B_Slow_Recovery",
+      "PrimaryAttack_C_Slow_Recovery": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_C_Slow_Recovery.A_PrimaryAttack_C_Slow_Recovery",
+      "Stun_Start": "/Game/Retargeted/KwangSamurai/Animations/A_Stun_Start.A_Stun_Start",
+      "Stun_Loop": "/Game/Retargeted/KwangSamurai/Animations/A_Stun_Loop.A_Stun_Loop",
+      "Death_Bwd": "/Game/Retargeted/KwangSamurai/Animations/A_Death_Bwd.A_Death_Bwd",
+      "Jog_Fwd_Start": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Fwd_Start.A_Jog_Fwd_Start",
+      "Jog_Bwd_Start": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Bwd_Start.A_Jog_Bwd_Start",
+      "Jog_Left_Start": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Left_Start.A_Jog_Left_Start",
+      "Jog_Right_Start": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Right_Start.A_Jog_Right_Start",
+      "Ability_RMB": "/Game/Retargeted/KwangSamurai/Animations/A_Ability_RMB.A_Ability_RMB"
+    },
+    "license": "Local derivatives of Fab Paragon: Kwang; excluded from Git. No source redistribution.",
+    "limitations": [
+      "Automatic alignment needs rendered pose review before gameplay acceptance.",
+      "No finger or weapon-bone correspondence is invented.",
+      "Weighted wrist auxiliaries stay at reference locally in these clips; the native pose must synchronize them with Hand motion.",
+      "Root-locked native evaluation must preserve pelvis gait if the imported hips are bone zero."
+    ]
+  },
+  "status": "fresh-load animation validation passed; rendered review pending",
+  "source": {
+    "mesh": "/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/Kwang_GDC.Kwang_GDC",
+    "skeleton": "/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/Kwang_Skeleton.Kwang_Skeleton",
+    "root": "root",
+    "pelvis": "pelvis",
+    "hip_rooted": false,
+    "bones": [
+      "root",
+      "pelvis",
+      "hip_cloth_bk_l",
+      "hip_cloth_fr_l",
+      "hip_helper_r",
+      "hip_helper_side_r",
+      "spine_01",
+      "spine_02",
+      "spine_03",
+      "clavicle_l",
+      "shoulder_plate_top_l",
+      "upperarm_l",
+      "lowerarm_l",
+      "hand_l",
+      "index_01_l",
+      "index_02_l",
+      "index_03_l",
+      "middle_01_l",
+      "middle_02_l",
+      "middle_03_l",
+      "pinky_01_l",
+      "pinky_02_l",
+      "pinky_03_l",
+      "ring_01_l",
+      "ring_02_l",
+      "ring_03_l",
+      "thumb_01_l",
+      "thumb_02_l",
+      "thumb_03_l",
+      "weapon_l",
+      "lowerarm_twist_01_l",
+      "upperarm_twist_01_l",
+      "shoulder_plate_bott_l",
+      "upperarm_twist_02_l",
+      "clavicle_r",
+      "upperarm_r",
+      "lowerarm_r",
+      "hand_r",
+      "index_01_r",
+      "index_02_r",
+      "index_03_r",
+      "middle_01_r",
+      "middle_02_r",
+      "middle_03_r",
+      "pinky_01_r",
+      "pinky_02_r",
+      "pinky_03_r",
+      "ring_01_r",
+      "ring_02_r",
+      "ring_03_r",
+      "thumb_01_r",
+      "thumb_02_r",
+      "thumb_03_r",
+      "weapon_r",
+      "lowerarm_twist_01_r",
+      "sleeve_jiggle",
+      "upperarm_twist_01_r",
+      "upperarm_twist_02_r",
+      "neck_01",
+      "neck_02",
+      "head",
+      "hairBang_l_01",
+      "hairBang_l_02",
+      "hairBang_r_01",
+      "hairBang_r_02",
+      "faceAttach",
+      "C_brow_mid",
+      "L_brow_mid",
+      "L_brow_outer",
+      "L_cheek_inner",
+      "C_lip_upper_mid",
+      "L_lip_upper_outer",
+      "L_lip_corner",
+      "C_nose_bridge",
+      "R_brow_mid",
+      "R_brow_outer",
+      "R_cheek_inner",
+      "R_lip_corner",
+      "C_jaw",
+      "L_lip_lower_outer",
+      "C_lip_lower_mid",
+      "R_lip_lower_outer",
+      "teeth_lower",
+      "tongue",
+      "R_eye",
+      "R_eye_lid_upper_mid",
+      "R_eye_lid_lower_mid",
+      "L_eye",
+      "L_eye_lid_upper_mid",
+      "L_eye_lid_lower_mid",
+      "teeth_upper",
+      "R_lip_upper_outer",
+      "weapon_backMount_r",
+      "tail_flap",
+      "thigh_l",
+      "calf_l",
+      "calf_twist_01_l",
+      "foot_l",
+      "ball_l",
+      "thigh_twist_01_l",
+      "hip_plate_bott_l",
+      "thigh_twist_02_l",
+      "thigh_r",
+      "calf_r",
+      "calf_twist_01_r",
+      "foot_r",
+      "ball_r",
+      "thigh_twist_01_r",
+      "thigh_twist_02_r",
+      "ik_foot_root",
+      "ik_foot_l",
+      "ik_foot_r",
+      "ik_hand_root",
+      "ik_hand_gun",
+      "ik_hand_l",
+      "ik_hand_r",
+      "VB ik_foot_root_weapon_r"
+    ],
+    "parents": {
+      "root": "None",
+      "pelvis": "root",
+      "hip_cloth_bk_l": "pelvis",
+      "hip_cloth_fr_l": "pelvis",
+      "hip_helper_r": "pelvis",
+      "hip_helper_side_r": "pelvis",
+      "spine_01": "pelvis",
+      "spine_02": "spine_01",
+      "spine_03": "spine_02",
+      "clavicle_l": "spine_03",
+      "shoulder_plate_top_l": "clavicle_l",
+      "upperarm_l": "clavicle_l",
+      "lowerarm_l": "upperarm_l",
+      "hand_l": "lowerarm_l",
+      "index_01_l": "hand_l",
+      "index_02_l": "index_01_l",
+      "index_03_l": "index_02_l",
+      "middle_01_l": "hand_l",
+      "middle_02_l": "middle_01_l",
+      "middle_03_l": "middle_02_l",
+      "pinky_01_l": "hand_l",
+      "pinky_02_l": "pinky_01_l",
+      "pinky_03_l": "pinky_02_l",
+      "ring_01_l": "hand_l",
+      "ring_02_l": "ring_01_l",
+      "ring_03_l": "ring_02_l",
+      "thumb_01_l": "hand_l",
+      "thumb_02_l": "thumb_01_l",
+      "thumb_03_l": "thumb_02_l",
+      "weapon_l": "hand_l",
+      "lowerarm_twist_01_l": "lowerarm_l",
+      "upperarm_twist_01_l": "upperarm_l",
+      "shoulder_plate_bott_l": "upperarm_twist_01_l",
+      "upperarm_twist_02_l": "upperarm_l",
+      "clavicle_r": "spine_03",
+      "upperarm_r": "clavicle_r",
+      "lowerarm_r": "upperarm_r",
+      "hand_r": "lowerarm_r",
+      "index_01_r": "hand_r",
+      "index_02_r": "index_01_r",
+      "index_03_r": "index_02_r",
+      "middle_01_r": "hand_r",
+      "middle_02_r": "middle_01_r",
+      "middle_03_r": "middle_02_r",
+      "pinky_01_r": "hand_r",
+      "pinky_02_r": "pinky_01_r",
+      "pinky_03_r": "pinky_02_r",
+      "ring_01_r": "hand_r",
+      "ring_02_r": "ring_01_r",
+      "ring_03_r": "ring_02_r",
+      "thumb_01_r": "hand_r",
+      "thumb_02_r": "thumb_01_r",
+      "thumb_03_r": "thumb_02_r",
+      "weapon_r": "hand_r",
+      "lowerarm_twist_01_r": "lowerarm_r",
+      "sleeve_jiggle": "lowerarm_r",
+      "upperarm_twist_01_r": "upperarm_r",
+      "upperarm_twist_02_r": "upperarm_r",
+      "neck_01": "spine_03",
+      "neck_02": "neck_01",
+      "head": "neck_02",
+      "hairBang_l_01": "head",
+      "hairBang_l_02": "hairBang_l_01",
+      "hairBang_r_01": "head",
+      "hairBang_r_02": "hairBang_r_01",
+      "faceAttach": "head",
+      "C_brow_mid": "faceAttach",
+      "L_brow_mid": "faceAttach",
+      "L_brow_outer": "faceAttach",
+      "L_cheek_inner": "faceAttach",
+      "C_lip_upper_mid": "faceAttach",
+      "L_lip_upper_outer": "faceAttach",
+      "L_lip_corner": "faceAttach",
+      "C_nose_bridge": "faceAttach",
+      "R_brow_mid": "faceAttach",
+      "R_brow_outer": "faceAttach",
+      "R_cheek_inner": "faceAttach",
+      "R_lip_corner": "faceAttach",
+      "C_jaw": "faceAttach",
+      "L_lip_lower_outer": "C_jaw",
+      "C_lip_lower_mid": "C_jaw",
+      "R_lip_lower_outer": "C_jaw",
+      "teeth_lower": "C_jaw",
+      "tongue": "C_jaw",
+      "R_eye": "faceAttach",
+      "R_eye_lid_upper_mid": "R_eye",
+      "R_eye_lid_lower_mid": "R_eye",
+      "L_eye": "faceAttach",
+      "L_eye_lid_upper_mid": "L_eye",
+      "L_eye_lid_lower_mid": "L_eye",
+      "teeth_upper": "faceAttach",
+      "R_lip_upper_outer": "faceAttach",
+      "weapon_backMount_r": "spine_02",
+      "tail_flap": "pelvis",
+      "thigh_l": "pelvis",
+      "calf_l": "thigh_l",
+      "calf_twist_01_l": "calf_l",
+      "foot_l": "calf_l",
+      "ball_l": "foot_l",
+      "thigh_twist_01_l": "thigh_l",
+      "hip_plate_bott_l": "thigh_twist_01_l",
+      "thigh_twist_02_l": "thigh_l",
+      "thigh_r": "pelvis",
+      "calf_r": "thigh_r",
+      "calf_twist_01_r": "calf_r",
+      "foot_r": "calf_r",
+      "ball_r": "foot_r",
+      "thigh_twist_01_r": "thigh_r",
+      "thigh_twist_02_r": "thigh_r",
+      "ik_foot_root": "root",
+      "ik_foot_l": "ik_foot_root",
+      "ik_foot_r": "ik_foot_root",
+      "ik_hand_root": "root",
+      "ik_hand_gun": "ik_hand_root",
+      "ik_hand_l": "ik_hand_gun",
+      "ik_hand_r": "ik_hand_gun",
+      "VB ik_foot_root_weapon_r": "ik_foot_root"
+    },
+    "chains": {
+      "Spine": {
+        "start": "spine_01",
+        "end": "spine_03",
+        "bones": [
+          "spine_01",
+          "spine_02",
+          "spine_03"
+        ]
+      },
+      "Neck": {
+        "start": "neck_01",
+        "end": "neck_02",
+        "bones": [
+          "neck_01",
+          "neck_02"
+        ]
+      },
+      "Head": {
+        "start": "head",
+        "end": "head",
+        "bones": [
+          "head"
+        ]
+      },
+      "LeftClavicle": {
+        "start": "clavicle_l",
+        "end": "clavicle_l",
+        "bones": [
+          "clavicle_l"
+        ]
+      },
+      "RightClavicle": {
+        "start": "clavicle_r",
+        "end": "clavicle_r",
+        "bones": [
+          "clavicle_r"
+        ]
+      },
+      "LeftArm": {
+        "start": "upperarm_l",
+        "end": "hand_l",
+        "bones": [
+          "upperarm_l",
+          "lowerarm_l",
+          "hand_l"
+        ]
+      },
+      "RightArm": {
+        "start": "upperarm_r",
+        "end": "hand_r",
+        "bones": [
+          "upperarm_r",
+          "lowerarm_r",
+          "hand_r"
+        ]
+      },
+      "LeftLeg": {
+        "start": "thigh_l",
+        "end": "foot_l",
+        "bones": [
+          "thigh_l",
+          "calf_l",
+          "foot_l"
+        ]
+      },
+      "RightLeg": {
+        "start": "thigh_r",
+        "end": "foot_r",
+        "bones": [
+          "thigh_r",
+          "calf_r",
+          "foot_r"
+        ]
+      },
+      "LeftToe": {
+        "start": "ball_l",
+        "end": "ball_l",
+        "bones": [
+          "ball_l"
+        ]
+      },
+      "RightToe": {
+        "start": "ball_r",
+        "end": "ball_r",
+        "bones": [
+          "ball_r"
+        ]
+      }
+    },
+    "unmapped_bones": [
+      "root",
+      "hip_cloth_bk_l",
+      "hip_cloth_fr_l",
+      "hip_helper_r",
+      "hip_helper_side_r",
+      "shoulder_plate_top_l",
+      "index_01_l",
+      "index_02_l",
+      "index_03_l",
+      "middle_01_l",
+      "middle_02_l",
+      "middle_03_l",
+      "pinky_01_l",
+      "pinky_02_l",
+      "pinky_03_l",
+      "ring_01_l",
+      "ring_02_l",
+      "ring_03_l",
+      "thumb_01_l",
+      "thumb_02_l",
+      "thumb_03_l",
+      "weapon_l",
+      "lowerarm_twist_01_l",
+      "upperarm_twist_01_l",
+      "shoulder_plate_bott_l",
+      "upperarm_twist_02_l",
+      "index_01_r",
+      "index_02_r",
+      "index_03_r",
+      "middle_01_r",
+      "middle_02_r",
+      "middle_03_r",
+      "pinky_01_r",
+      "pinky_02_r",
+      "pinky_03_r",
+      "ring_01_r",
+      "ring_02_r",
+      "ring_03_r",
+      "thumb_01_r",
+      "thumb_02_r",
+      "thumb_03_r",
+      "weapon_r",
+      "lowerarm_twist_01_r",
+      "sleeve_jiggle",
+      "upperarm_twist_01_r",
+      "upperarm_twist_02_r",
+      "hairBang_l_01",
+      "hairBang_l_02",
+      "hairBang_r_01",
+      "hairBang_r_02",
+      "faceAttach",
+      "C_brow_mid",
+      "L_brow_mid",
+      "L_brow_outer",
+      "L_cheek_inner",
+      "C_lip_upper_mid",
+      "L_lip_upper_outer",
+      "L_lip_corner",
+      "C_nose_bridge",
+      "R_brow_mid",
+      "R_brow_outer",
+      "R_cheek_inner",
+      "R_lip_corner",
+      "C_jaw",
+      "L_lip_lower_outer",
+      "C_lip_lower_mid",
+      "R_lip_lower_outer",
+      "teeth_lower",
+      "tongue",
+      "R_eye",
+      "R_eye_lid_upper_mid",
+      "R_eye_lid_lower_mid",
+      "L_eye",
+      "L_eye_lid_upper_mid",
+      "L_eye_lid_lower_mid",
+      "teeth_upper",
+      "R_lip_upper_outer",
+      "weapon_backMount_r",
+      "tail_flap",
+      "calf_twist_01_l",
+      "thigh_twist_01_l",
+      "hip_plate_bott_l",
+      "thigh_twist_02_l",
+      "calf_twist_01_r",
+      "thigh_twist_01_r",
+      "thigh_twist_02_r",
+      "ik_foot_root",
+      "ik_foot_l",
+      "ik_foot_r",
+      "ik_hand_root",
+      "ik_hand_gun",
+      "ik_hand_l",
+      "ik_hand_r",
+      "VB ik_foot_root_weapon_r"
+    ],
+    "unmapped_policy": "Keep target reference local transforms; inherit mapped parent motion"
+  },
+  "target": {
+    "mesh": "/Game/Characters/Samurai/SK_Samurai.SK_Samurai",
+    "skeleton": "/Game/Characters/Samurai/SK_Samurai_Skeleton.SK_Samurai_Skeleton",
+    "root": "mixamorig_Hips",
+    "pelvis": "mixamorig_Hips",
+    "hip_rooted": true,
+    "bones": [
+      "mixamorig_Hips",
+      "mixamorig_Spine",
+      "mixamorig_Spine1",
+      "mixamorig_Spine2",
+      "mixamorig_Neck",
+      "mixamorig_Head",
+      "mixamorig_HeadTop_End",
+      "headfront",
+      "mixamorig_LeftShoulder",
+      "mixamorig_LeftArm",
+      "mixamorig_LeftForeArm",
+      "mixamorig_LeftHand",
+      "Bone_029",
+      "Bone_025",
+      "Bone_024",
+      "mixamorig_RightShoulder",
+      "mixamorig_RightArm",
+      "mixamorig_RightForeArm",
+      "mixamorig_RightHand",
+      "Bone_030",
+      "Bone_020",
+      "Bone_019",
+      "mixamorig_LeftUpLeg",
+      "mixamorig_LeftLeg",
+      "mixamorig_LeftFoot",
+      "mixamorig_LeftToeBase",
+      "mixamorig_LeftToe_End",
+      "mixamorig_RightUpLeg",
+      "mixamorig_RightLeg",
+      "mixamorig_RightFoot",
+      "mixamorig_RightToeBase",
+      "mixamorig_RightToe_End"
+    ],
+    "parents": {
+      "mixamorig_Hips": "None",
+      "mixamorig_Spine": "mixamorig_Hips",
+      "mixamorig_Spine1": "mixamorig_Spine",
+      "mixamorig_Spine2": "mixamorig_Spine1",
+      "mixamorig_Neck": "mixamorig_Spine2",
+      "mixamorig_Head": "mixamorig_Neck",
+      "mixamorig_HeadTop_End": "mixamorig_Head",
+      "headfront": "mixamorig_Head",
+      "mixamorig_LeftShoulder": "mixamorig_Spine2",
+      "mixamorig_LeftArm": "mixamorig_LeftShoulder",
+      "mixamorig_LeftForeArm": "mixamorig_LeftArm",
+      "mixamorig_LeftHand": "mixamorig_LeftForeArm",
+      "Bone_029": "mixamorig_LeftHand",
+      "Bone_025": "mixamorig_LeftForeArm",
+      "Bone_024": "Bone_025",
+      "mixamorig_RightShoulder": "mixamorig_Spine2",
+      "mixamorig_RightArm": "mixamorig_RightShoulder",
+      "mixamorig_RightForeArm": "mixamorig_RightArm",
+      "mixamorig_RightHand": "mixamorig_RightForeArm",
+      "Bone_030": "mixamorig_RightHand",
+      "Bone_020": "mixamorig_RightForeArm",
+      "Bone_019": "Bone_020",
+      "mixamorig_LeftUpLeg": "mixamorig_Hips",
+      "mixamorig_LeftLeg": "mixamorig_LeftUpLeg",
+      "mixamorig_LeftFoot": "mixamorig_LeftLeg",
+      "mixamorig_LeftToeBase": "mixamorig_LeftFoot",
+      "mixamorig_LeftToe_End": "mixamorig_LeftToeBase",
+      "mixamorig_RightUpLeg": "mixamorig_Hips",
+      "mixamorig_RightLeg": "mixamorig_RightUpLeg",
+      "mixamorig_RightFoot": "mixamorig_RightLeg",
+      "mixamorig_RightToeBase": "mixamorig_RightFoot",
+      "mixamorig_RightToe_End": "mixamorig_RightToeBase"
+    },
+    "chains": {
+      "Spine": {
+        "start": "mixamorig_Spine",
+        "end": "mixamorig_Spine2",
+        "bones": [
+          "mixamorig_Spine",
+          "mixamorig_Spine1",
+          "mixamorig_Spine2"
+        ]
+      },
+      "Neck": {
+        "start": "mixamorig_Neck",
+        "end": "mixamorig_Neck",
+        "bones": [
+          "mixamorig_Neck"
+        ]
+      },
+      "Head": {
+        "start": "mixamorig_Head",
+        "end": "mixamorig_Head",
+        "bones": [
+          "mixamorig_Head"
+        ]
+      },
+      "LeftClavicle": {
+        "start": "mixamorig_LeftShoulder",
+        "end": "mixamorig_LeftShoulder",
+        "bones": [
+          "mixamorig_LeftShoulder"
+        ]
+      },
+      "RightClavicle": {
+        "start": "mixamorig_RightShoulder",
+        "end": "mixamorig_RightShoulder",
+        "bones": [
+          "mixamorig_RightShoulder"
+        ]
+      },
+      "LeftArm": {
+        "start": "mixamorig_LeftArm",
+        "end": "mixamorig_LeftHand",
+        "bones": [
+          "mixamorig_LeftArm",
+          "mixamorig_LeftForeArm",
+          "mixamorig_LeftHand"
+        ]
+      },
+      "RightArm": {
+        "start": "mixamorig_RightArm",
+        "end": "mixamorig_RightHand",
+        "bones": [
+          "mixamorig_RightArm",
+          "mixamorig_RightForeArm",
+          "mixamorig_RightHand"
+        ]
+      },
+      "LeftLeg": {
+        "start": "mixamorig_LeftUpLeg",
+        "end": "mixamorig_LeftFoot",
+        "bones": [
+          "mixamorig_LeftUpLeg",
+          "mixamorig_LeftLeg",
+          "mixamorig_LeftFoot"
+        ]
+      },
+      "RightLeg": {
+        "start": "mixamorig_RightUpLeg",
+        "end": "mixamorig_RightFoot",
+        "bones": [
+          "mixamorig_RightUpLeg",
+          "mixamorig_RightLeg",
+          "mixamorig_RightFoot"
+        ]
+      },
+      "LeftToe": {
+        "start": "mixamorig_LeftToeBase",
+        "end": "mixamorig_LeftToeBase",
+        "bones": [
+          "mixamorig_LeftToeBase"
+        ]
+      },
+      "RightToe": {
+        "start": "mixamorig_RightToeBase",
+        "end": "mixamorig_RightToeBase",
+        "bones": [
+          "mixamorig_RightToeBase"
+        ]
+      }
+    },
+    "unmapped_bones": [
+      "mixamorig_HeadTop_End",
+      "headfront",
+      "Bone_029",
+      "Bone_025",
+      "Bone_024",
+      "Bone_030",
+      "Bone_020",
+      "Bone_019",
+      "mixamorig_LeftToe_End",
+      "mixamorig_RightToe_End"
+    ],
+    "unmapped_policy": "Keep target reference local transforms; inherit mapped parent motion"
+  },
+  "validation": {
+    "Idle": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Idle.A_Idle",
+      "duration_seconds": 8.666666984558105,
+      "frames": 260,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          2.574541449546814,
+          2.688594400882721,
+          1.45281982421875
+        ],
+        "mixamorig_LeftHand": [
+          2.9602098681935516,
+          2.5770753136886686,
+          1.4581709664268487
+        ],
+        "mixamorig_RightHand": [
+          3.132427882195497,
+          3.2843461935188447,
+          1.9200827313640048
+        ],
+        "mixamorig_LeftFoot": [
+          0.46888490462319155,
+          0.4044334719613225,
+          0.17632900115760464
+        ],
+        "mixamorig_RightFoot": [
+          0.1926198560854857,
+          0.3833827970006354,
+          0.22109794637702151
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Jog_Fwd": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Fwd.A_Jog_Fwd",
+      "duration_seconds": 1.7666666507720947,
+      "frames": 53,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          0.0,
+          4.112639427185059,
+          8.097419738769531
+        ],
+        "mixamorig_LeftHand": [
+          7.5844377997226395,
+          8.916941000368347,
+          10.376563389735821
+        ],
+        "mixamorig_RightHand": [
+          4.866261573671149,
+          7.555876457677721,
+          8.178856499521828
+        ],
+        "mixamorig_LeftFoot": [
+          2.0653671220484267,
+          77.92207412703594,
+          16.651762758378226
+        ],
+        "mixamorig_RightFoot": [
+          1.9960358205062372,
+          69.02190515667019,
+          16.828156367813406
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Jog_Bwd": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Bwd.A_Jog_Bwd",
+      "duration_seconds": 1.4666666984558105,
+      "frames": 44,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          2.0322232246398926,
+          7.430164098739624,
+          4.4496307373046875
+        ],
+        "mixamorig_LeftHand": [
+          4.883030855333237,
+          10.209164210284674,
+          3.02739072908804
+        ],
+        "mixamorig_RightHand": [
+          3.490506291479818,
+          11.91493093843784,
+          2.332057127144708
+        ],
+        "mixamorig_LeftFoot": [
+          4.678797270197746,
+          64.50376946327553,
+          13.966274804202449
+        ],
+        "mixamorig_RightFoot": [
+          6.417802452582253,
+          60.874755475165905,
+          18.375745153877652
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Jog_Left": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Left.A_Jog_Left",
+      "duration_seconds": 1.4666666984558105,
+      "frames": 44,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          7.063374757766724,
+          5.374409437179565,
+          5.243156433105469
+        ],
+        "mixamorig_LeftHand": [
+          6.988193255885777,
+          11.645486521191895,
+          6.774311942278487
+        ],
+        "mixamorig_RightHand": [
+          6.128939545774777,
+          10.441871884428549,
+          6.381519381396103
+        ],
+        "mixamorig_LeftFoot": [
+          67.5917214016454,
+          13.37403837381698,
+          10.108334336063628
+        ],
+        "mixamorig_RightFoot": [
+          71.66434177030038,
+          8.120116609559325,
+          13.982103859860175
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Jog_Right": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Right.A_Jog_Right",
+      "duration_seconds": 1.5333333015441895,
+      "frames": 46,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          0.0006270408630371094,
+          8.632681369781494,
+          6.815330505371094
+        ],
+        "mixamorig_LeftHand": [
+          6.718370468113605,
+          13.338361598430975,
+          4.160843479151836
+        ],
+        "mixamorig_RightHand": [
+          6.751319016770374,
+          12.909988380916218,
+          4.552367952739047
+        ],
+        "mixamorig_LeftFoot": [
+          68.93508970649746,
+          17.35099502798165,
+          13.77348463010096
+        ],
+        "mixamorig_RightFoot": [
+          64.34238039479109,
+          10.799010587593354,
+          19.077613266663967
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "PrimaryAttack_A_Slow": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_A_Slow.A_PrimaryAttack_A_Slow",
+      "duration_seconds": 1.2000000476837158,
+      "frames": 36,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          9.746169865131378,
+          16.934563279151917,
+          26.660804748535156
+        ],
+        "mixamorig_LeftHand": [
+          58.76477925155665,
+          74.80086026285144,
+          80.80733616837209
+        ],
+        "mixamorig_RightHand": [
+          46.7607099436085,
+          88.02754758732635,
+          82.51156005368458
+        ],
+        "mixamorig_LeftFoot": [
+          4.784627574863375,
+          5.381158824088331,
+          7.940044485158616
+        ],
+        "mixamorig_RightFoot": [
+          5.350692018138567,
+          32.05800255911502,
+          13.299520884120767
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "PrimaryAttack_B_Slow": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_B_Slow.A_PrimaryAttack_B_Slow",
+      "duration_seconds": 1.2666666507720947,
+      "frames": 38,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          9.678356647491455,
+          23.629419326782227,
+          22.954681396484375
+        ],
+        "mixamorig_LeftHand": [
+          65.27107346350846,
+          73.27087236207694,
+          76.43631093433899
+        ],
+        "mixamorig_RightHand": [
+          70.05660997056673,
+          88.86402651358596,
+          77.99766068131424
+        ],
+        "mixamorig_LeftFoot": [
+          10.790876854734204,
+          9.961824517565535,
+          9.70720862135461
+        ],
+        "mixamorig_RightFoot": [
+          22.06617761542792,
+          25.478614051419566,
+          10.584668985736123
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "PrimaryAttack_C_Slow": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_C_Slow.A_PrimaryAttack_C_Slow",
+      "duration_seconds": 1.2666666507720947,
+      "frames": 38,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          10.49481725692749,
+          23.165205001831055,
+          18.94879150390625
+        ],
+        "mixamorig_LeftHand": [
+          51.707347041342686,
+          54.8901823953707,
+          86.66613731453648
+        ],
+        "mixamorig_RightHand": [
+          53.57276893524087,
+          78.62095478016224,
+          93.19703162301266
+        ],
+        "mixamorig_LeftFoot": [
+          9.239326615575102,
+          5.092845621300508,
+          2.9455168269529395
+        ],
+        "mixamorig_RightFoot": [
+          30.495265861499576,
+          28.096648950538082,
+          5.256421060963987
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "PrimaryAttack_D_Slow": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_D_Slow.A_PrimaryAttack_D_Slow",
+      "duration_seconds": 1.4666666984558105,
+      "frames": 44,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          12.649048805236816,
+          10.21423864364624,
+          28.85021209716797
+        ],
+        "mixamorig_LeftHand": [
+          72.86510627538684,
+          57.25932422886339,
+          29.42941092808995
+        ],
+        "mixamorig_RightHand": [
+          81.70140458101535,
+          80.36736077387863,
+          23.835024553570747
+        ],
+        "mixamorig_LeftFoot": [
+          10.207338808391047,
+          35.265935319918015,
+          7.085961357013062
+        ],
+        "mixamorig_RightFoot": [
+          8.246940369798285,
+          6.126830584446292,
+          15.871983846581998
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "PrimaryAttack_A_Slow_Recovery": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_A_Slow_Recovery.A_PrimaryAttack_A_Slow_Recovery",
+      "duration_seconds": 0.9333333373069763,
+      "frames": 28,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          2.277399778366089,
+          23.662643432617188,
+          9.050262451171875
+        ],
+        "mixamorig_LeftHand": [
+          55.005301984894174,
+          41.99348353946308,
+          42.986499877413536
+        ],
+        "mixamorig_RightHand": [
+          56.81847679168489,
+          53.215124747124946,
+          54.40717919211623
+        ],
+        "mixamorig_LeftFoot": [
+          5.445480990667765,
+          7.891458462622765,
+          4.060744187624039
+        ],
+        "mixamorig_RightFoot": [
+          3.763868230552351,
+          10.793197478934571,
+          8.655587760001914
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "PrimaryAttack_B_Slow_Recovery": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_B_Slow_Recovery.A_PrimaryAttack_B_Slow_Recovery",
+      "duration_seconds": 0.7333333492279053,
+      "frames": 22,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          3.205228805541992,
+          16.928263187408447,
+          7.624488830566406
+        ],
+        "mixamorig_LeftHand": [
+          13.243746922829779,
+          27.610005687226625,
+          55.4516465056694
+        ],
+        "mixamorig_RightHand": [
+          3.788150259433838,
+          27.16165010189466,
+          50.912552037252254
+        ],
+        "mixamorig_LeftFoot": [
+          3.5615596745285956,
+          7.93091879715325,
+          4.88471072699339
+        ],
+        "mixamorig_RightFoot": [
+          4.668701382245644,
+          5.567304093298631,
+          3.9050895342282814
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "PrimaryAttack_C_Slow_Recovery": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_PrimaryAttack_C_Slow_Recovery.A_PrimaryAttack_C_Slow_Recovery",
+      "duration_seconds": 0.9666666388511658,
+      "frames": 29,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          12.296394348144531,
+          18.148470044136047,
+          5.7979583740234375
+        ],
+        "mixamorig_LeftHand": [
+          46.68678632452611,
+          32.429356342375165,
+          8.800720148604839
+        ],
+        "mixamorig_RightHand": [
+          68.02063824402933,
+          52.79203751494351,
+          21.095526328821364
+        ],
+        "mixamorig_LeftFoot": [
+          6.529886605169363,
+          10.121101542000048,
+          2.07792635160709
+        ],
+        "mixamorig_RightFoot": [
+          16.529620760338965,
+          8.30851743342521,
+          6.9482142331911945
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Stun_Start": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Stun_Start.A_Stun_Start",
+      "duration_seconds": 0.5,
+      "frames": 15,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          12.853900909423828,
+          7.9428645968437195,
+          21.44061279296875
+        ],
+        "mixamorig_LeftHand": [
+          11.834713688690343,
+          24.223421909829028,
+          49.50882443621293
+        ],
+        "mixamorig_RightHand": [
+          5.047633245604143,
+          20.754716640100177,
+          57.32688046466822
+        ],
+        "mixamorig_LeftFoot": [
+          4.507781319086931,
+          5.056508747146687,
+          5.404331135281325
+        ],
+        "mixamorig_RightFoot": [
+          3.506059608746348,
+          3.5138452820416752,
+          3.3211947820857404
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Stun_Loop": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Stun_Loop.A_Stun_Loop",
+      "duration_seconds": 2.0,
+      "frames": 60,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          4.346890449523926,
+          7.5784361362457275,
+          1.7827072143554688
+        ],
+        "mixamorig_LeftHand": [
+          9.626984246529236,
+          18.69695116661221,
+          6.825187755053278
+        ],
+        "mixamorig_RightHand": [
+          7.554842046567426,
+          17.292831310017387,
+          5.309136642827852
+        ],
+        "mixamorig_LeftFoot": [
+          0.835086062175403,
+          0.7820115199497728,
+          0.28528849754397356
+        ],
+        "mixamorig_RightFoot": [
+          0.6425967996648332,
+          1.2210622299523806,
+          0.5797717031472231
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Death_Bwd": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Death_Bwd.A_Death_Bwd",
+      "duration_seconds": 2.1666667461395264,
+      "frames": 65,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          38.34443759918213,
+          195.95979595184326,
+          119.15350723266602
+        ],
+        "mixamorig_LeftHand": [
+          30.2065832969161,
+          219.43765323735656,
+          154.32102614738506
+        ],
+        "mixamorig_RightHand": [
+          71.99867278508967,
+          262.1871752228469,
+          101.62137389740269
+        ],
+        "mixamorig_LeftFoot": [
+          92.81931349610633,
+          262.787236388185,
+          96.37870974635416
+        ],
+        "mixamorig_RightFoot": [
+          92.64165291208037,
+          248.51804504223728,
+          69.55360381457999
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Jog_Fwd_Start": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Fwd_Start.A_Jog_Fwd_Start",
+      "duration_seconds": 2.4666666984558105,
+      "frames": 74,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          4.2673656940460205,
+          0.0,
+          10.696044921875
+        ],
+        "mixamorig_LeftHand": [
+          8.727177510697128,
+          18.999441199599513,
+          13.251325507237667
+        ],
+        "mixamorig_RightHand": [
+          6.479093608488732,
+          22.336446127611925,
+          14.717062639304558
+        ],
+        "mixamorig_LeftFoot": [
+          13.576056023178623,
+          70.39794923928156,
+          16.941797876749142
+        ],
+        "mixamorig_RightFoot": [
+          18.695412521209576,
+          64.35356499818761,
+          11.191381732125407
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Jog_Bwd_Start": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Bwd_Start.A_Jog_Bwd_Start",
+      "duration_seconds": 1.7999999523162842,
+      "frames": 54,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          4.125289440155029,
+          6.694760620594025,
+          12.8507080078125
+        ],
+        "mixamorig_LeftHand": [
+          12.120267354910842,
+          21.30101788220154,
+          10.567564965231753
+        ],
+        "mixamorig_RightHand": [
+          9.115624886275207,
+          29.14446449218832,
+          9.690364173468822
+        ],
+        "mixamorig_LeftFoot": [
+          11.9660133435291,
+          52.74832027727484,
+          14.330892539905626
+        ],
+        "mixamorig_RightFoot": [
+          19.249806934498263,
+          48.0861613091935,
+          13.970801085890677
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Jog_Left_Start": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Left_Start.A_Jog_Left_Start",
+      "duration_seconds": 2.066666603088379,
+      "frames": 62,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          6.0117970407009125,
+          8.049700260162354,
+          8.058189392089844
+        ],
+        "mixamorig_LeftHand": [
+          2.535778048645014,
+          13.464851942846005,
+          6.899273220575196
+        ],
+        "mixamorig_RightHand": [
+          5.0481728630624865,
+          16.349337718912775,
+          8.23302214115867
+        ],
+        "mixamorig_LeftFoot": [
+          55.72683073430004,
+          15.646159147424935,
+          6.84459406983477
+        ],
+        "mixamorig_RightFoot": [
+          60.8970180215337,
+          25.95274244185822,
+          13.080793952752401
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Jog_Right_Start": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Jog_Right_Start.A_Jog_Right_Start",
+      "duration_seconds": 2.0999999046325684,
+      "frames": 63,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          3.985631227493286,
+          9.71659231185913,
+          16.90911102294922
+        ],
+        "mixamorig_LeftHand": [
+          7.245877418569709,
+          19.98428620825645,
+          19.101801638714647
+        ],
+        "mixamorig_RightHand": [
+          8.107352978498469,
+          16.622594744597283,
+          19.33368427865753
+        ],
+        "mixamorig_LeftFoot": [
+          58.086441989462706,
+          24.58222085438279,
+          16.49314172384004
+        ],
+        "mixamorig_RightFoot": [
+          60.556312577236255,
+          19.825864956030767,
+          16.785093643063803
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    },
+    "Ability_RMB": {
+      "asset": "/Game/Retargeted/KwangSamurai/Animations/A_Ability_RMB.A_Ability_RMB",
+      "duration_seconds": 2.0,
+      "frames": 60,
+      "bone_tracks": 32,
+      "pose_samples_checked": 13,
+      "component_translation_ranges_cm": {
+        "mixamorig_Hips": [
+          1.3370392322540283,
+          0.0,
+          9.904975891113281
+        ],
+        "mixamorig_LeftHand": [
+          37.10583725428424,
+          30.46553888153302,
+          73.90864091710867
+        ],
+        "mixamorig_RightHand": [
+          29.00399999971954,
+          33.801797100940895,
+          65.72182225674813
+        ],
+        "mixamorig_LeftFoot": [
+          11.307992038905676,
+          26.20789854883421,
+          3.0834090525282036
+        ],
+        "mixamorig_RightFoot": [
+          16.137084386223975,
+          21.178120318051317,
+          2.693023483674658
+        ]
+      },
+      "notifies": 0,
+      "source_curves": 0,
+      "root_motion": false
+    }
+  },
+  "protected_package_sha256": {
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Jog_Fwd.uasset": "6dab7676135e5a9b406dfae91d604985a8d31ff0679ee1f0cf2416533ccd4bcc",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Jog_Left_Start.uasset": "06e314e5d25999920396e2ed83da065614788a502a6fec303cf71f3ae671868b",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Jog_Left.uasset": "f2508f7811205a89aa2b583e7e8c0e0452965a1c7365a9bc631d0ef744e9c29f",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/PrimaryAttack_B_Slow_Recovery.uasset": "0027656e364b71bc1c83a9f3618bb0249adf28ae9b62b46eb5fcce0b318821a5",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Jog_Right_Start.uasset": "b8f5dd56dfabafb1af418ea1c17430aef0d7e17af2930401b8d1639196ae9f9e",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/PrimaryAttack_A_Slow.uasset": "19a99849071f4059388256aeecf2551490a72fc6c96c374a3f946bd28d1432fd",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/PrimaryAttack_A_Slow_Recovery.uasset": "527a201403295311d97a20ac8001a5510b475f1639f509a192bb061e090245f5",
+    "Content/Characters/Samurai/SK_Samurai.uasset": "62ff3234cf4ba921c05dae28b30a28bf9c0f0b172d45eadd984d35c21a23e72a",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Ability_RMB.uasset": "8188238f31540e1e4cc8372262cfc8c0d085a13ad35e25b97d65376381ac5f8c",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Jog_Right.uasset": "eb161a3aa1acb7889c62ec95a82d3a1947db257c271035e3cfde1cdc514ff801",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/PrimaryAttack_C_Slow_Recovery.uasset": "5fd2f0c83dea8bf9c87a2661f81529689c03edd0c778f773b9332af85d76f9ce",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Stun_Start.uasset": "ed776b6b20a223a54ceb067f240471bc43c270349b742aafcfbdfed563605da1",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Jog_Bwd.uasset": "8703ee70da2b0a826dab06394d6af7ae3036c34fa2135e70c520c5e363546c57",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Idle.uasset": "20ddd223fb14514c45f9b878d017eec9ae6471eef7535cb55bfed9b232d83edc",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/PrimaryAttack_D_Slow.uasset": "66ae757360e9f3a770df416deeec79af95c40b3f510c38880aa46190a4a36166",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Jog_Fwd_Start.uasset": "e1a38e05f5d7a45c36959b0cce7a9d129616f6849a24b296594e742c8c39f779",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Stun_Loop.uasset": "29667be49d7cc05ad6dcbe01b690727bedf123e1cceb76455a54f5051a6f8129",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Meshes/Kwang_Skeleton.uasset": "c46a229b25cd4d898b9e6b9390388d9f6815553068003e34214ccd4ee77e0c62",
+    "Content/Characters/Samurai/SK_Samurai_Skeleton.uasset": "4237337eaa9c65956976b714dc86bcaca56ae8edc319b81b55f00c2dda9b44e5",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Meshes/Kwang_GDC.uasset": "781eecceccbf4ab17c3d2bc88de748e69f5474504b7c75c1bad9415964552488",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/PrimaryAttack_C_Slow.uasset": "4066282e505221e9e3f25d06acdd9039273d29aad35843b2706dfd52b042ce36",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Jog_Bwd_Start.uasset": "1eb369590f1b49ac41cfa097b6dd544367664c4d87b32ff571f7dc2eedd1c06c",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/PrimaryAttack_B_Slow.uasset": "ec491e4016660bafda13c56ddb8c5daf6871849337fce7139fcf891469fe359f",
+    "Content/ParagonKwang/Characters/Heroes/Kwang/Animations/Death_Bwd.uasset": "1cd08a3a66200e2df6cc58bed8e42081c1563cea8261a1c51d6499114222788c"
+  },
+  "changed_content_packages": [],
+  "source_and_target_packages_unchanged": true
+}
