@@ -1,10 +1,10 @@
-# The Drowned Road
+# SAMURAI
 
-Original narrative proposal. Working title; complete story spoilers below.
+Original narrative proposal for **SAMURAI**. **The Drowned Road** is the campaign's story name. Complete story spoilers below.
 
 ## The game in one paragraph
 
-Twelve years ago, a swordsman closed an escape gate while his commander flooded a valley to win a war. Now drought has uncovered the valley, and the government is arresting people who officially died there. When the swordsman refuses to execute one of those survivors, he becomes a fugitive in the country he helped create. His former comrades hunt him through abandoned villages, mountain shrines, and fields growing inside the ruins. As the rains return, he must open the road he once closed—and protect people who have every reason to hate him.
+Twelve years ago, a samurai retainer closed an escape gate while his lord flooded a valley to win a war. He still serves that lord, General Iori, guarding the province and enforcing its judgments. Now drought has uncovered the valley, and the government is arresting people who officially died there. When the samurai refuses an order to execute one of those survivors, he becomes a fugitive in the country he helped create. His former comrades hunt him through abandoned villages, mountain shrines, and fields growing inside the ruins. As the rains return, he must open the road he once closed—and protect people who have every reason to hate him.
 
 The central question is: **What does taking responsibility demand when forgiveness is not yours to ask for?**
 
@@ -20,19 +20,23 @@ The landscape begins in late summer: insects, pale reeds, bright sky, cracked mu
 
 The world should also be pleasurable to inhabit. A cook experiments with recipes reconstructed from memory. Children turn a stranded boat into a theatre. Two old neighbors renew an argument over a boundary now marked by the same tree growing through both houses. These people have lives beyond what was done to them.
 
+Ren's intended appearance is an armored samurai whose maintained, weathered equipment comes from the same household as the officers pursuing him. Familiar armor, sword fittings, and household insignia make that shared service visible. Among the survivors, his appearance carries the authority of the men who closed the gate; earning their trust takes more than removing a crest.
+
 ## The people
 
-**Ren — the player character.** About forty, a court executioner and former military swordsman. Precise, reserved, capable of dry humor. He believes a clean death is the last kindness his work permits. This belief has also allowed him to continue serving a violent institution without questioning who it condemns. He knows civilians were behind the gate he closed. The game never reveals that he was secretly innocent.
+**Ren — the player character.** About forty, a senior samurai retainer in Iori's military household. Precise, reserved, capable of dry humor. His service includes guarding roads and supply convoys, commanding household soldiers, training younger officers, and carrying out executions when assigned. He has sworn to serve Iori and protect the province, and for years he has treated obedience to his lord as sufficient proof that he is doing both.
+
+Execution duty exposes that failure most directly. Ren believes a clean death is the last kindness he can offer a condemned person. This belief has allowed him to continue enforcing judgments without questioning who is condemned. He knows civilians were behind the gate he closed. The game never reveals that he was secretly innocent.
 
 Ren wants to confess, settle his debt, and perhaps die doing something worthy. The survivors need him to do less satisfying things: keep a route open, carry supplies, accept distrust, and remain alive to answer questions. His arc moves from seeking a personal ending to accepting an ongoing obligation.
 
 **Aya — Ren's younger sister.** A river surveyor in her thirties who organizes the valley settlements. She survived the flood through a maintenance channel and deliberately never sought her brother out. She knows what he did. She has spent years finding water, repairing crossings, and helping families live under borrowed identities. Her community is her life's work, rather than a temporary refuge awaiting Ren's arrival. She will accept his help without offering reconciliation as payment.
 
-**General Iori — the principal antagonist.** Ren's former commander and teacher, now the governor. He built roads, repaired irrigation, and sustained a long peace after his victory. He is sincerely committed to preventing another famine or war. He also considers himself entitled to decide whose losses can be omitted from that peace.
+**General Iori — the principal antagonist.** The provincial governor, Ren's lord, and the commander who trained him. Ren remains in his service when the story begins. Iori built roads, repaired irrigation, and sustained a long peace after his victory. He is sincerely committed to preventing another famine or war. He also considers himself entitled to decide whose losses can be omitted from that peace.
 
 Iori's immediate objective is to refill the reservoir when the rains return, securing water for the next planting season. Restoring the reservoir does require relocation from its exposed bed. His crime is making safe relocation conditional on surrendering the survivors' identities, testimony, and property claims—and eventually using soldiers against those who refuse. There is a workable alternative: evacuate everyone, acknowledge the original villages, preserve their claims, and investigate the flood. He rejects it because it threatens his authority and the estates awarded to his officers.
 
-**Masato — Ren's former pupil.** A young officer who believes lawful service protects ordinary people from whoever happens to have the strongest sword. He knows Ren as the man who insisted that discipline meant restraint. Ren's flight looks like hypocrisy and betrayal. Masato's question is whether obeying the law still serves people when the authorities knowingly falsify who those people are.
+**Masato — Ren's former pupil.** A younger samurai officer in the same household who believes lawful service protects ordinary people from whoever happens to have the strongest sword. He knows Ren as the man who trained him and insisted that discipline meant restraint. They have guarded the same roads and served under the same oath. Ren's flight looks like hypocrisy and a betrayal of obligations Masato still takes seriously. Masato's question is whether obeying the law still serves people when the authorities knowingly falsify who those people are.
 
 **Daigo — an old comrade.** A road captain who has secretly protected survivors with false papers for years. He did good work inside the system while Ren looked away. He fears Ren's sudden need for honesty will expose families who are currently safe. He is right about that danger. Helping him means protecting people's choice to remain anonymous.
 
@@ -44,7 +48,7 @@ Iori's immediate objective is to refill the reservoir when the rains return, sec
 
 The first image is water falling into a stone basin. A hand rinses a sword. Beyond a wall, festival drums mark the anniversary of the peace.
 
-The player takes control in a shrine courtyard. Ren prepares for an execution while Masato insists on one last practice exchange before the ceremony. Their brief spar introduces movement, guard, and counters through familiar banter. Ren corrects him: a fighter who rushes the finish stops watching the person in front of him.
+The player takes control in a shrine courtyard used by Iori's household guard. Before the prisoner arrives for Ren's assigned execution duty, he and Masato finish their morning practice. Their brief spar introduces movement, guard, and counters through familiar banter. Ren corrects him: a fighter who rushes the finish stops watching the person in front of him.
 
 Hana is brought into the courtyard. Her offense is read aloud: she has claimed the name, home, and compensation belonging to a woman dead for twelve years. She says the name is her own.
 
@@ -68,7 +72,7 @@ Beyond the shrine, they descend toward a lake that is no longer there. Roofs pro
 
 Hana says someone there will want to see him. She does not promise it will be a happy reunion.
 
-**Title: THE DROWNED ROAD.**
+**Title: SAMURAI.** Beneath it, the campaign name: **THE DROWNED ROAD.**
 
 ## Act I: what survived
 
@@ -197,13 +201,14 @@ These are narrative and encounter intentions, not claims that the current protot
 
 The existing courtyard duel is a natural foundation for Ren's confrontation with Masato. A first narrative slice can contain the execution order, Hana's short exchange with Ren, the duel, and a brief aftermath pointing toward the exposed valley. The larger adventure is not required to prove the opening works.
 
-The prototype's existing guard, counter, posture, and stance systems already support the idea that these fighters learned related sword traditions. Story integration should preserve the established combat controls. Character identity should eventually come from original design and performance rather than the biography of a temporary character asset.
+The prototype's existing guard, counter, posture, and stance systems already support the idea that these fighters learned related sword traditions. Story integration should preserve the established combat controls. An armored samurai character fits Ren's household service and his shared training with Masato. Costume details above describe the narrative direction; they do not assert that a particular character import, insignia, or performance is implemented. Ren's identity comes from this story rather than a character asset's supplied biography.
 
 The current prototype ends duels lethally. The proposed opening would need a deliberate nonlethal victory resolution before it could accurately portray Masato's survival. Until that exists, the combat arena remains a mechanical prototype rather than an implemented story scene.
 
 ## Narrative principles
 
 - Establish Ren's responsibility early and keep it concrete.
+- Ground Ren's samurai identity in his household, duties, training, and personal oath. Show how he fulfills or fails specific obligations through his choices.
 - Give people practical needs, pleasures, and disagreements beyond their suffering.
 - Let survivors control whether they testify, reveal an identity, or forgive someone.
 - Give major duels a present conflict and a consequence beyond access to the next area.

@@ -56,7 +56,7 @@ fi
 if ! "$gpu_ok"; then
     missing=1
     if "$require_gpu"; then
-        printf 'RONIN: graphics launch blocked until NVIDIA/Vulkan checks pass. Build and bootstrap work without a GPU.\n' >&2
+        printf 'SAMURAI: graphics launch blocked until NVIDIA/Vulkan checks pass. Build and bootstrap work without a GPU.\n' >&2
         printf 'If this is a restricted shell, repeat the probe in a normal host terminal with GPU device access.\n' >&2
     fi
 fi

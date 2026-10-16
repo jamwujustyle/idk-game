@@ -120,21 +120,21 @@ gamepad share the primary player. Keep this explicit so device connection change
 do not rely on a missing platform default. Restart the editor or game after
 changing this setting because Unreal caches the policy within the running process.
 
-To add **RONIN** to Ubuntu's applications search, run this explicitly as your normal user:
+To add **SAMURAI** to Ubuntu's applications search, run this explicitly as your normal user:
 
 ```sh
 ./scripts/install-launcher.sh
 ```
 
-It creates `~/.local/share/applications/ronin.desktop`, launching this checkout fullscreen without a terminal window. It records `UE_ROOT` if set when installed; otherwise the launcher uses `.tools/unreal`. The checkout and engine must remain available. Rerun the installer after moving either location. It does not install Unreal or rebuild the game.
+It creates `~/.local/share/applications/samurai.desktop`, launching this checkout fullscreen without a terminal window. It records `UE_ROOT` if set when installed; otherwise the launcher uses `.tools/unreal`. The checkout and engine must remain available. Rerun the installer after moving either location. It does not install Unreal or rebuild the game. A matching legacy launcher for this checkout is replaced without removing entries belonging to other checkouts.
 
-To add **Unreal Editor — RONIN** as a separate applications entry:
+To add **Unreal Editor — SAMURAI** as a separate applications entry:
 
 ```sh
 ./scripts/install-launcher.sh --editor
 ```
 
-Press **Super**, type **Unreal**, and select the editor entry. This shortcut opens the project with a 30 FPS cap, reduced viewport shadows/post-processing, 50% viewport resolution, and on-demand shader compilation. These settings keep asset browsing lighter and apply to that editor process; the game launcher retains its own settings. The entry is saved as `~/.local/share/applications/ronin-editor.desktop`. In the editor, use **Window → Fab → My Library** to import assets acquired through Fab.
+Press **Super**, type **Unreal**, and select the editor entry. This shortcut opens the project with a 30 FPS cap, reduced viewport shadows/post-processing, 50% viewport resolution, and on-demand shader compilation. These settings keep asset browsing lighter and apply to that editor process; the game launcher retains its own settings. The entry is saved as `~/.local/share/applications/samurai-editor.desktop`. In the editor, use **Window → Fab → My Library** to import assets acquired through Fab.
 
 ## 5. Package and verify
 
@@ -150,7 +150,7 @@ For this command, UE 5.7 writes the launcher directly to `Builds/Linux/Ronin.sh`
 ./Builds/Linux/Ronin.sh -fullscreen -ResX=1920 -ResY=1200
 ```
 
-The [packaged run guide](LINUX-PACKAGE.md) covers runtime requirements and NVIDIA hybrid graphics. After packaging, an optional portable archive can be created with `./scripts/archive-linux.sh`. This adds a README containing the run guide and the control table from the project README, preserves executable modes, and writes `Builds/Ronin-Linux-x86_64.tar.gz` plus its SHA-256 checksum. It verifies that launcher, executable, and cooked content exist; it does not build or launch Unreal. Repeating the command replaces the archive. Source development and editor-game play do not require packaging.
+The [packaged run guide](LINUX-PACKAGE.md) covers runtime requirements and NVIDIA hybrid graphics. After packaging, an optional portable archive can be created with `./scripts/archive-linux.sh`. This adds a README containing the run guide and the control table from the project README, preserves executable modes, and writes `Builds/Samurai-Linux-x86_64.tar.gz` plus its SHA-256 checksum. It verifies that launcher, executable, and cooked content exist; it does not build or launch Unreal. Repeating the command replaces the archive. Source development and editor-game play do not require packaging.
 
 Verification is complete only after the packaged executable launches and the core interaction works: movement/camera, light/heavy attacks, guarding/parrying, dodging, stance switching, execution, pause/restart, and quality/frame-limit controls. Check audio, HUD visibility, GPU selection, and frame time on the actual laptop. Record failures rather than treating source checks or a successful package command as a playtest.
 

@@ -3,12 +3,12 @@ set -euo pipefail
 
 PROJECT_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
 if (( $# > 2 )) || [[ "${1:-}" == --help ]]; then
-    printf 'Usage: scripts/archive-linux.sh [packaged-directory] [output.tar.gz]\nDefaults: Builds/Linux and Builds/Ronin-Linux-x86_64.tar.gz. Replaces that archive if it exists.\n'
+    printf 'Usage: scripts/archive-linux.sh [packaged-directory] [output.tar.gz]\nDefaults: Builds/Linux and Builds/Samurai-Linux-x86_64.tar.gz. Replaces that archive if it exists.\n'
     if (( $# > 2 )); then exit 2; fi
     exit 0
 fi
 package_dir="${1:-$PROJECT_ROOT/Builds/Linux}"
-output="${2:-$PROJECT_ROOT/Builds/Ronin-Linux-x86_64.tar.gz}"
+output="${2:-$PROJECT_ROOT/Builds/Samurai-Linux-x86_64.tar.gz}"
 [[ -x "$package_dir/Ronin.sh" && -x "$package_dir/Ronin/Binaries/Linux/Ronin" ]] || {
     printf 'A completed Linux package with Ronin.sh and its game executable is required. Run scripts/unreal.sh package-linux first.\n' >&2
     exit 1
@@ -35,7 +35,7 @@ guide = (root / 'docs' / 'LINUX-PACKAGE.md').read_text()
 (package / 'README.md').write_text(guide.rstrip() + '\n\n## Controls\n\n' + table + '\n')
 PY
 mkdir -p -- "$(dirname -- "$output")"
-temporary="$(mktemp --tmpdir="$(dirname -- "$output")" .ronin-archive.XXXXXX)"
+temporary="$(mktemp --tmpdir="$(dirname -- "$output")" .samurai-archive.XXXXXX)"
 trap 'rm -f -- "$temporary"' EXIT
 tar -czf "$temporary" -C "$(dirname -- "$package_dir")" -- "$(basename -- "$package_dir")"
 mv -- "$temporary" "$output"

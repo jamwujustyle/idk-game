@@ -74,7 +74,7 @@ void ARoninHUD::DrawHUD()
     if (!G->HasDuelStarted())
     {
         DrawRect(FLinearColor(.01f,.018f,.025f,.42f),0,0,W,H);
-        Label(TEXT("R O N I N"),W*.5f,H*.17f,2.5f,Ivory,true);
+        Label(TEXT("S A M U R A I"),W*.5f,H*.17f,2.5f,Ivory,true);
         Label(TEXT("THE LAST COURTYARD"),W*.5f,H*.26f,.75f,Gold,true);
         if (G->bShowHelp) Controls(*G,W*.5f-252*S,H*.34f);
         else Label(TEXT("Read the blade. Find your opening."),W*.5f,H*.43f,.8f,Ivory,true);

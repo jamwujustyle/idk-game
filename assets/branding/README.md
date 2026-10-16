@@ -1,17 +1,21 @@
-# RONIN launcher artwork
+# SAMURAI launcher artwork
 
-`ronin.png` is the game's square launcher icon: an ivory katana over a vermilion
+`samurai.png` is the game's square launcher icon: an ivory katana over a vermilion
 sun and blue-green water, on a charcoal tile with transparent outer corners.
 
 The game entry created by `scripts/install-launcher.sh` references this image by
 its absolute checkout path. Keep the asset in the checkout and rerun the installer
 after moving the project. The separate Unreal Editor entry keeps its development
 icon. Reopen applications search after reinstalling to refresh a visible result.
+The installer creates `samurai.desktop` (or `samurai-editor.desktop` with
+`--editor`) and removes the corresponding old RONIN entry only when it points to
+this checkout.
 
 ## Asset source
 
 Original artwork generated with the built-in imagegen tool. The PNG is the
-unmodified generated output, including its alpha channel.
+unmodified generated output, including its alpha channel. Its original generation
+prompt is preserved below; the text-free artwork also serves the SAMURAI name.
 
 Generation prompt:
 

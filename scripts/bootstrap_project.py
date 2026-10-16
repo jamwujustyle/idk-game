@@ -123,7 +123,7 @@ def main():
     marker = ROOT / ".cache" / "bootstrap.complete"
     marker.parent.mkdir(parents=True, exist_ok=True)
     marker.write_text(json.dumps({"engine": unreal.SystemLibrary.get_engine_version(), "assets": expected}, indent=2) + "\n")
-    unreal.log("RONIN bootstrap complete. Runtime game mode constructs the arena and fighters.")
+    unreal.log("SAMURAI bootstrap complete. Runtime game mode constructs the arena and fighters.")
 
 
 if __name__ == "__main__":

@@ -1,8 +1,10 @@
-# RONIN
+# SAMURAI
 
 A compact Unreal Engine 5 C++ sword-combat prototype: a lone fighter, a stone courtyard, and an opponent built around readable attacks, guard pressure, and timed counters.
 
-**Status: playable Linux prototype; combat and visuals are being revised.** Seven Unreal integration tests pass. The current play build still uses Kwang while an original armored samurai is prepared. See the [latest verification](reports/2026-10-16-combat-reset.md) for rendered evidence and remaining playtest work.
+The planned campaign, [The Drowned Road](docs/STORY.md), follows a samurai retainer confronting the consequences of an order he once obeyed.
+
+**Status: combat prototype under active development.** The SAMURAI branding build compiles; original armored character integration and runtime checks remain in progress. See the [naming and build verification](reports/2026-10-16-samurai-rename.md) and the [last rendered combat verification](reports/2026-10-16-combat-reset.md) for their respective evidence and remaining playtest work.
 
 ## Start
 
@@ -45,10 +47,14 @@ Xbox prompts appear after gamepad input. Rumble uses standard force feedback wit
 
 ## Project layout
 
+The game's displayed name is **SAMURAI**. `Ronin.uproject`, the `Ronin` module,
+build targets, console commands, and settings keys are stable internal identifiers
+used by existing assets and development tools.
+
 - `Source/Ronin`: combat rules, fighters, game mode, and HUD.
 - `Config`: input, rendering, maps, and packaging defaults.
 - `scripts`: engine commands, asset bootstrap, audio synthesis, and environment checks.
 - `docs/SETUP.md`: installation and build/run instructions.
 - `docs/ENVIRONMENT.md`: dated observations from the development laptop.
 
-The first slice combines Kwang skeletal characters, scanned environment assets, project-authored courtyard structures, and original synthesized audio. It still needs combat tuning, visual review, and packaged-build verification. Multi-round progression is not implemented.
+The first slice combines scanned environment assets, project-authored courtyard structures, and original synthesized audio. Character integration, combat tuning, visual review, and packaged-build verification remain in progress. Multi-round progression is not implemented.

@@ -1,4 +1,4 @@
-# RONIN for Linux
+# SAMURAI for Linux
 
 This package runs without Unreal Editor or a development toolchain. It requires Linux x86_64, a working Vulkan graphics driver, and a GPU supporting Unreal's Vulkan SM6 renderer. Keyboard and mouse are supported; an Xbox-compatible controller is optional.
 
