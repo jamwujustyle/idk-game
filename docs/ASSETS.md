@@ -1,4 +1,6 @@
-# Environment assets
+# Asset sources
+
+## Environment
 
 The courtyard uses the following Poly Haven assets. Each is released under
 [CC0 1.0](https://polyhaven.com/license), which permits modification, commercial
@@ -46,3 +48,17 @@ gameplay evidence.
 Import verification checks data and asset creation. Material compilation and
 appearance still require a GPU run. The parent project packaging configuration
 must include `/Game/Environment` because the arena loads those assets at runtime.
+
+## Character
+
+[Paragon: Kwang](https://www.fab.com/listings/f4c67e92-b976-4b5b-ab9f-4c25b010f6f3)
+is provided by Epic Games through Fab, under the listing's
+[Fab Standard License](https://www.fab.com/eula). It supplies the rigged character,
+material variants, and authored animations. Developers must acquire the pack in
+their own Fab library and use **Window → Fab → My Library → Paragon: Kwang → Add
+to Project** to populate `Content/ParagonKwang`.
+
+The raw character pack is ignored by Git and is not redistributed in this public
+source repository. Keep its original asset paths so code references resolve.
+Distributable game builds should contain cooked assets required by gameplay;
+acquiring this pack does not make its source assets CC0.

@@ -89,6 +89,8 @@ Interactive commands check NVIDIA/Vulkan first and set NVIDIA's offload environm
 
 The `editor` command defaults SDL's window backend to `x11`, using XWayland on a Wayland desktop. Epic documents native Wayland menu/input issues in [UE 5.7's SDL3 integration](https://dev.epicgames.com/documentation/en-us/unreal-engine/updating-unreal-engine-on-linux-to-sdl3). This applies to both terminal and app-menu launches, without changing the desktop session. An explicitly supplied `SDL_VIDEO_DRIVER` (or legacy `SDL_VIDEODRIVER`) takes precedence. Confirm `Using SDL video driver 'x11'` in the editor log when diagnosing menus.
 
+The embedded Fab browser uses software rendering through `r.CEFGPUAcceleration=0` in `Config/DefaultEngine.ini`. This leaves the arena's Vulkan rendering enabled. Restart the editor after changing this startup setting; its log should report `CEF GPU acceleration disabled`.
+
 Linux controller ownership is configured in `Config/DefaultInput.ini`, under
 `[InputPlatformSettings_Linux InputPlatformSettings]`. The integer setting
 `input.DeviceMappingPolicy=1` selects Unreal's
