@@ -85,6 +85,22 @@ Uncooked editor-game launches set `r.ShaderCompiler.JobCacheDDC=0` at startup to
 
 Unreal can clamp the requested resolution to display bounds. For an offscreen capture that requires an exact size, pass `-RenderOffscreen -ForceRes` alongside the resolution arguments.
 
+Development builds also expose `ronin.Capture /absolute/output.png`. It waits for
+the game viewport and HUD, then five seconds without pending shader jobs,
+captures the rendered viewport, checks the new output file, and exits. It fails
+after a 300-second deadline by default; an optional second argument sets a
+10–1800 second deadline for first-use compilation. Capture runs cap rendering at
+30 fps while waiting. The opening duel gate keeps combat idle during capture.
+
+```sh
+./scripts/unreal.sh play -windowed -RenderOffscreen -ForceRes \
+  -ResX=1920 -ResY=1200 \
+  "-ExecCmds=ronin.Capture $PWD/reports/startup.png"
+```
+
+Prefix the console command with `showhud,` for a scene-only capture. The capture
+command is excluded from Shipping and Test builds.
+
 Interactive commands check NVIDIA/Vulkan first and set NVIDIA's offload environment variables. Verify the GPU selected in Unreal's log after the first launch. Both commands require the generated assets; neither silently rebuilds code. Find the controls in the [README](../README.md#controls).
 
 The `editor` command defaults SDL's window backend to `x11`, using XWayland on a Wayland desktop. Epic documents native Wayland menu/input issues in [UE 5.7's SDL3 integration](https://dev.epicgames.com/documentation/en-us/unreal-engine/updating-unreal-engine-on-linux-to-sdl3). This applies to both terminal and app-menu launches, without changing the desktop session. An explicitly supplied `SDL_VIDEO_DRIVER` (or legacy `SDL_VIDEODRIVER`) takes precedence. Confirm `Using SDL video driver 'x11'` in the editor log when diagnosing menus.

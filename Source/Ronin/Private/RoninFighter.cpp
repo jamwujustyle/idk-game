@@ -13,6 +13,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/RotationMatrix.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 ARoninFighter::ARoninFighter()
@@ -41,6 +43,15 @@ ARoninFighter::ARoninFighter()
     GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
     GetMesh()->SetAnimInstanceClass(URoninAnimInstance::StaticClass());
 
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> TrailAsset(
+        TEXT("/Game/ParagonKwang/FX/Particles/Abilities/Primary/FX/P_Kwang_Primary_Trail.P_Kwang_Primary_Trail"));
+    BladeTrail = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("BladeTrail"));
+    BladeTrail->SetupAttachment(GetMesh());
+    BladeTrail->bAutoActivate = false;
+    BladeTrail->bAutoDestroy = false;
+    BladeTrail->SecondsBeforeInactive = 0.f;
+    BladeTrail->SetTemplate(TrailAsset.Object);
+
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
     CameraBoom->TargetArmLength = 460.f;
@@ -62,6 +73,9 @@ void ARoninFighter::BeginPlay()
     // GameMode precedes Fighter; the skeletal pose must see this frame's combat and movement.
     GetMesh()->AddTickPrerequisiteActor(this);
     GetMesh()->AddTickPrerequisiteComponent(GetCharacterMovement());
+    // Two explicit dependencies also keep Cascade from batching this socket-sampled effect.
+    BladeTrail->AddTickPrerequisiteActor(this);
+    BladeTrail->AddTickPrerequisiteComponent(GetMesh());
     if (!GetMesh()->GetSkeletalMeshAsset())
         UE_LOG(LogTemp, Error, TEXT("Kwang is missing. Install the licensed Paragon: Kwang content before playing."));
 
@@ -90,6 +104,8 @@ void ARoninFighter::SetFrozen(bool bValue)
     bFrozen = bValue;
     // Still evaluate the explicit contact pose on the first hit-stop frame, with no clock advance.
     GetMesh()->GlobalAnimRateScale = bFrozen ? 0.f : 1.f;
+    BladeTrail->CustomTimeDilation = bFrozen ? 0.f : 1.f;
+    BladeTrail->SetComponentTickEnabled(!bFrozen && BladeTrail->IsActive());
     if (bFrozen)
     {
         GetCharacterMovement()->StopMovementImmediately();
@@ -98,12 +114,30 @@ void ARoninFighter::SetFrozen(bool bValue)
     }
 }
 
+void ARoninFighter::UpdateBladeTrail(bool bActivePhase, bool bFreeze)
+{
+    if (!BladeTrail->Template) return;
+    if (bActivePhase != bBladeTrailEmitting)
+    {
+        if (bActivePhase)
+            BladeTrail->BeginTrails(TEXT("FX_weapon_base"), TEXT("FX_weapon_tip"), ETrailWidthMode_FromCentre, 1.f);
+        else
+            BladeTrail->EndTrails();
+        bBladeTrailEmitting = bActivePhase;
+    }
+    // Preserve the current ribbon and its age through pause/hit-stop, without new samples.
+    BladeTrail->CustomTimeDilation = bFreeze ? 0.f : 1.f;
+    BladeTrail->SetComponentTickEnabled(!bFreeze && BladeTrail->IsActive());
+}
+
 void ARoninFighter::Tick(float Dt)
 {
     Super::Tick(Dt);
     auto* G = Game();
-    GetMesh()->GlobalAnimRateScale = (!G || bFrozen || G->bCombatPaused) ? 0.f : 1.f;
-    if (!G || bFrozen || G->bCombatPaused)
+    const bool bFreeze = !G || bFrozen || G->bCombatPaused;
+    GetMesh()->GlobalAnimRateScale = bFreeze ? 0.f : 1.f;
+    UpdateBladeTrail(G && G->Combat.Get(Identity).action == ronin::Action::Active, bFreeze);
+    if (bFreeze)
     {
         GetCharacterMovement()->StopMovementImmediately();
         GetCharacterMovement()->MaxWalkSpeed = 0.f;
@@ -148,6 +182,11 @@ void ARoninFighter::Tick(float Dt)
 
 void ARoninFighter::ResetPose(FVector Location, FRotator Rotation)
 {
+    // Discard both live samples and a fading tail before a rematch teleport.
+    BladeTrail->ResetParticles(true);
+    BladeTrail->SetComponentTickEnabled(false);
+    BladeTrail->CustomTimeDilation = 1.f;
+    bBladeTrailEmitting = false;
     SetActorLocationAndRotation(Location, Rotation, false, nullptr, ETeleportType::TeleportPhysics);
     GetCharacterMovement()->StopMovementImmediately();
     GetCharacterMovement()->MaxWalkSpeed = 390.f;

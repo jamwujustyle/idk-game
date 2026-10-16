@@ -1,0 +1,119 @@
+﻿{
+	"devices": [
+		{
+			"deviceName": "jam-Legion-Y7000P-IRX10",
+			"instance": "CD41BA87AC0D436EAA94C2218B583F84",
+			"instanceName": "jam-Legion-Y7000P-IRX10-92412",
+			"platform": "LinuxEditor",
+			"oSVersion": "Ubuntu 26.04.1 LTS 7.0.0-34-generic",
+			"model": "Default",
+			"gPU": "NVIDIA GeForce RTX 5060 Laptop GPU (NVIDIA UNIX Open Kernel Module for x86_64  595.91.07  Release Build  (dvs-builder@U22-I3-B08-02-2)  Wed Jul 29 03:01:16 UTC 2026)",
+			"cPUModel": "Intel(R) Core(TM) i7-14650HX",
+			"rAMInGB": 31,
+			"renderMode": "SM6",
+			"rHI": "",
+			"appInstanceLog": ""
+		}
+	],
+	"reportCreatedOn": "2026.10.16-09.32.54",
+	"succeeded": 6,
+	"succeededWithWarnings": 0,
+	"failed": 0,
+	"notRun": 0,
+	"inProcess": 0,
+	"totalDuration": 0.14908045530319214,
+	"comparisonExported": false,
+	"comparisonExportDirectory": "",
+	"tests": [
+		{
+			"testDisplayName": "AnimationTiming",
+			"fullTestPath": "Ronin.Integration.AnimationTiming",
+			"tags": [],
+			"state": "Success",
+			"deviceInstance": [
+				"CD41BA87AC0D436EAA94C2218B583F84"
+			],
+			"duration": 0.0087950732558965683,
+			"dateTime": "2026.10.16-09.32.54",
+			"entries": [],
+			"warnings": 0,
+			"errors": 0,
+			"artifacts": []
+		},
+		{
+			"testDisplayName": "Assets",
+			"fullTestPath": "Ronin.Integration.Assets",
+			"tags": [],
+			"state": "Success",
+			"deviceInstance": [
+				"CD41BA87AC0D436EAA94C2218B583F84"
+			],
+			"duration": 0.0084478668868541718,
+			"dateTime": "2026.10.16-09.32.54",
+			"entries": [],
+			"warnings": 0,
+			"errors": 0,
+			"artifacts": []
+		},
+		{
+			"testDisplayName": "ClassDefaults",
+			"fullTestPath": "Ronin.Integration.ClassDefaults",
+			"tags": [],
+			"state": "Success",
+			"deviceInstance": [
+				"CD41BA87AC0D436EAA94C2218B583F84"
+			],
+			"duration": 0.0079125361517071724,
+			"dateTime": "2026.10.16-09.32.54",
+			"entries": [],
+			"warnings": 0,
+			"errors": 0,
+			"artifacts": []
+		},
+		{
+			"testDisplayName": "CookConfiguration",
+			"fullTestPath": "Ronin.Integration.CookConfiguration",
+			"tags": [],
+			"state": "Success",
+			"deviceInstance": [
+				"CD41BA87AC0D436EAA94C2218B583F84"
+			],
+			"duration": 0.0085956407710909843,
+			"dateTime": "2026.10.16-09.32.54",
+			"entries": [],
+			"warnings": 0,
+			"errors": 0,
+			"artifacts": []
+		},
+		{
+			"testDisplayName": "InputCoverage",
+			"fullTestPath": "Ronin.Integration.InputCoverage",
+			"tags": [],
+			"state": "Success",
+			"deviceInstance": [
+				"CD41BA87AC0D436EAA94C2218B583F84"
+			],
+			"duration": 0.0086772069334983826,
+			"dateTime": "2026.10.16-09.32.54",
+			"entries": [],
+			"warnings": 0,
+			"errors": 0,
+			"artifacts": []
+		},
+		{
+			"testDisplayName": "LiveWorld",
+			"fullTestPath": "Ronin.Integration.LiveWorld",
+			"tags": [],
+			"state": "Success",
+			"deviceInstance": [
+				"CD41BA87AC0D436EAA94C2218B583F84"
+			],
+			"duration": 0.10665213316679001,
+			"dateTime": "2026.10.16-09.32.54",
+			"entries": [],
+			"warnings": 0,
+			"errors": 0,
+			"artifacts": []
+		}
+	]
+}

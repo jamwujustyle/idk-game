@@ -26,9 +26,20 @@
 #include "Materials/MaterialInterface.h"
 #include "Materials/Material.h"
 #include "Misc/ConfigCacheIni.h"
+#include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleLODLevel.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Particles/TypeData/ParticleModuleTypeDataAnimTrail.h"
 #include "Sound/SoundWave.h"
 #include "Tests/AutomationCommon.h"
 #include "UObject/UObjectGlobals.h"
+
+namespace
+{
+constexpr const TCHAR* BladeTrailAssetPath =
+    TEXT("/Game/ParagonKwang/FX/Particles/Abilities/Primary/FX/P_Kwang_Primary_Trail.P_Kwang_Primary_Trail");
+}
 
 // These tests exercise engine objects, imported assets and merged configuration.
 // Combat arithmetic is covered by the separate standalone CombatCore tests.
@@ -80,6 +91,17 @@ bool FRoninClassDefaultsTest::RunTest(const FString& Parameters)
         bOk &= TestTrue(TEXT("Visual mesh leaves collision to the gameplay capsule"), Body->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
         bOk &= TestTrue(TEXT("Skeletal poses update without a rendered viewport"),
             Body->VisibilityBasedAnimTickOption == EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones);
+    }
+    const UParticleSystemComponent* Trail = Fighter->FindComponentByClass<UParticleSystemComponent>();
+    bOk &= TestNotNull(TEXT("Fighter owns its reusable blade trail component"), Trail);
+    if (Trail)
+    {
+        bOk &= TestTrue(TEXT("Blade trail samples the authored skeletal body"), Trail->GetAttachParent() == Body);
+        bOk &= TestFalse(TEXT("Blade trail does not activate on spawn"), Trail->bAutoActivate);
+        bOk &= TestFalse(TEXT("Blade trail starts inactive"), Trail->IsActive());
+        bOk &= TestFalse(TEXT("Blade trail survives for later attacks and rematches"), Trail->bAutoDestroy);
+        bOk &= TestTrue(TEXT("Blade trail uses the selected authored effect"),
+            Trail->Template && Trail->Template->GetPathName() == BladeTrailAssetPath);
     }
 
     const UStaticMeshComponent* Floor = Arena->FindComponentByClass<UStaticMeshComponent>();
@@ -151,6 +173,9 @@ bool FRoninAssetsTest::RunTest(const FString& Parameters)
         for (const FName Bone : {FName(TEXT("weapon_r")), FName(TEXT("spine_01"))})
             bOk &= TestTrue(FString::Printf(TEXT("%s has required pose bone %s"), Name, *Bone.ToString()),
                 Mesh->GetRefSkeleton().FindBoneIndex(Bone) != INDEX_NONE);
+        for (const FName Socket : {FName(TEXT("FX_weapon_base")), FName(TEXT("FX_weapon_tip"))})
+            bOk &= TestNotNull(FString::Printf(TEXT("%s resolves blade trail socket %s"), Name, *Socket.ToString()),
+                Mesh->FindSocket(Socket));
         for (int32 Index = 0; Index < static_cast<int32>(ERoninAnimationClip::Count); ++Index)
         {
             UAnimSequence* Sequence = Animation->GetClip(static_cast<ERoninAnimationClip>(Index));
@@ -161,6 +186,19 @@ bool FRoninAssetsTest::RunTest(const FString& Parameters)
             bOk &= TestTrue(Label + TEXT(" has a playable authored duration"), Sequence->GetPlayLength() > 0.f);
             bOk &= TestTrue(Label + TEXT(" is a full pose suitable for sequence evaluation"), Sequence->GetAdditiveAnimType() == AAT_None);
         }
+    }
+    UParticleSystem* Trail = LoadObject<UParticleSystem>(nullptr, BladeTrailAssetPath);
+    bOk &= TestNotNull(TEXT("Authored blade trail loads as a Cascade particle system"), Trail);
+    if (Trail)
+    {
+        bool bHasSocketTrail = false;
+        for (const UParticleEmitter* Emitter : Trail->Emitters)
+        {
+            if (!Emitter) continue;
+            for (const UParticleLODLevel* LOD : Emitter->LODLevels)
+                bHasSocketTrail |= LOD && LOD->TypeDataModule && LOD->TypeDataModule->IsA<UParticleModuleTypeDataAnimTrail>();
+        }
+        bOk &= TestTrue(TEXT("Authored effect supports BeginTrails socket sampling"), bHasSocketTrail);
     }
     return bOk;
 }
@@ -302,6 +340,16 @@ bool FRoninCookConfigurationTest::RunTest(const FString& Parameters)
         bOk &= TestTrue(FString::Printf(TEXT("Runtime default retains cookable mesh reference: %s"), Name),
             Mesh && FighterReferences.Contains(Mesh));
     }
+    UParticleSystemComponent* Trail = GetMutableDefault<ARoninFighter>()->FindComponentByClass<UParticleSystemComponent>();
+    bOk &= TestTrue(TEXT("Fighter default retains the trail component for cooking"), Trail && FighterReferences.Contains(Trail));
+    if (Trail)
+    {
+        TArray<UObject*> TrailReferences;
+        FReferenceFinder TrailFinder(TrailReferences, nullptr, false, true, false, true);
+        TrailFinder.FindReferences(Trail);
+        UParticleSystem* Template = LoadObject<UParticleSystem>(nullptr, BladeTrailAssetPath);
+        bOk &= TestTrue(TEXT("Trail component retains the selected cookable effect"), Template && TrailReferences.Contains(Template));
+    }
     TArray<UObject*> AnimationReferences;
     FReferenceFinder AnimationFinder(AnimationReferences, nullptr, false, true, false, true);
     URoninAnimInstance* Animation = GetMutableDefault<URoninAnimInstance>();
@@ -364,6 +412,23 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
         Player->GetMesh()->GetSkeletalMeshAsset() != Enemy->GetMesh()->GetSkeletalMeshAsset());
     const FName WeaponBone(TEXT("weapon_r"));
     bOk &= TestTrue(TEXT("Live player exposes the animated weapon bone"), Player->GetMesh()->GetBoneIndex(WeaponBone) != INDEX_NONE);
+    TArray<UParticleSystemComponent*> BladeTrails;
+    for (ARoninFighter* Fighter : {Player, Enemy})
+    {
+        TArray<UParticleSystemComponent*> Components;
+        Fighter->GetComponents(Components);
+        bOk &= TestEqual(TEXT("Each fighter owns one blade trail component"), Components.Num(), 1);
+        for (UParticleSystemComponent* Trail : Components)
+        {
+            BladeTrails.Add(Trail);
+            bOk &= TestFalse(TEXT("Live blade trail remains inactive before the duel"), Trail->IsActive());
+            const auto& Prerequisites = Trail->PrimaryComponentTick.GetPrerequisites();
+            bOk &= TestTrue(TEXT("Trail samples after combat phase updates"),
+                Prerequisites.Contains(FTickPrerequisite(Fighter, Fighter->PrimaryActorTick)));
+            bOk &= TestTrue(TEXT("Trail samples after the skeletal pose is evaluated"),
+                Prerequisites.Contains(FTickPrerequisite(Fighter->GetMesh(), Fighter->GetMesh()->PrimaryComponentTick)));
+        }
+    }
     int32 ArenaCount = 0;
     ARoninArena* Arena = nullptr;
     for (TActorIterator<ARoninArena> It(World); It; ++It) { Arena = *It; ++ArenaCount; }
@@ -502,10 +567,22 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
     bOk &= TestEqual(TEXT("Pause freezes the action blend"), PausedAttack.ActionWeight, AttackAnimation.ActionWeight);
     bOk &= TestTrue(TEXT("Pause holds the evaluated attack pose"),
         Player->GetMesh()->GetSocketTransform(WeaponBone, RTS_Component).Equals(AttackingWeapon, .001));
+    // These controls execute with NullRHI even though Cascade cannot activate
+    // emitters there. Visible ribbon emission and tail cleanup need a GPU pass.
+    for (const UParticleSystemComponent* Trail : BladeTrails)
+    {
+        bOk &= TestEqual(TEXT("Pause freezes the blade trail clock"), Trail->CustomTimeDilation, 0.f);
+        bOk &= TestFalse(TEXT("Pause prevents new blade trail samples"), Trail->IsComponentTickEnabled());
+    }
     bOk &= InvokeAction(TEXT("Restart"), IE_Pressed);
     bOk &= TestTrue(TEXT("Rematch returns directly to an active duel"), Game->HasDuelStarted() && Game->CanControl());
     bOk &= TestEqual(TEXT("Rematch resets the duel clock"), Game->GetRoundTime(), 0.f);
     bOk &= TestTrue(TEXT("Rematch clears the previous attack"), Game->Combat.Get(ronin::FighterId::Player).action == ronin::Action::Idle);
+    for (const UParticleSystemComponent* Trail : BladeTrails)
+    {
+        bOk &= TestEqual(TEXT("Rematch restores the paused blade trail clock"), Trail->CustomTimeDilation, 1.f);
+        bOk &= TestFalse(TEXT("Rematch keeps trail sampling disabled across teleport"), Trail->IsComponentTickEnabled());
+    }
 
     // Resolve a real close-range contact through GameMode, so this checks the
     // hit-stop integration rather than manually freezing the animation instance.
@@ -533,6 +610,11 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
         bOk &= TestEqual(TEXT("Hit-stop freezes the idle clock"), HeldContact.IdleTime, Contact.IdleTime);
         bOk &= TestTrue(TEXT("Hit-stop preserves the evaluated contact pose"),
             Player->GetMesh()->GetSocketTransform(WeaponBone, RTS_Component).Equals(ContactWeapon, .001));
+        for (const UParticleSystemComponent* Trail : BladeTrails)
+        {
+            bOk &= TestEqual(TEXT("Contact hit-stop freezes blade trail clocks"), Trail->CustomTimeDilation, 0.f);
+            bOk &= TestFalse(TEXT("Contact hit-stop prevents new trail samples"), Trail->IsComponentTickEnabled());
+        }
         for (int32 Frame = 0; Frame < 24; ++Frame) TestWorld.TickTestWorld(Step);
         bOk &= TestFalse(TEXT("Animation resumes after hit-stop expires"), PlayerAnimation->GetPlaybackState().bFrozen);
         bOk &= TestTrue(TEXT("Combat clock resumes after hit-stop"), Game->GetRoundTime() > ContactRoundTime);

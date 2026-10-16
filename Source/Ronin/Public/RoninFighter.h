@@ -7,6 +7,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UParticleSystemComponent;
 class USkeletalMesh;
 class ARoninGameMode;
 struct FRoninAnimationState;
@@ -32,6 +33,7 @@ public:
 
 private:
     ARoninGameMode* Game() const;
+    void UpdateBladeTrail(bool bActivePhase, bool bFreeze);
     void MoveForward(float Value);
     void MoveRight(float Value);
     void Turn(float Value);
@@ -46,9 +48,11 @@ private:
     UPROPERTY() TObjectPtr<UCameraComponent> Camera;
     UPROPERTY() TObjectPtr<USkeletalMesh> PlayerMesh;
     UPROPERTY() TObjectPtr<USkeletalMesh> EnemyMesh;
+    UPROPERTY() TObjectPtr<UParticleSystemComponent> BladeTrail;
     FVector DodgeDirection = FVector::ForwardVector;
     float DodgeSpeed = 800.f;
     FVector2D MoveInput = FVector2D::ZeroVector;
     uint32 AnimationResetSerial = 0;
     bool bFrozen = false;
+    bool bBladeTrailEmitting = false;
 };

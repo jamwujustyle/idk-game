@@ -1,6 +1,6 @@
 # Verification
 
-The Unreal Engine 5.7.4 editor build and asset bootstrap completed successfully on 2026-10-16. All five engine integration tests passed with zero errors and zero warnings in the [recorded Unreal results](../reports/unreal-tests/run-20261016T080105Z-U0gArY/index.json); the [console log](../reports/unreal-tests/run-20261016T080105Z-U0gArY/console.log) preserves the run output. See the [dated verification report](../reports/2026-10-16-verification.md) for the broader acceptance status. These automated results do not establish GPU rendering, audible playback, gameplay rumble, or a working packaged build.
+Keep observed results in dated reports under `reports/`. The [initial verification report](../reports/2026-10-16-verification.md) and [visual integration report](../reports/2026-10-16-visual-integration.md) distinguish automated checks, rendered evidence, and remaining live acceptance work. Automated integration results alone do not establish GPU appearance, audible playback, gameplay rumble, or a working packaged build.
 
 ## Fast checks without Unreal
 
@@ -29,13 +29,14 @@ The tests in `Source/Ronin/Private/Tests/RoninAutomationTests.cpp` check:
 
 | Test | Integration covered |
 | --- | --- |
-| ClassDefaults | Unreal constructs fighter/arena/game-mode classes; meshes resolve; capsule and movement components exist; camera uses its spring arm and permits a 16:10 viewport; floor supports pawn collision at ground height; game mode selects the HUD and custom controller. |
-| Assets | The actual arena map, opaque parameterized material with instanced-mesh usage enabled, and all five nonempty sound-wave assets load through Unreal. |
+| ClassDefaults | Unreal constructs fighter/arena/game-mode classes; the authored skeletal body uses the native animation graph and preserves the 34 cm radius / 88 cm half-height capsule; the reusable blade trail starts inactive and attaches to the body; camera and floor collision defaults remain valid. |
+| Assets | The arena map, combat material and five sound cues load. Both Kwang appearances share a compatible skeleton with all 20 full-pose animation clips, weapon bones and blade-trail sockets. The selected Cascade effect contains an animation-trail emitter. |
+| AnimationTiming | Every stance/attack duration maps windup, active and recovery onto continuous authored clip boundaries; elapsed times clamp safely, including instantaneous phases. |
 | InputCoverage | Merged `UInputSettings` contains usable keyboard/mouse and gamepad action coverage and effective gamepad movement/camera axes. It checks device reachability without duplicating physical button choices. |
-| CookConfiguration | Startup map/game mode resolve and packaging includes the arena plus runtime-loaded audio/material directories. |
-| LiveWorld | UE's `FTestWorldWrapper` starts the configured game mode in a temporary game world. Real BeginPlay spawns the arena and two fighters, possession installs pawn input, 102 fixed ticks check collision settling and pause, and camera transforms remain finite. Actual bound actions exercise stance, guard press/release, pause/resume, and light attack. The world is torn down after the test. |
+| CookConfiguration | Startup map/game mode resolve and packaging includes the arena plus runtime-loaded audio/material directories. Reflected defaults retain hard references to the selected Kwang meshes, clips and blade-trail effect. |
+| LiveWorld | UE's temporary game world exercises spawn, possession, collision, camera and bound input actions. Combat waits for explicit start. Authored attacks move the weapon bone; pause and real-contact hit-stop freeze poses and clocks; rematch clears attack/death playback. Trail tick prerequisites follow phase and bone updates, pause/hit-stop disable sampling, and rematch restores the trail clock while sampling remains disabled across teleport. |
 
-The live-world test uses the same procedural startup as the empty arena map, with a controller supplied by the game mode's factory. It invokes installed input delegates; it does not simulate physical device events or a viewport. Cook configuration checks do not prove a packaged build contains every asset. NullRHI does not test GPU rendering, frame time, audio playback, or physical controller rumble. The suite is guarded by `WITH_DEV_AUTOMATION_TESTS` and registered for the editor context.
+The live-world test uses the same actor startup as the empty arena map, with a controller supplied by the game mode's factory. It invokes installed input delegates; it does not simulate physical device events or a viewport. Cook reference checks do not prove a packaged build contains every asset. NullRHI does not activate Cascade emitters, so visible trail emission, frozen ribbons, fading tails and removal of old samples on rematch require a GPU pass. It also does not test frame time, audio playback or physical controller rumble. The suite is guarded by `WITH_DEV_AUTOMATION_TESTS` and registered for the editor context.
 
 The runner follows Epic's [automation command-line workflow](https://dev.epicgames.com/documentation/en-us/unreal-engine/run-automation-tests-in-unreal-engine) and verifies the documented [JSON results and completion log](https://dev.epicgames.com/documentation/en-us/unreal-engine/review-test-results-in-unreal-engine).
 
