@@ -15,4 +15,8 @@
 
 ## Pending
 
-The NVIDIA Vulkan SM6 renderer initialized successfully and is compiling its first shader cache. Visual gameplay review, frame-time measurement, gameplay audio/controller feedback, and Linux packaging remain pending.
+The NVIDIA Vulkan SM6 renderer initialized successfully and rendered the arena. The first offscreen capture exposed checkerboard fallback materials and undersized HUD text. HUD text was enlarged and the editor target rebuilt successfully. Full material compilation is enabled at startup; its first interactive launch is compiling shaders, so the material fix still awaits visual confirmation.
+
+The inherited Development-build F2/F3/F4 view-mode bindings were removed to prevent conflicts with the game's settings controls. Static comparison against Unreal's defaults confirmed the exact removals and preservation of F9 screenshots. The portable Linux archive helper passed mocked package, executable-mode, controls, checksum, and invalid-input checks; a real package has not been produced.
+
+Interactive visual review, representative frame-time measurement, gameplay audio/controller feedback, and Linux packaging remain pending. The earlier 600-frame capture includes first-use compilation and screenshot stalls and is not a valid performance benchmark.

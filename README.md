@@ -2,7 +2,7 @@
 
 A compact Unreal Engine 5 C++ sword-combat prototype: a lone fighter, a stylized arena, and an opponent built around readable attacks, guard pressure, and timed counters.
 
-**Status: both Unreal 5.7.4 Linux targets compile, asset setup passes, and all five engine integration tests pass.** The first rendered review and Linux packaging are in progress. See the [verification report](reports/2026-10-16-verification.md) for observed results and remaining checks.
+**Status: both Unreal 5.7.4 Linux targets compile, asset setup passes, and all five engine integration tests pass.** Interactive Linux playtesting is being prepared. Packaging is optional for playing through the installed editor. See the [verification report](reports/2026-10-16-verification.md) for observed results and remaining checks.
 
 ## Start
 

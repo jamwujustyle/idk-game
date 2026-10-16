@@ -74,6 +74,8 @@ A completion marker and on-disk asset checks guard against a commandlet returnin
 ./scripts/unreal.sh editor
 ```
 
+Uncooked editor-game launches set `r.ShaderCompiler.JobCacheDDC=0` at startup to compile complete material shader maps. The first rendered launch can spend several minutes compiling shaders; subsequent launches reuse the compiled shader cache. Allow that work to finish before judging missing materials or startup performance. Visual validation is tracked separately in the [verification report](../reports/2026-10-16-verification.md).
+
 `play` launches a 1600 × 1000 window by default, matching a 16:10 display. Explicit `-windowed`/`-fullscreen`, `-ResX=...`, and `-ResY=...` replace their corresponding defaults; each resolution dimension can be supplied independently. Additional arguments are passed as distinct arguments to Unreal, including quoted paths or console commands:
 
 ```sh
@@ -92,6 +94,14 @@ Interactive commands check NVIDIA/Vulkan first and set NVIDIA's offload environm
 ```
 
 This invokes `RunUAT.sh BuildCookRun` for a Linux Development build, cooks `/Game/Maps/Arena`, stages and packages it, and archives output under ignored `Builds/Linux`. It passes the same 1–8 compile-action limit to UnrealBuildTool. Packaging requires a successful editor build and bootstrap first.
+
+For this command, UE 5.7 writes the launcher directly to `Builds/Linux/Ronin.sh`; it starts `Ronin/Binaries/Linux/Ronin` inside that folder. Launch it independently of the editor:
+
+```sh
+./Builds/Linux/Ronin.sh -windowed -ResX=1600 -ResY=1000
+```
+
+The [packaged run guide](LINUX-PACKAGE.md) covers runtime requirements and NVIDIA hybrid graphics. After packaging, an optional portable archive can be created with `./scripts/archive-linux.sh`. This adds a README containing the run guide and the control table from the project README, preserves executable modes, and writes `Builds/Ronin-Linux-x86_64.tar.gz` plus its SHA-256 checksum. It verifies that launcher, executable, and cooked content exist; it does not build or launch Unreal. Repeating the command replaces the archive. Source development and editor-game play do not require packaging.
 
 Verification is complete only after the packaged executable launches and the core interaction works: movement/camera, light/heavy attacks, guarding/parrying, dodging, stance switching, execution, pause/restart, and quality/frame-limit controls. Check audio, HUD visibility, GPU selection, and frame time on the actual laptop. Record failures rather than treating source checks or a successful package command as a playtest.
 

@@ -14,13 +14,14 @@ const FLinearColor Muted(.5f,.56f,.58f,1.f);
 const FLinearColor Gold(.93f,.68f,.31f,1.f);
 const FLinearColor Teal(.32f,.73f,.69f,1.f);
 const FLinearColor Red(.8f,.17f,.12f,1.f);
+constexpr float FontScale=1.7f;
 }
 
 void ARoninHUD::Label(const FString& Text,float X,float Y,float Size,FLinearColor Color,bool bCenter)
 {
     if (!GEngine || !Canvas) return;
     FCanvasTextItem Item(FVector2D(X,Y),FText::FromString(Text),GEngine->GetMediumFont(),Color);
-    Item.Scale=FVector2D(Size*Scale,Size*Scale);
+    Item.Scale=FVector2D(Size*Scale*FontScale,Size*Scale*FontScale);
     Item.bCentreX=bCenter;
     Item.EnableShadow(FLinearColor(0,0,0,.8f),FVector2D(1,1));
     Canvas->DrawItem(Item);
