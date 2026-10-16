@@ -37,6 +37,14 @@ A fresh guard press while idle opens a 0.18-second parry window and starts a
 guard closes it immediately; pressing again during cooldown permits blocking
 but grants no new parry window. A successful parry consumes the window.
 
+The engine tracks the physical guard button separately from the active guard.
+If the button remains held through an attack, dodge, or stagger, it restores
+blocking after the fighter returns to idle by calling
+`SetGuard(id, true, false)`. The final `allowParry` argument prevents automatic
+blocking from opening a parry window or changing the parry cooldown. It defaults
+to `true` for a fresh physical press. Releasing with `SetGuard(id, false)` always
+clears guard and any remaining parry window.
+
 Parrying prevents damage, adds 34 posture to the attacker (42 in Stone), and
 staggers them for 0.58 seconds unless their posture breaks. The defender regains
 12 stamina, removes 12 posture, and gains a 1.1-second counter opportunity. The

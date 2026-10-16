@@ -116,7 +116,7 @@ bool CombatCore::TryAttack(FighterId id, AttackKind kind)
     return true;
 }
 
-void CombatCore::SetGuard(FighterId id, bool held)
+void CombatCore::SetGuard(FighterId id, bool held, bool allowParry)
 {
     auto& fighter = Mutable(id);
     if (!held)
@@ -128,7 +128,7 @@ void CombatCore::SetGuard(FighterId id, bool held)
     if (fighter.action != Action::Idle || fighter.guarding)
         return;
     fighter.guarding = true;
-    if (fighter.parryCooldown <= Epsilon)
+    if (allowParry && fighter.parryCooldown <= Epsilon)
     {
         fighter.parryTime = ParryWindow;
         fighter.parryCooldown = 0.32f;

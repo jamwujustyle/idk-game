@@ -73,7 +73,9 @@ public:
     const FighterState& Get(FighterId id) const;
 
     bool TryAttack(FighterId id, AttackKind kind);
-    void SetGuard(FighterId id, bool held);
+    // A physical press may parry; restoring a held button after an interruption
+    // should pass allowParry=false once idle, so automatic blocking gives no parry.
+    void SetGuard(FighterId id, bool held, bool allowParry = true);
     bool TryDodge(FighterId id);
     bool SetStance(FighterId id, Stance stance);
 

@@ -163,6 +163,41 @@ void GuardHoldAndSpam()
     CHECK(Near(stone.Get(FighterId::Player).posture, 25.f * 0.72f));
 }
 
+void InterruptedGuardResumesWithoutAutomaticParry()
+{
+    CombatCore combat;
+    combat.SetGuard(FighterId::Player, true);
+    CHECK(combat.TryAttack(FighterId::Player, AttackKind::Light));
+    CHECK(!combat.Get(FighterId::Player).guarding);
+    combat.SetGuard(FighterId::Player, true, false);
+    CHECK(!combat.Get(FighterId::Player).guarding);
+    AdvanceToIdle(combat, FighterId::Player);
+    CHECK(combat.Get(FighterId::Player).parryCooldown == 0.f);
+    combat.SetGuard(FighterId::Player, true, false);
+    CHECK(combat.Get(FighterId::Player).guarding);
+    CHECK(combat.Get(FighterId::Player).parryTime == 0.f);
+    CHECK(combat.Get(FighterId::Player).parryCooldown == 0.f);
+    EnterActive(combat, FighterId::Enemy, AttackKind::Light);
+    CHECK(combat.ResolveHit(FighterId::Enemy, 180.f) == HitResult::Blocked);
+
+    CombatCore cooldown;
+    cooldown.SetGuard(FighterId::Player, true);
+    const float remaining = cooldown.Get(FighterId::Player).parryCooldown;
+    cooldown.SetGuard(FighterId::Player, false);
+    CHECK(cooldown.Get(FighterId::Player).parryTime == 0.f);
+    cooldown.SetGuard(FighterId::Player, true, false);
+    CHECK(cooldown.Get(FighterId::Player).guarding);
+    CHECK(cooldown.Get(FighterId::Player).parryTime == 0.f);
+    CHECK(cooldown.Get(FighterId::Player).parryCooldown == remaining);
+    cooldown.Tick(0.33f);
+    cooldown.SetGuard(FighterId::Player, true, false);
+    CHECK(cooldown.Get(FighterId::Player).parryTime == 0.f);
+    CHECK(cooldown.Get(FighterId::Player).parryCooldown == 0.f);
+    cooldown.SetGuard(FighterId::Player, false);
+    cooldown.SetGuard(FighterId::Player, true);
+    CHECK(Near(cooldown.Get(FighterId::Player).parryTime, CombatCore::ParryWindow));
+}
+
 void DodgeTimingAndUnblockable()
 {
     CombatCore timed;
@@ -323,6 +358,7 @@ int main()
     TimingIsFrameIndependent();
     ParryAndCounter();
     GuardHoldAndSpam();
+    InterruptedGuardResumesWithoutAutomaticParry();
     DodgeTimingAndUnblockable();
     GuardBreakAndExecution();
     StanceCostsAndStamina();
