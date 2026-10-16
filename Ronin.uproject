@@ -4,5 +4,8 @@
   "Category": "Games",
   "Description": "RONIN: a compact stance-and-parry sword combat prototype.",
   "Modules": [{"Name": "Ronin", "Type": "Runtime", "LoadingPhase": "Default"}],
-  "Plugins": [{"Name": "PythonScriptPlugin", "Enabled": true, "TargetAllowList": ["Editor"]}]
+  "Plugins": [
+    {"Name": "PythonScriptPlugin", "Enabled": true, "TargetAllowList": ["Editor"]},
+    {"Name": "AndroidFileServer", "Enabled": false}
+  ]
 }
