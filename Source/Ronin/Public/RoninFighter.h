@@ -50,7 +50,9 @@ private:
     UPROPERTY() TObjectPtr<USkeletalMesh> EnemyMesh;
     UPROPERTY() TObjectPtr<UParticleSystemComponent> BladeTrail;
     FVector DodgeDirection = FVector::ForwardVector;
-    float DodgeSpeed = 800.f;
+    float DodgeDistance = 180.f;
+    float DodgeDuration = 0.f;
+    float DodgeElapsed = 0.f;
     FVector2D MoveInput = FVector2D::ZeroVector;
     uint32 AnimationResetSerial = 0;
     bool bFrozen = false;

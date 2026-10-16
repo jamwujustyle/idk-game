@@ -53,7 +53,7 @@ void ARoninHUD::Controls(const ARoninGameMode& Game,float X,float Y)
     Label(bPad ? TEXT("D-PAD LEFT / UP / RIGHT  STANCE") : TEXT("1 / 2 / 3  FLOW / STONE / GALE"),X,Y+162*S,.65f,Ivory);
     Label(bPad ? TEXT("RS CLICK  LOCK     VIEW  REMATCH") : TEXT("TAB  LOCK     R  REMATCH"),X,Y+192*S,.65f,Ivory);
     Label(TEXT("Tap guard just before impact to parry."),X,Y+235*S,.6f,Muted);
-    Label(TEXT("Teal: stamina. Gold: posture."),X,Y+259*S,.55f,Muted);
+    Label(TEXT("Red attack: dodge. Full gold posture: guard break."),X,Y+259*S,.55f,Muted);
     if (Game.HasDuelStarted()) Statistics(Game,X+252*S,Y+287*S);
 }
 
@@ -135,8 +135,9 @@ void ARoninHUD::DrawHUD()
 
     Label(TEXT("VITALITY"),Margin,H-112*S,.55f,Muted);
     Bar(Margin,H-90*S,220*S,9*S,Player.health/Player.maxHealth,Ivory);
-    Bar(Margin,H-71*S,220*S,4*S,Player.stamina/Player.maxStamina,Teal);
-    Bar(Margin,H-58*S,220*S,4*S,Player.posture/Player.maxPosture,Gold);
+    Label(TEXT("POSTURE"),Margin,H-70*S,.45f,Player.posture>=Player.maxPosture*.75f ? Red : Muted);
+    Bar(Margin,H-48*S,220*S,5*S,Player.posture/Player.maxPosture,
+        Player.posture>=Player.maxPosture*.75f ? Red : Gold);
     const TCHAR* Stances[]={TEXT("FLOW"),TEXT("STONE"),TEXT("GALE")};
     const TCHAR* Desc[]={TEXT("FAST PRESSURE"),TEXT("GUARD BREAK"),TEXT("MOBILE DEFENSE")};
     const int32 Current=static_cast<int32>(Player.stance);

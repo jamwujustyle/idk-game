@@ -14,6 +14,7 @@
 #include "Components/InputComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Distributions/DistributionFloat.h"
 #include "Engine/Engine.h"
 #include "Engine/SkeletalMesh.h"
 #include "Engine/StaticMesh.h"
@@ -28,9 +29,12 @@
 #include "Misc/ConfigCacheIni.h"
 #include "Particles/ParticleEmitter.h"
 #include "Particles/ParticleLODLevel.h"
+#include "Particles/ParticleModuleRequired.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Particles/Spawn/ParticleModuleSpawn.h"
 #include "Particles/TypeData/ParticleModuleTypeDataAnimTrail.h"
+#include "Particles/TypeData/ParticleModuleTypeDataGpu.h"
 #include "Sound/SoundWave.h"
 #include "Tests/AutomationCommon.h"
 #include "UObject/UObjectGlobals.h"
@@ -39,6 +43,47 @@ namespace
 {
 constexpr const TCHAR* BladeTrailAssetPath =
     TEXT("/Game/ParagonKwang/FX/Particles/Abilities/Primary/FX/P_Kwang_Primary_Trail.P_Kwang_Primary_Trail");
+constexpr const TCHAR* ContactSparkAssetPath =
+    TEXT("/Game/ParagonKwang/FX/Particles/Abilities/Primary/FX/P_Kwang_Primary_Impact.P_Kwang_Primary_Impact");
+
+// Snapshot the source graph and the settings altered by runtime filtering.
+// Compare observed values instead of duplicating the pack's original tuning.
+TArray<FString> SnapshotImpactSource(const UParticleSystem* Source)
+{
+    TArray<FString> Result;
+    Result.Add(FString::Printf(TEXT("warmup:%.9g"), Source->WarmupTime));
+    for (const UParticleEmitter* Emitter : Source->Emitters)
+    {
+        Result.Add(GetPathNameSafe(Emitter));
+        if (!Emitter) continue;
+        Result.Add(Emitter->EmitterName.ToString());
+        for (const UParticleLODLevel* LOD : Emitter->LODLevels)
+        {
+            Result.Add(GetPathNameSafe(LOD));
+            if (!LOD) continue;
+            Result.Add(GetPathNameSafe(LOD->RequiredModule));
+            Result.Add(GetPathNameSafe(LOD->SpawnModule));
+            Result.Add(GetPathNameSafe(LOD->TypeDataModule));
+            for (const UParticleModule* Module : LOD->Modules) Result.Add(GetPathNameSafe(Module));
+            if (const auto* Required = LOD->RequiredModule.Get())
+                Result.Add(FString::Printf(TEXT("duration:%.9g,%.9g,%d delay:%.9g,%.9g,%d loops:%d"),
+                    Required->EmitterDuration, Required->EmitterDurationLow, int32(Required->bEmitterDurationUseRange),
+                    Required->EmitterDelay, Required->EmitterDelayLow, int32(Required->bEmitterDelayUseRange), Required->EmitterLoops));
+            if (auto* Spawn = LOD->SpawnModule.Get())
+            {
+                Result.Add(GetPathNameSafe(Spawn->Rate.Distribution));
+                for (float Time : {0.f, .05f, .5f, 1.f})
+                {
+                    FRandomStream Random(17);
+                    Result.Add(FString::Printf(TEXT("rate:%.9g"), Spawn->Rate.GetValue(Time, nullptr, &Random)));
+                }
+                for (const FParticleBurst& Burst : Spawn->BurstList)
+                    Result.Add(FString::Printf(TEXT("burst:%d,%d,%.9g"), Burst.Count, Burst.CountLow, Burst.Time));
+            }
+        }
+    }
+    return Result;
+}
 }
 
 // These tests exercise engine objects, imported assets and merged configuration.
@@ -315,6 +360,13 @@ bool FRoninCookConfigurationTest::RunTest(const FString& Parameters)
     UClass* ConfiguredGameMode = LoadClass<AGameModeBase>(nullptr, *GameModePath);
     bOk &= TestTrue(TEXT("Configured game mode resolves to the combat runtime"), ConfiguredGameMode == ARoninGameMode::StaticClass());
 
+    TArray<UObject*> GameModeReferences;
+    FReferenceFinder GameModeFinder(GameModeReferences, nullptr, false, true, false, true);
+    GameModeFinder.FindReferences(GetMutableDefault<ARoninGameMode>());
+    UParticleSystem* SparkSource = LoadObject<UParticleSystem>(nullptr, ContactSparkAssetPath);
+    bOk &= TestTrue(TEXT("Game mode retains the authored contact-spark source for cooking"),
+        SparkSource && GameModeReferences.Contains(SparkSource));
+
     TArray<FString> CookDirectories;
     TArray<FString> CookMaps;
     const TCHAR* Section = TEXT("/Script/UnrealEd.ProjectPackagingSettings");
@@ -370,6 +422,9 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FRoninLiveWorldTest,
 bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
 {
     if (!TestNotNull(TEXT("Engine is available to own the test world"), GEngine)) return false;
+    UParticleSystem* SparkSource = LoadObject<UParticleSystem>(nullptr, ContactSparkAssetPath);
+    if (!TestNotNull(TEXT("Authored impact source loads before runtime filtering"), SparkSource)) return false;
+    const TArray<FString> OriginalImpact = SnapshotImpactSource(SparkSource);
 
     // UE's wrapper owns the game instance, physics world and teardown, including
     // restoring GFrameCounter after manual ticks. No PIE window or viewport is needed.
@@ -403,6 +458,63 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
 
     bool bOk = TestTrue(TEXT("StartPlay possesses the player"), Controller->GetPawn() == Player
         && Player->GetController() == Controller);
+    bOk &= TestEqual(TEXT("Authored impact retains all seven original emitters"), SparkSource->Emitters.Num(), 7);
+    const UParticleSystem* ContactSparks = Game->GetContactSparkTemplate();
+    bOk &= TestNotNull(TEXT("StartPlay prepares a filtered contact-spark template"), ContactSparks);
+    if (ContactSparks)
+    {
+        bOk &= TestTrue(TEXT("Filtered sparks are a transient game-owned copy"), ContactSparks != SparkSource
+            && ContactSparks->HasAnyFlags(RF_Transient) && ContactSparks->IsIn(Game));
+        bOk &= TestEqual(TEXT("Only the two physical spark emitters can activate"), ContactSparks->Emitters.Num(), 2);
+        TSet<FName> ExpectedNames{FName(TEXT("Sparks")), FName(TEXT("Sparks_Smaller"))};
+        for (const UParticleEmitter* Emitter : ContactSparks->Emitters)
+        {
+            if (!TestNotNull(TEXT("Filtered emitter exists"), Emitter)) { bOk = false; continue; }
+            bOk &= TestTrue(TEXT("Filtered emitter is owned by its runtime template"), Emitter->IsIn(ContactSparks));
+            bOk &= TestEqual(TEXT("Filtered emitter is an expected unique spark layer"), ExpectedNames.Remove(Emitter->EmitterName), 1);
+            bOk &= TestEqual(TEXT("Both authored spark LODs survive filtering"), Emitter->LODLevels.Num(), 2);
+            for (const UParticleLODLevel* LOD : Emitter->LODLevels)
+            {
+                if (!TestNotNull(TEXT("Filtered spark LOD exists"), LOD)) { bOk = false; continue; }
+                auto Owned = [&](const UObject* Object)
+                {
+                    return TestTrue(TEXT("Spark modules are remapped into the runtime copy"), Object && Object->IsIn(ContactSparks));
+                };
+                bOk &= Owned(LOD);
+                bOk &= Owned(LOD->RequiredModule);
+                bOk &= Owned(LOD->SpawnModule);
+                bOk &= Owned(LOD->TypeDataModule);
+                for (const UParticleModule* Module : LOD->Modules) if (Module) bOk &= Owned(Module);
+                for (const UParticleModule* Module : LOD->SpawnModules) bOk &= Owned(Module);
+                for (const UParticleModule* Module : LOD->UpdateModules) bOk &= Owned(Module);
+                bOk &= TestTrue(TEXT("Filtered spark simulation retains GPU type data"),
+                    LOD->TypeDataModule && LOD->TypeDataModule->IsA<UParticleModuleTypeDataGpu>());
+                bOk &= TestTrue(TEXT("Runtime duplication rebuilds executable module lists"),
+                    !LOD->Modules.IsEmpty() && !LOD->SpawnModules.IsEmpty() && !LOD->UpdateModules.IsEmpty());
+                if (!LOD->RequiredModule || !LOD->SpawnModule) continue;
+                const auto* Required = LOD->RequiredModule.Get();
+                bOk &= TestTrue(TEXT("Contact emission starts immediately and cannot loop"),
+                    Required->EmitterDelay == 0.f && Required->EmitterDelayLow == 0.f
+                    && Required->EmitterLoops == 1 && Required->EmitterDuration > 0.f && Required->EmitterDuration <= .1f);
+                auto* Spawn = LOD->SpawnModule.Get();
+                for (float Time : {0.f, .025f, .05f, 1.f})
+                    bOk &= TestEqual(TEXT("Contact sparks have no continuous emission"), Spawn->Rate.GetValue(Time), 0.f);
+                bOk &= TestEqual(TEXT("Each contact layer emits one bounded burst"), Spawn->BurstList.Num(), 1);
+                if (Spawn->BurstList.Num() == 1)
+                {
+                    const FParticleBurst& Burst = Spawn->BurstList[0];
+                    const int32 ExpectedCount = Emitter->EmitterName == TEXT("Sparks") ? 6 : 12;
+                    const float BurstScale = Spawn->BurstScale.GetValue(0.f);
+                    bOk &= TestTrue(TEXT("Contact burst is small, fixed and immediate"),
+                        Burst.Count == ExpectedCount && Burst.CountLow == -1 && Burst.Time == 0.f
+                        && BurstScale > 0.f && BurstScale <= 1.f);
+                }
+            }
+        }
+        bOk &= TestTrue(TEXT("Both required physical spark layers are present"), ExpectedNames.IsEmpty());
+    }
+    bOk &= TestTrue(TEXT("Runtime filtering preserves authored impact graph and emission settings"),
+        SnapshotImpactSource(SparkSource) == OriginalImpact);
     bOk &= TestTrue(TEXT("Both fighters receive BeginPlay"), Player->HasActorBegunPlay() && Enemy->HasActorBegunPlay());
     URoninAnimInstance* PlayerAnimation = Cast<URoninAnimInstance>(Player->GetMesh()->GetAnimInstance());
     URoninAnimInstance* EnemyAnimation = Cast<URoninAnimInstance>(Enemy->GetMesh()->GetAnimInstance());
@@ -649,8 +761,133 @@ bool FRoninLiveWorldTest::RunTest(const FString& Parameters)
         bOk &= TestTrue(TEXT("Rematch restarts the idle clock"), Reset.IdleTime <= Step * 2.f);
     }
 
+    // Drive the same core-then-movement order as GameMode with two frame sizes.
+    // This isolates the swept step from AI decisions and confirms its last fraction
+    // is applied even when the core has reached idle on that simulation tick.
+    for (const ronin::Stance Stance : {ronin::Stance::Flow, ronin::Stance::Gale})
+    {
+        for (const float Delta : {.05f, 1.f / 120.f})
+        {
+            bOk &= InvokeAction(TEXT("Restart"), IE_Pressed);
+            Player->ResetPose(FVector(0, -300, 100), FRotator::ZeroRotator);
+            Enemy->ResetPose(FVector(650, 600, 100), FRotator(0, 180, 0));
+            bOk &= TestTrue(TEXT("Dodge trial selects its stance"), Game->Combat.SetStance(ronin::FighterId::Player, Stance));
+            bOk &= InvokeAction(TEXT("Heavy"), IE_Pressed);
+            bOk &= InvokeAction(TEXT("Guard"), IE_Pressed);
+            bOk &= TestTrue(TEXT("A physical guard press cancels attack windup into a fresh parry"),
+                Game->Combat.Get(ronin::FighterId::Player).action == ronin::Action::Idle
+                && Game->Combat.Get(ronin::FighterId::Player).parryTime > 0.f);
+            bOk &= InvokeAction(TEXT("Guard"), IE_Released);
+            bOk &= InvokeAction(TEXT("Heavy"), IE_Pressed);
+            bOk &= InvokeAction(TEXT("Dodge"), IE_Pressed);
+            bOk &= TestTrue(TEXT("Bound dodge cancels the attack windup"),
+                Game->Combat.Get(ronin::FighterId::Player).action == ronin::Action::Dodging);
+            const FVector DodgeStart = Player->GetActorLocation();
+            bOk &= InvokeAction(TEXT("Pause"), IE_Pressed);
+            Player->AdvanceDodge(Delta);
+            bOk &= TestTrue(TEXT("A paused dodge cannot move the capsule"), Player->GetActorLocation().Equals(DodgeStart, .001));
+            bOk &= InvokeAction(TEXT("Pause"), IE_Pressed);
+            for (int32 Frame = 0; Frame < 64 && Game->Combat.Get(ronin::FighterId::Player).action == ronin::Action::Dodging; ++Frame)
+            {
+                Game->Combat.Tick(Delta);
+                Player->AdvanceDodge(Delta);
+            }
+            const FVector DodgeEnd = Player->GetActorLocation();
+            const double ExpectedDistance = Stance == ronin::Stance::Gale ? 210. : 180.;
+            bOk &= TestTrue(TEXT("Swept dodge finishes at its bounded distance across frame sizes"),
+                FMath::Abs(FVector::Dist2D(DodgeStart, DodgeEnd) - ExpectedDistance) < .1);
+            bOk &= TestTrue(TEXT("Directional step does not change capsule height"), FMath::Abs(DodgeEnd.Z - DodgeStart.Z) < .1);
+            Player->AdvanceDodge(.5f);
+            bOk &= TestTrue(TEXT("Finished step cannot continue drifting"), Player->GetActorLocation().Equals(DodgeEnd, .001));
+            bOk &= InvokeAction(TEXT("Dodge"), IE_Pressed);
+            bOk &= TestTrue(TEXT("Another dodge is immediately available after recovery"),
+                Game->Combat.Get(ronin::FighterId::Player).action == ronin::Action::Dodging);
+            bOk &= InvokeAction(TEXT("Restart"), IE_Pressed);
+            const FVector RematchPosition = Player->GetActorLocation();
+            Player->AdvanceDodge(Delta);
+            bOk &= TestTrue(TEXT("Rematch discards any unfinished dodge displacement"),
+                Player->GetActorLocation().Equals(RematchPosition, .001));
+        }
+    }
+
+    bOk &= TestTrue(TEXT("Combat and rematches leave the authored impact source unchanged"),
+        SnapshotImpactSource(SparkSource) == OriginalImpact);
     bOk &= TestWorld.DestroyTestWorld(false);
     TestWorld.ForwardErrorMessages(this);
+    return bOk && !HasAnyErrors();
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FRoninImpactCameraTest, "Ronin.Integration.ImpactCamera",
+    EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
+
+bool FRoninImpactCameraTest::RunTest(const FString& Parameters)
+{
+    (void)Parameters;
+    auto* Modifier=NewObject<URoninImpactCameraModifier>();
+    if (!TestNotNull(TEXT("Native impact modifier can be constructed without a rendered world"), Modifier)) return false;
+    FMinimalViewInfo Base;
+    Base.Location=FVector(80.,120.,250.);
+    Base.Rotation=FRotator(-12.,37.,0.);
+    Base.FOV=82.f;
+    const auto SameView=[&Base](const FMinimalViewInfo& View)
+    {
+        return View.Location.Equals(Base.Location,.0001) && View.Rotation.Equals(Base.Rotation,.0001) &&
+            FMath::IsNearlyEqual(View.FOV,Base.FOV,.0001f);
+    };
+    bool bOk=true;
+    for (auto Event : {ronin::HapticEvent::Swing,ronin::HapticEvent::HeavySwing,ronin::HapticEvent::Dodge})
+    {
+        Modifier->Pulse(Event);
+        auto View=Base;
+        bOk &= TestFalse(TEXT("Impact modifier preserves the remaining camera modifier chain"),
+            Modifier->ModifyCamera(1.f/60.f,View));
+        bOk &= TestTrue(TEXT("Movement actions leave the camera unchanged"),SameView(View));
+    }
+    for (float Rate : {30.f,60.f,120.f})
+    {
+        for (auto Event : {ronin::HapticEvent::Hit,ronin::HapticEvent::Block,ronin::HapticEvent::PerfectDodge,
+            ronin::HapticEvent::Parry,ronin::HapticEvent::Damage,ronin::HapticEvent::GuardBreak,ronin::HapticEvent::Execute})
+        {
+            Modifier->Clear();
+            Modifier->Pulse(Event);
+            auto View=Base;
+            Modifier->ModifyCamera(1.f/Rate,View);
+            bOk &= TestFalse(TEXT("Confirmed contact supplies an immediate view impulse"),SameView(View));
+            bool bBounded=true;
+            for (int32 Frame=0; Frame<int32(Rate); ++Frame)
+            {
+                // The engine provides a fresh base POV each frame, not last frame's offset.
+                View=Base;
+                Modifier->ModifyCamera(1.f/Rate,View);
+                bBounded &= FVector::Dist(View.Location,Base.Location)<=2.401 &&
+                    FMath::Abs(View.Rotation.Pitch-Base.Rotation.Pitch)<=.676 &&
+                    FMath::Abs(View.FOV-Base.FOV)<=.676f &&
+                    View.Rotation.Yaw==Base.Rotation.Yaw && View.Rotation.Roll==Base.Rotation.Roll;
+            }
+            bOk &= TestTrue(TEXT("Repeated camera evaluation stays bounded without accumulating aim or roll"),bBounded);
+            bOk &= TestTrue(TEXT("Every contact settles exactly to the base view"),SameView(View));
+        }
+    }
+    Modifier->Pulse(ronin::HapticEvent::Parry);
+    auto View=Base;
+    Modifier->ModifyCamera(.05f,View);
+    Modifier->Pulse(ronin::HapticEvent::Hit);
+    Modifier->Pulse(ronin::HapticEvent::Parry);
+    View=Base;
+    Modifier->ModifyCamera(0.f,View);
+    bOk &= TestTrue(TEXT("Lower-priority and duplicate contacts cannot fill the parry's quiet gap"),SameView(View));
+    Modifier->Clear();
+    Modifier->Pulse(ronin::HapticEvent::Execute);
+    View=Base;
+    Modifier->ModifyCamera(.01f,View);
+    bOk &= TestFalse(TEXT("Execution supplies feedback before reset"),SameView(View));
+    Modifier->Clear();
+    View=Base;
+    Modifier->ModifyCamera(.1f,View);
+    bOk &= TestTrue(TEXT("Pause or rematch cleanup immediately restores the base view"),SameView(View));
+    View=Base;
+    Modifier->ModifyCamera(.1f,View);
+    bOk &= TestTrue(TEXT("Cleared feedback cannot resume on subsequent frames"),SameView(View));
     return bOk && !HasAnyErrors();
 }
 

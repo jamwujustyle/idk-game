@@ -193,6 +193,7 @@ void ARoninFighter::ResetPose(FVector Location, FRotator Rotation)
     ConsumeMovementInputVector();
     ++AnimationResetSerial;
     MoveInput = FVector2D::ZeroVector;
+    DodgeDuration = DodgeElapsed = 0.f;
     bFrozen = false;
     GetMesh()->GlobalAnimRateScale = 1.f;
     if (Controller) Controller->SetControlRotation(FRotator(-12, Rotation.Yaw, 0));
@@ -200,7 +201,13 @@ void ARoninFighter::ResetPose(FVector Location, FRotator Rotation)
 
 void ARoninFighter::BeginDodge()
 {
-    if (auto* G=Game()) DodgeSpeed=G->Combat.Get(Identity).stance==ronin::Stance::Gale ? 1000.f : 800.f;
+    if (auto* G=Game())
+    {
+        const auto& State = G->Combat.Get(Identity);
+        DodgeDistance = State.stance == ronin::Stance::Gale ? 210.f : 180.f;
+        DodgeDuration = State.actionDuration;
+        DodgeElapsed = 0.f;
+    }
     const FRotator Yaw(0,Controller ? Controller->GetControlRotation().Yaw : GetActorRotation().Yaw,0);
     DodgeDirection = (FRotationMatrix(Yaw).GetUnitAxis(EAxis::X)*MoveInput.X + FRotationMatrix(Yaw).GetUnitAxis(EAxis::Y)*MoveInput.Y).GetSafeNormal();
     if (DodgeDirection.IsNearlyZero()) DodgeDirection = -GetActorForwardVector();
@@ -209,11 +216,23 @@ void ARoninFighter::BeginDodge()
 void ARoninFighter::AdvanceDodge(float SimulationDelta)
 {
     auto* G=Game();
-    if (G && G->CanControl() && G->Combat.Get(Identity).action==ronin::Action::Dodging)
+    if (!G || !G->CanControl() || SimulationDelta <= 0.f || DodgeDuration <= 0.f || DodgeElapsed >= DodgeDuration)
+        return;
+    const auto& State = G->Combat.Get(Identity);
+    if (State.action == ronin::Action::Dodging || State.action == ronin::Action::Idle)
     {
+        // GameMode advances the core first. Integrate the exact phase interval,
+        // including its final fraction when that step has already reached idle.
+        const float NextTime = State.action == ronin::Action::Dodging ?
+            FMath::Clamp(State.actionTime, DodgeElapsed, DodgeDuration) : DodgeDuration;
+        const auto Travel = [](float Phase) { return 1.6f * Phase - .6f * Phase * Phase; };
+        const float DeltaDistance = DodgeDistance *
+            (Travel(NextTime / DodgeDuration) - Travel(DodgeElapsed / DodgeDuration));
         GetCharacterMovement()->StopMovementImmediately();
-        AddActorWorldOffset(DodgeDirection*DodgeSpeed*SimulationDelta,true);
+        AddActorWorldOffset(DodgeDirection * DeltaDistance, true);
+        DodgeElapsed = NextTime;
     }
+    else DodgeElapsed = DodgeDuration; // A hit or posture break interrupts the step.
 }
 
 void ARoninFighter::HitFlash(FLinearColor)

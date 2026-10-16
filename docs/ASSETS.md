@@ -74,3 +74,17 @@ The pack has no dedicated guard or dodge roll. Guard adapts the upper body of
 adaptations need gameplay review. The native animation graph does not depend
 on the pack's example character or animation Blueprints. Cook only gameplay
 references, rather than adding the entire pack to `DirectoriesToAlwaysCook`.
+
+Parries, blocks, and guard breaks use a transient copy of
+`P_Kwang_Primary_Impact` containing only its `Sparks` and `Sparks_Smaller`
+emitters. Their original LODs, spark material and GPU simulation modules are
+preserved; continuous spawning and the source delay are removed, and the two
+bursts are configured for 6 and 12 sparks. Each effect lasts at most 0.35 seconds,
+with at most four concurrent effects. Sparks continue through contact hit-stop;
+pause freezes them, and rematch clears them. Damage does not spawn this effect.
+The source asset is never edited or played whole: fire, flare, plasma, smoke and
+glow emitters are excluded before activation. Code keeps a hard reference to
+the source for cooking, which also includes its dependencies even though the
+runtime copy filters the emitters. Both effects still need a GPU review for
+appearance, contact placement, timing and cleanup; headless checks cannot verify
+their rendered appearance.

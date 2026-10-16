@@ -1,4 +1,6 @@
 #include "CoreMinimal.h"
+#include "RoninFighter.h"
+#include "RoninGameMode.h"
 
 #if !UE_BUILD_SHIPPING && !UE_BUILD_TEST
 
@@ -33,10 +35,14 @@ struct FRoninCaptureState
     double ReadySince = 0.0;
     double NextStatusAt = 0.0;
     double DeadlineSeconds = 300.0;
+    double ScenarioStartedAt = 0.0;
+    double ParryObservedAt = 0.0;
+    FString Scenario = TEXT("idle");
     FIntPoint ViewportSize = FIntPoint::ZeroValue;
     FDelegateHandle ProcessedHandle;
     bool bRequested = false;
     bool bProcessed = false;
+    bool bGuardSent = false;
 
     void Unbind()
     {
@@ -71,23 +77,34 @@ void StartCapture(const TArray<FString>& Args)
         UE_LOG(LogRoninCapture, Warning, TEXT("ronin.Capture is already waiting for a screenshot."));
         return;
     }
-    if ((Args.Num() != 1 && Args.Num() != 2) || FPaths::IsRelative(Args[0]) ||
+    if (Args.Num() < 1 || Args.Num() > 3 || FPaths::IsRelative(Args[0]) ||
         !FPaths::GetExtension(Args[0]).Equals(TEXT("png"), ESearchCase::IgnoreCase) ||
         FParse::Param(FCommandLine::Get(), TEXT("nullrhi")))
     {
-        UE_LOG(LogRoninCapture, Error, TEXT("Usage: ronin.Capture <absolute-output.png> [timeout-seconds]; a GPU RHI is required."));
+        UE_LOG(LogRoninCapture, Error, TEXT("Usage: ronin.Capture <absolute-output.png> [timeout-seconds] [idle|guard|attack|close|parry]; a GPU RHI is required."));
         FPlatformMisc::RequestExitWithStatus(false, 1, TEXT("ronin.Capture invalid arguments"));
         return;
     }
 
     const TSharedRef<FRoninCaptureState> State = MakeShared<FRoninCaptureState>();
-    if (Args.Num() == 2)
+    if (Args.Num() >= 2)
     {
         if (!Args[1].IsNumeric() || !LexTryParseString(State->DeadlineSeconds, *Args[1]) ||
             !FMath::IsFinite(State->DeadlineSeconds) || State->DeadlineSeconds < 10.0 || State->DeadlineSeconds > 1800.0)
         {
             UE_LOG(LogRoninCapture, Error, TEXT("Capture timeout must be between 10 and 1800 seconds."));
             FPlatformMisc::RequestExitWithStatus(false, 1, TEXT("ronin.Capture invalid timeout"));
+            return;
+        }
+    }
+    if (Args.Num() == 3)
+    {
+        State->Scenario = Args[2].ToLower();
+        if (State->Scenario != TEXT("idle") && State->Scenario != TEXT("guard") &&
+            State->Scenario != TEXT("attack") && State->Scenario != TEXT("close") && State->Scenario != TEXT("parry"))
+        {
+            UE_LOG(LogRoninCapture, Error, TEXT("Capture scenario must be idle, guard, attack, close, or parry."));
+            FPlatformMisc::RequestExitWithStatus(false, 1, TEXT("ronin.Capture invalid scenario"));
             return;
         }
     }
@@ -163,6 +180,51 @@ void StartCapture(const TArray<FString>& Args)
         if (State->ReadySince == 0.0) State->ReadySince = Now;
         if (Now - State->ReadySince < 5.0) return true;
 
+        // Exercise the game's actual actions after startup has settled. Do not
+        // assign animation poses or phase times just to manufacture a screenshot.
+        if (State->Scenario != TEXT("idle"))
+        {
+            ARoninGameMode* Game = World->GetAuthGameMode<ARoninGameMode>();
+            if (!Game || !Game->PlayerFighter || !Game->EnemyFighter)
+                return State->Finish(false, TEXT("Capture scenario requires the RONIN duel."));
+            if (State->ScenarioStartedAt == 0.0)
+            {
+                Game->StartDuel();
+                if (State->Scenario == TEXT("guard")) Game->Guard(true);
+                if (State->Scenario == TEXT("attack")) Game->LightAttack();
+                if (State->Scenario == TEXT("close") || State->Scenario == TEXT("parry"))
+                {
+                    Game->EnemyFighter->ResetPose(Game->PlayerFighter->GetActorLocation() +
+                        Game->PlayerFighter->GetActorForwardVector() * 190.f,
+                        Game->PlayerFighter->GetActorRotation() + FRotator(0.f, 180.f, 0.f));
+                }
+                State->ScenarioStartedAt = Now;
+                return true;
+            }
+            if (Now - State->ScenarioStartedAt > 3.0)
+                return State->Finish(false, TEXT("The requested gameplay scenario did not reach its capture state."));
+            if (State->Scenario == TEXT("attack"))
+            {
+                const auto& Fighter = Game->Combat.Get(ronin::FighterId::Player);
+                if (Fighter.action != ronin::Action::Active || Fighter.actionTime < Fighter.actionDuration * .4f)
+                    return true;
+            }
+            else if (State->Scenario == TEXT("parry"))
+            {
+                const auto& Enemy = Game->Combat.Get(ronin::FighterId::Enemy);
+                if (!State->bGuardSent && Enemy.action == ronin::Action::Windup &&
+                    Enemy.actionDuration-Enemy.actionTime <= .08f)
+                {
+                    Game->Guard(true);
+                    State->bGuardSent = true;
+                }
+                if (Game->PerfectParries == 0) return true;
+                if (State->ParryObservedAt == 0.0) State->ParryObservedAt = Now;
+                if (Now-State->ParryObservedAt < .05) return true;
+            }
+            else if (Now - State->ScenarioStartedAt < .3) return true;
+        }
+
         State->ViewportSize = Client->Viewport->GetSizeXY();
         const TWeakPtr<FRoninCaptureState> WeakState = State;
         State->ProcessedHandle = FScreenshotRequest::OnScreenshotRequestProcessed().AddLambda([WeakState]
@@ -180,7 +242,7 @@ void StartCapture(const TArray<FString>& Args)
 }
 
 FAutoConsoleCommand CaptureCommand(TEXT("ronin.Capture"),
-    TEXT("Capture the game viewport and HUD to an absolute PNG path after shaders settle, then exit. Optional timeout: 10-1800 seconds; default 300."),
+    TEXT("Capture the viewport after shaders settle, then exit. Args: absolute PNG, timeout (10-1800; default 300), scenario (idle|guard|attack|close|parry; default idle)."),
     FConsoleCommandWithArgsDelegate::CreateStatic(&StartCapture), ECVF_Cheat);
 }
 

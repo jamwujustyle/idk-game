@@ -2,7 +2,7 @@
 
 A compact Unreal Engine 5 C++ sword-combat prototype: a lone fighter, a stone courtyard, and an opponent built around readable attacks, guard pressure, and timed counters.
 
-**Status: the Kwang character integration compiles in Unreal 5.7.4, and all six engine integration tests pass.** The updated scene still needs a rendered visual review and interactive Linux playtest. Packaging is optional for playing through the installed editor. See the [verification report](reports/2026-10-16-verification.md) for observed results and remaining checks.
+**Status: playable Linux prototype; combat and visuals are being revised.** Seven Unreal integration tests pass. The current play build still uses Kwang while an original armored samurai is prepared. See the [latest verification](reports/2026-10-16-combat-reset.md) for rendered evidence and remaining playtest work.
 
 ## Start
 

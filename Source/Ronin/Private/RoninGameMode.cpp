@@ -10,8 +10,15 @@
 #include "GameFramework/PlayerController.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
-#include "DrawDebugHelpers.h"
 #include "Misc/ConfigCacheIni.h"
+#include "Particles/ParticleEmitter.h"
+#include "Particles/ParticleLODLevel.h"
+#include "Particles/ParticleModuleRequired.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Particles/Spawn/ParticleModuleSpawn.h"
+#include "Particles/TypeData/ParticleModuleTypeDataGpu.h"
+#include "UObject/ConstructorHelpers.h"
 
 using ronin::FighterId;
 using ronin::Action;
@@ -20,6 +27,8 @@ using ronin::HitResult;
 
 namespace
 {
+constexpr float ContactSparkLifetime = .35f;
+constexpr int32 MaxContactSparkBursts = 4;
 void PulseFeedback(UObject* Context, ronin::HapticEvent Event)
 {
     if (auto* PC=Cast<ARoninPlayerController>(UGameplayStatics::GetPlayerController(Context,0))) PC->Pulse(Event);
@@ -36,11 +45,15 @@ ARoninGameMode::ARoninGameMode()
     DefaultPawnClass = nullptr;
     HUDClass = ARoninHUD::StaticClass();
     PlayerControllerClass = ARoninPlayerController::StaticClass();
+    static ConstructorHelpers::FObjectFinder<UParticleSystem> SparkAsset(
+        TEXT("/Game/ParagonKwang/FX/Particles/Abilities/Primary/FX/P_Kwang_Primary_Impact.P_Kwang_Primary_Impact"));
+    ContactSparkSource = SparkAsset.Object;
 }
 
 void ARoninGameMode::StartPlay()
 {
     Super::StartPlay();
+    InitializeContactSparks();
     GetWorld()->SpawnActor<ARoninArena>();
     // Set identity before BeginPlay builds the fighter's materials.
     PlayerFighter = GetWorld()->SpawnActorDeferred<ARoninFighter>(ARoninFighter::StaticClass(),
@@ -87,6 +100,101 @@ void ARoninGameMode::StartPlay()
     RestartDuel();
 }
 
+void ARoninGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    ClearContactSparks();
+    Super::EndPlay(EndPlayReason);
+}
+
+void ARoninGameMode::InitializeContactSparks()
+{
+    if (!ContactSparkSource || ContactSparks) return;
+    FObjectDuplicationParameters Parameters(ContactSparkSource, this);
+    Parameters.FlagMask &= ~(RF_Public | RF_Standalone);
+    Parameters.ApplyFlags |= RF_Transient;
+    auto* Filtered = Cast<UParticleSystem>(StaticDuplicateObjectEx(Parameters));
+    if (!Filtered) return;
+    Filtered->Emitters.RemoveAll([](const TObjectPtr<UParticleEmitter>& Emitter)
+    {
+        return !Emitter || (Emitter->EmitterName != TEXT("Sparks") && Emitter->EmitterName != TEXT("Sparks_Smaller"));
+    });
+    // Fail closed if the installed pack differs; never fall back to its magical impact.
+    if (Filtered->Emitters.Num() != 2) return;
+    for (UParticleEmitter* Emitter : Filtered->Emitters)
+    {
+        if (Emitter->LODLevels.IsEmpty()) return;
+        for (UParticleLODLevel* LOD : Emitter->LODLevels)
+        {
+            if (!LOD || !LOD->RequiredModule || !LOD->SpawnModule || !LOD->TypeDataModule
+                || !LOD->IsIn(Filtered) || !LOD->RequiredModule->IsIn(Filtered) || !LOD->SpawnModule->IsIn(Filtered)) return;
+            const auto* GPU = Cast<UParticleModuleTypeDataGpu>(LOD->TypeDataModule);
+            if (!GPU || !GPU->IsIn(Filtered)) return;
+            for (const auto& Module : LOD->Modules)
+                if (Module && !Module->IsIn(Filtered)) return;
+            auto* Required = LOD->RequiredModule.Get();
+            Required->EmitterDelay = Required->EmitterDelayLow = 0.f;
+            Required->bEmitterDelayUseRange = false;
+            Required->EmitterDuration = Required->EmitterDurationLow = .05f;
+            Required->bEmitterDurationUseRange = false;
+            Required->EmitterLoops = 1;
+            auto* Spawn = LOD->SpawnModule.Get();
+            // An empty raw distribution evaluates to zero in editor and cooked builds.
+            Spawn->Rate = FRawDistributionFloat();
+            Spawn->BurstList.Reset();
+            FParticleBurst Burst;
+            Burst.Count = Emitter->EmitterName == TEXT("Sparks") ? 6 : 12;
+            Spawn->BurstList.Add(Burst);
+        }
+        // Duplication clears transient module lists; rebuild them and the GPU type-data resources.
+        Emitter->UpdateModuleLists();
+    }
+    Filtered->WarmupTime = 0.f;
+    ContactSparks = Filtered;
+}
+
+void ARoninGameMode::SpawnContactSparks(FVector Location)
+{
+    if (!ContactSparks) return;
+    if (ContactSparkBursts.Num() >= MaxContactSparkBursts)
+    {
+        if (auto* Oldest = ContactSparkBursts[0].Component.Get()) Oldest->DestroyComponent();
+        ContactSparkBursts.RemoveAt(0);
+    }
+    auto* Effect = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ContactSparks,
+        FTransform(FRotator::ZeroRotator, Location, FVector(.35f)), false, EPSCPoolMethod::None, false);
+    if (!Effect) return;
+    Effect->AddTickPrerequisiteActor(this);
+    Effect->SecondsBeforeInactive = 0.f;
+    Effect->ActivateSystem();
+    ContactSparkBursts.Add({Effect, 0.f});
+}
+
+void ARoninGameMode::UpdateContactSparks(float Dt)
+{
+    for (int32 Index = ContactSparkBursts.Num() - 1; Index >= 0; --Index)
+    {
+        auto& Burst = ContactSparkBursts[Index];
+        auto* Effect = Burst.Component.Get();
+        if (!Effect) { ContactSparkBursts.RemoveAt(Index); continue; }
+        if (!bCombatPaused) Burst.Age += Dt;
+        if (Burst.Age >= ContactSparkLifetime)
+        {
+            Effect->DestroyComponent();
+            ContactSparkBursts.RemoveAt(Index);
+            continue;
+        }
+        Effect->CustomTimeDilation = bCombatPaused ? 0.f : 1.f;
+        Effect->SetComponentTickEnabled(!bCombatPaused && Effect->IsActive());
+    }
+}
+
+void ARoninGameMode::ClearContactSparks()
+{
+    for (const auto& Burst : ContactSparkBursts)
+        if (auto* Effect = Burst.Component.Get()) Effect->DestroyComponent();
+    ContactSparkBursts.Reset();
+}
+
 bool ARoninGameMode::CanControl() const
 {
     return bDuelStarted && !bCombatPaused && PlayerFighter && EnemyFighter &&
@@ -96,6 +204,7 @@ bool ARoninGameMode::CanControl() const
 void ARoninGameMode::Tick(float Dt)
 {
     Super::Tick(Dt);
+    UpdateContactSparks(Dt);
     SmoothedFrameTime=FMath::FInterpTo(SmoothedFrameTime,FMath::Max(Dt,.0001f),Dt,3.f);
     DisplayedFPS=1.f/SmoothedFrameTime;
     if (auto* PC=Cast<ARoninPlayerController>(UGameplayStatics::GetPlayerController(this,0))) bUsingGamepad=PC->bUsingGamepad;
@@ -180,10 +289,16 @@ void ARoninGameMode::ResolveAttack(FighterId Id)
     FVector Delta=Target->GetActorLocation()-Source->GetActorLocation();
     Delta.Z=0;
     const bool Facing=FVector::DotProduct(Source->GetActorForwardVector(),Delta.GetSafeNormal())>.25f;
+    const bool bGuardContact=Combat.Get(Id==FighterId::Player ? FighterId::Enemy : FighterId::Player).guarding;
     const auto Result=Combat.ResolveHit(Id,Delta.Size(),Facing);
     if (Result==HitResult::None || Result==HitResult::Miss) return;
     const FVector Contact=(Source->GetActorLocation()+Target->GetActorLocation())*.5f+FVector(0,0,25);
-    if (Result==HitResult::Dodged) { Notify(TEXT("CLEAN EVADE"),FLinearColor(.48f,.85f,.83f)); return; }
+    if (Result==HitResult::Dodged)
+    {
+        Notify(TEXT("CLEAN EVADE"),FLinearColor(.48f,.85f,.83f));
+        if (Id==FighterId::Enemy) PulseFeedback(this,ronin::HapticEvent::PerfectDodge);
+        return;
+    }
     FLinearColor Color(.95f,.49f,.16f);
     if (Result==HitResult::Parried)
     {
@@ -217,15 +332,11 @@ void ARoninGameMode::ResolveAttack(FighterId Id)
         PlayCue(TEXT("Hit"),Contact); HitStop=.045f;
         Target->HitFlash(FLinearColor(.9f,.12f,.06f));
         if (Id==FighterId::Enemy) ImpactFlash=.22f;
-        PulseFeedback(this,Id==FighterId::Enemy ? ronin::HapticEvent::Damage : ronin::HapticEvent::Block);
+        PulseFeedback(this,Id==FighterId::Enemy ? ronin::HapticEvent::Damage : ronin::HapticEvent::Hit);
     }
-    // Brief geometric sparks are deliberately temporary prototype VFX.
-    for (int32 I=0; I<9; ++I)
-    {
-        const float Angle=I*UE_TWO_PI/9.f;
-        const FVector Ray(FMath::Cos(Angle)*65.f,FMath::Sin(Angle)*65.f,(I%3)*22.f);
-        DrawDebugLine(GetWorld(),Contact,Contact+Ray,Color.ToFColor(true),false,.1f,0,2.f);
-    }
+    if (Result==HitResult::Parried || Result==HitResult::Blocked ||
+        (Result==HitResult::GuardBreak && bGuardContact))
+        SpawnContactSparks(Contact);
 }
 
 void ARoninGameMode::StartDuel()
@@ -238,6 +349,7 @@ void ARoninGameMode::StartDuel()
 
 void ARoninGameMode::RestartDuel()
 {
+    ClearContactSparks();
     StopFeedback(this);
     Combat.Reset(); Accumulator=0; HitStop=0; RoundTime=0; PerfectParries=0; bRoundScored=false;
     bCombatPaused=false; ImpactFlash=0; bGuardHeld=false;
@@ -252,7 +364,7 @@ void ARoninGameMode::LightAttack()
 }
 void ARoninGameMode::HeavyAttack()
 {
-    if (CanControl() && Combat.TryAttack(FighterId::Player,AttackKind::Heavy)) { PlayCue(TEXT("Slash"),PlayerFighter->GetActorLocation(),1.15f); PulseFeedback(this,ronin::HapticEvent::Swing); }
+    if (CanControl() && Combat.TryAttack(FighterId::Player,AttackKind::Heavy)) { PlayCue(TEXT("Slash"),PlayerFighter->GetActorLocation(),1.15f); PulseFeedback(this,ronin::HapticEvent::HeavySwing); }
 }
 void ARoninGameMode::Guard(bool bHeld)
 {
@@ -287,6 +399,7 @@ void ARoninGameMode::TogglePause()
 {
     if (!bDuelStarted) return;
     bCombatPaused=!bCombatPaused;
+    UpdateContactSparks(0.f);
     StopFeedback(this);
     Combat.SetGuard(FighterId::Player,false);
     bGuardHeld=false;

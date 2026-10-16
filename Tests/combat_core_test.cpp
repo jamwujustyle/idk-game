@@ -68,12 +68,14 @@ void AttackPhasesAndContact()
     const auto spec = combat.Get(FighterId::Player).spec;
     CHECK(combat.ResolveHit(FighterId::Player, 100.f) == HitResult::None);
     CHECK(!combat.TryAttack(FighterId::Player, AttackKind::Heavy));
-    CHECK(!combat.TryDodge(FighterId::Player));
     CHECK(!combat.SetStance(FighterId::Player, Stance::Stone));
     combat.Tick(spec.windup - 0.01f);
     CHECK(combat.Get(FighterId::Player).action == Action::Windup);
     combat.Tick(0.01f);
     CHECK(combat.Get(FighterId::Player).action == Action::Active);
+    CHECK(!combat.TryDodge(FighterId::Player));
+    combat.SetGuard(FighterId::Player, true);
+    CHECK(!combat.Get(FighterId::Player).guarding);
     CHECK(combat.ResolveHit(FighterId::Player, spec.range + 1.f) == HitResult::Miss);
     CHECK(combat.ResolveHit(FighterId::Player, 100.f, false) == HitResult::Miss);
     CHECK(combat.ResolveHit(FighterId::Player, -1.f) == HitResult::Miss);
@@ -101,15 +103,26 @@ void TimingIsFrameIndependent()
     const auto& a = coarse.Get(FighterId::Player);
     const auto& b = fine.Get(FighterId::Player);
     CHECK(a.action == Action::Idle && b.action == Action::Idle);
-    CHECK(Near(a.stamina, b.stamina));
     CHECK(Near(a.attackElapsed, b.attackElapsed));
     CHECK(Near(a.actionTime, b.actionTime));
     CHECK(coarse.EnemyReady() && fine.EnemyReady());
-    const float stamina = a.stamina;
+    const float elapsed = a.actionTime;
     coarse.Tick(-1.f);
     coarse.Tick(std::numeric_limits<float>::infinity());
     coarse.Tick(std::numeric_limits<float>::quiet_NaN());
-    CHECK(coarse.Get(FighterId::Player).stamina == stamina);
+    CHECK(coarse.Get(FighterId::Player).actionTime == elapsed);
+
+    for (auto* combat : {&coarse, &fine})
+    {
+        combat->SetGuard(FighterId::Player, true, false);
+        EnterActive(*combat, FighterId::Enemy, AttackKind::Light);
+        CHECK(combat->ResolveHit(FighterId::Enemy, 150.f) == HitResult::Blocked);
+        combat->SetGuard(FighterId::Player, false);
+    }
+    coarse.Tick(2.f);
+    for (int frame = 0; frame < 240; ++frame) fine.Tick(1.f / 120.f);
+    CHECK(Near(coarse.Get(FighterId::Player).posture, fine.Get(FighterId::Player).posture));
+    CHECK(Near(coarse.Get(FighterId::Player).posture, 18.6f));
 }
 
 void ParryAndCounter()
@@ -124,6 +137,12 @@ void ParryAndCounter()
     CHECK(Near(combat.Get(FighterId::Enemy).posture, 34.f));
     CHECK(combat.Get(FighterId::Player).health == 100.f);
     CHECK(combat.Get(FighterId::Player).counterTime > 0.f);
+    CHECK(combat.Get(FighterId::Player).parryCooldown == 0.f);
+    combat.SetGuard(FighterId::Player, true);
+    CHECK(combat.Get(FighterId::Player).parryTime == 0.f); // Holding cannot auto-deflect.
+    combat.SetGuard(FighterId::Player, false);
+    combat.SetGuard(FighterId::Player, true);
+    CHECK(Near(combat.Get(FighterId::Player).parryTime, CombatCore::ParryWindow));
     CHECK(combat.SetStance(FighterId::Player, Stance::Stone));
     const auto base = CombatCore::GetAttackSpec(Stance::Stone, AttackKind::Heavy);
     CHECK(combat.TryAttack(FighterId::Player, AttackKind::Heavy));
@@ -150,7 +169,6 @@ void GuardHoldAndSpam()
     CHECK(combat.ResolveHit(FighterId::Enemy, 180.f) == HitResult::Blocked);
     CHECK(combat.Get(FighterId::Player).health == 100.f);
     CHECK(Near(combat.Get(FighterId::Player).posture, 25.f));
-    CHECK(combat.Get(FighterId::Player).stamina < 100.f);
     combat.SetGuard(FighterId::Player, false);
     combat.SetGuard(FighterId::Player, true);
     CHECK(Near(combat.Get(FighterId::Player).parryTime, CombatCore::ParryWindow));
@@ -208,7 +226,13 @@ void DodgeTimingAndUnblockable()
     timed.Tick(0.04f);
     CHECK(timed.ResolveHit(FighterId::Enemy, 150.f) == HitResult::Dodged);
     CHECK(timed.Get(FighterId::Player).health == 100.f);
+    CHECK(Near(timed.Get(FighterId::Player).counterTime, CombatCore::DodgeCounterWindow));
+    CHECK(timed.ResolveHit(FighterId::Enemy, 150.f) == HitResult::None);
     CHECK(!timed.TryDodge(FighterId::Player));
+    AdvanceToIdle(timed, FighterId::Player);
+    CHECK(timed.TryAttack(FighterId::Player, AttackKind::Light));
+    CHECK(Near(timed.Get(FighterId::Player).spec.windup,
+        CombatCore::GetAttackSpec(Stance::Stone, AttackKind::Light).windup * .75f));
 
     CombatCore early;
     CHECK(early.TryDodge(FighterId::Player));
@@ -251,7 +275,7 @@ void GuardBreakAndExecution()
     CHECK(combat.Get(FighterId::Enemy).action == Action::Dead);
     CHECK(combat.Get(FighterId::Enemy).health == 0.f);
     CHECK(combat.Get(FighterId::Player).action == Action::Recovery);
-    CHECK(combat.Get(FighterId::Player).stamina == 100.f);
+    CHECK(combat.Get(FighterId::Player).posture == 0.f);
     combat.Tick(5.f);
     CHECK(!combat.EnemyReady());
     CHECK(!combat.TryAttack(FighterId::Player, AttackKind::Light));
@@ -280,7 +304,7 @@ void GuardBreakAndExecution()
     CHECK(!blocking.Get(FighterId::Player).guarding);
 }
 
-void StanceCostsAndStamina()
+void StancesAndUnrestrictedActionUse()
 {
     const auto flow = CombatCore::GetAttackSpec(Stance::Flow, AttackKind::Light);
     const auto stone = CombatCore::GetAttackSpec(Stance::Stone, AttackKind::Heavy);
@@ -291,20 +315,124 @@ void StanceCostsAndStamina()
     CombatCore combat;
     CHECK(combat.SetStance(FighterId::Player, Stance::Gale));
     CHECK(combat.TryDodge(FighterId::Player));
-    CHECK(Near(combat.Get(FighterId::Player).stamina, 82.f));
-    CHECK(Near(combat.Get(FighterId::Player).invulnerabilityTime, 0.26f));
-    CHECK(Near(combat.Get(FighterId::Player).actionDuration, 0.38f));
+    CHECK(Near(combat.Get(FighterId::Player).invulnerabilityTime, 0.15f));
+    CHECK(Near(combat.Get(FighterId::Player).actionDuration, 0.26f));
     combat.Reset();
-    for (int dodge = 0; dodge < 4; ++dodge)
+    for (int dodge = 0; dodge < 20; ++dodge)
     {
         CHECK(combat.TryDodge(FighterId::Player));
-        combat.Tick(0.44f);
+        combat.Tick(.12f);
+        CHECK(combat.Get(FighterId::Player).invulnerabilityTime == 0.f);
+        CHECK(!combat.TryDodge(FighterId::Player));
+        combat.SetGuard(FighterId::Player, true);
+        CHECK(!combat.Get(FighterId::Player).guarding);
+        combat.Tick(.18f);
+        CHECK(combat.Get(FighterId::Player).action == Action::Idle);
     }
-    CHECK(Near(combat.Get(FighterId::Player).stamina, 4.f));
-    CHECK(!combat.TryDodge(FighterId::Player));
-    CHECK(!combat.TryAttack(FighterId::Player, AttackKind::Light));
-    combat.Tick(1.f);
-    CHECK(combat.TryAttack(FighterId::Player, AttackKind::Light));
+    for (int attack = 0; attack < 20; ++attack)
+    {
+        CHECK(combat.TryAttack(FighterId::Player, AttackKind::Heavy));
+        const auto& spec = combat.Get(FighterId::Player).spec;
+        combat.Tick(spec.windup + spec.active + spec.recovery);
+        CHECK(combat.Get(FighterId::Player).action == Action::Idle);
+    }
+    CHECK(combat.Get(FighterId::Player).posture == 0.f);
+}
+
+void DefenseCancelsAndCommitment()
+{
+    CombatCore guard;
+    CHECK(guard.TryAttack(FighterId::Player, AttackKind::Heavy));
+    guard.Tick(.1f);
+    const auto canceledId = guard.Get(FighterId::Player).attackId;
+    guard.SetGuard(FighterId::Player, true);
+    CHECK(guard.Get(FighterId::Player).action == Action::Idle);
+    CHECK(guard.Get(FighterId::Player).guarding);
+    CHECK(guard.Get(FighterId::Player).parryTime == CombatCore::ParryWindow);
+    CHECK(guard.Get(FighterId::Player).actionTime == 0.f);
+    CHECK(guard.Get(FighterId::Player).hitResolved);
+    guard.Tick(.5f);
+    CHECK(guard.ResolveHit(FighterId::Player, 100.f) == HitResult::None);
+    CHECK(guard.Get(FighterId::Enemy).health == 125.f);
+    CHECK(guard.TryAttack(FighterId::Player, AttackKind::Light));
+    CHECK(guard.Get(FighterId::Player).attackId > canceledId);
+    CHECK(!guard.Get(FighterId::Player).hitResolved);
+    CHECK(guard.Get(FighterId::Player).attackElapsed == 0.f);
+
+    CombatCore dodge;
+    CHECK(dodge.TryAttack(FighterId::Player, AttackKind::Heavy));
+    dodge.Tick(.1f);
+    CHECK(dodge.TryDodge(FighterId::Player));
+    CHECK(dodge.Get(FighterId::Player).action == Action::Dodging);
+    CHECK(dodge.Get(FighterId::Player).actionTime == 0.f);
+    CHECK(dodge.ResolveHit(FighterId::Player, 100.f) == HitResult::None);
+
+    CombatCore strike;
+    EnterActive(strike, FighterId::Player, AttackKind::Light);
+    CHECK(strike.ResolveHit(FighterId::Player, 1000.f) == HitResult::Miss);
+    CHECK(!strike.TryDodge(FighterId::Player));
+    CHECK(strike.ResolveHit(FighterId::Player, 150.f) == HitResult::Hit);
+    CHECK(strike.TryDodge(FighterId::Player)); // Resolved contact permits a defensive exit.
+    CHECK(strike.ResolveHit(FighterId::Player, 150.f) == HitResult::None);
+    CHECK(!strike.TryDodge(FighterId::Enemy)); // A hit stun cannot be escaped.
+    strike.SetGuard(FighterId::Enemy, true);
+    CHECK(!strike.Get(FighterId::Enemy).guarding);
+
+    CombatCore recovery;
+    EnterActive(recovery, FighterId::Player, AttackKind::Light);
+    recovery.Tick(recovery.Get(FighterId::Player).spec.active);
+    CHECK(recovery.Get(FighterId::Player).action == Action::Recovery);
+    recovery.SetGuard(FighterId::Player, true, false);
+    CHECK(recovery.Get(FighterId::Player).action == Action::Recovery);
+    recovery.SetGuard(FighterId::Player, true);
+    CHECK(recovery.Get(FighterId::Player).action == Action::Idle);
+    CHECK(recovery.Get(FighterId::Player).guarding);
+
+    CombatCore broken;
+    BreakEnemyWithParries(broken);
+    CHECK(!broken.TryDodge(FighterId::Enemy));
+    broken.SetGuard(FighterId::Enemy, true);
+    CHECK(!broken.Get(FighterId::Enemy).guarding);
+}
+
+void DefenseBoundariesAndPosturePressure()
+{
+    for (const bool inside : {true, false})
+    {
+        CombatCore parry;
+        CHECK(parry.TryAttack(FighterId::Enemy, AttackKind::Heavy));
+        const float time = CombatCore::ParryWindow - (inside ? .001f : 0.f);
+        parry.Tick(parry.Get(FighterId::Enemy).spec.windup - time);
+        parry.SetGuard(FighterId::Player, true);
+        parry.Tick(time);
+        CHECK(parry.ResolveHit(FighterId::Enemy, 150.f) ==
+            (inside ? HitResult::Parried : HitResult::Blocked));
+
+        CombatCore dodge;
+        CHECK(dodge.TryAttack(FighterId::Enemy, AttackKind::Heavy));
+        const float evadeTime = .12f - (inside ? .001f : 0.f);
+        dodge.Tick(dodge.Get(FighterId::Enemy).spec.windup - evadeTime);
+        CHECK(dodge.TryDodge(FighterId::Player));
+        dodge.Tick(evadeTime);
+        CHECK(dodge.ResolveHit(FighterId::Enemy, 150.f) ==
+            (inside ? HitResult::Dodged : HitResult::Hit));
+    }
+
+    CombatCore miss;
+    EnterActive(miss, FighterId::Enemy, AttackKind::Light);
+    CHECK(miss.TryDodge(FighterId::Player));
+    CHECK(miss.ResolveHit(FighterId::Enemy, 1000.f) == HitResult::Miss);
+    CHECK(miss.Get(FighterId::Player).counterTime == 0.f);
+
+    CombatCore guard;
+    guard.SetGuard(FighterId::Player, true, false);
+    EnterActive(guard, FighterId::Enemy, AttackKind::Heavy);
+    CHECK(guard.ResolveHit(FighterId::Enemy, 150.f) == HitResult::Blocked);
+    guard.Tick(5.f);
+    CHECK(Near(guard.Get(FighterId::Player).posture, 48.f)); // Holding is not free posture recovery.
+    guard.SetGuard(FighterId::Player, false);
+    guard.Tick(.5f);
+    CHECK(Near(guard.Get(FighterId::Player).posture, 40.f));
 }
 
 void EnemyRhythmResetAndLethality()
@@ -361,7 +489,9 @@ int main()
     InterruptedGuardResumesWithoutAutomaticParry();
     DodgeTimingAndUnblockable();
     GuardBreakAndExecution();
-    StanceCostsAndStamina();
+    StancesAndUnrestrictedActionUse();
+    DefenseCancelsAndCommitment();
+    DefenseBoundariesAndPosturePressure();
     EnemyRhythmResetAndLethality();
     std::cout << "Combat core: " << checks << " checks passed.\n";
 }

@@ -1,5 +1,6 @@
 #include "HapticCore.h"
 
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
@@ -10,6 +11,9 @@ using namespace ronin;
 namespace
 {
 int checks = 0;
+constexpr HapticEvent Events[]{HapticEvent::Swing, HapticEvent::HeavySwing, HapticEvent::Dodge,
+    HapticEvent::PerfectDodge, HapticEvent::Hit, HapticEvent::Block, HapticEvent::Parry,
+    HapticEvent::Damage, HapticEvent::GuardBreak, HapticEvent::Execute};
 
 void Check(bool condition, const char* expression, int line)
 {
@@ -23,10 +27,7 @@ void Check(bool condition, const char* expression, int line)
 
 #define CHECK(expression) Check((expression), #expression, __LINE__)
 
-bool Near(float a, float b)
-{
-    return std::fabs(a - b) < 0.0001f;
-}
+bool Near(float a, float b) { return std::fabs(a - b) < 0.0001f; }
 
 bool Silent(HapticOutput output)
 {
@@ -48,123 +49,177 @@ bool Normalized(HapticOutput output)
     return true;
 }
 
-void EventTimingAndDistinctPatterns()
+// The Linux Xbox backend collapses UE's four channels to these two motors.
+float Bass(HapticOutput output) { return std::max(output.leftLarge, output.rightLarge); }
+float Treble(HapticOutput output) { return std::max(output.leftSmall, output.rightSmall); }
+
+HapticOutput At(HapticEvent event, float time)
 {
-    const HapticEvent events[]{HapticEvent::Swing, HapticEvent::Dodge, HapticEvent::Block,
-        HapticEvent::Parry, HapticEvent::Damage, HapticEvent::GuardBreak, HapticEvent::Execute};
-    const float durations[]{0.11f, 0.16f, 0.16f, 0.24f, 0.32f, 0.5f, 0.72f};
-    HapticOutput initial[7]{};
-    for (int index = 0; index < 7; ++index)
+    HapticCore core;
+    core.SetIntensity(1.f);
+    CHECK(core.Trigger(event));
+    core.Tick(time);
+    return core.GetOutput();
+}
+
+float Energy(HapticEvent event)
+{
+    HapticCore core;
+    core.SetIntensity(1.f);
+    CHECK(core.Trigger(event));
+    float energy = 0.f;
+    for (int step = 0; step < 500; ++step)
+    {
+        const auto output = core.GetOutput();
+        energy += (Bass(output) + Treble(output)) * .001f;
+        core.Tick(.001f);
+    }
+    CHECK(!core.IsActive());
+    CHECK(Silent(core.GetOutput()));
+    return energy;
+}
+
+void DistinctionSurvivesTwoMotorMapping()
+{
+    const auto swing = At(HapticEvent::Swing, 0.f);
+    const auto heavy = At(HapticEvent::HeavySwing, 0.f);
+    const auto dodge = At(HapticEvent::Dodge, 0.f);
+    const auto hit = At(HapticEvent::Hit, 0.f);
+    const auto block = At(HapticEvent::Block, 0.f);
+    const auto damage = At(HapticEvent::Damage, 0.f);
+    const auto parry = At(HapticEvent::Parry, 0.f);
+    const auto evade = At(HapticEvent::PerfectDodge, 0.f);
+    CHECK(Bass(heavy) > 2.f * Bass(swing));
+    CHECK(Treble(parry) > 3.f * Bass(parry));
+    CHECK(Treble(block) > Bass(block));
+    CHECK(Bass(hit) > 3.f * Treble(hit));
+    CHECK(Bass(damage) > Bass(hit));
+    CHECK(Treble(evade) > 5.f * Treble(dodge));
+    // A contact's treble dies before its bass; this is not one scaled waveform.
+    const auto hitTail = At(HapticEvent::Hit, .06f);
+    CHECK(Treble(hitTail) / Treble(hit) < Bass(hitTail) / Bass(hit));
+    CHECK(Energy(HapticEvent::Dodge) < .2f * Energy(HapticEvent::Hit));
+    CHECK(Energy(HapticEvent::Swing) < .4f * Energy(HapticEvent::Block));
+    CHECK(Energy(HapticEvent::Damage) > Energy(HapticEvent::Hit));
+    CHECK(Silent(At(HapticEvent::Dodge, .08f)));
+    CHECK(Silent(At(HapticEvent::Swing, .1f)));
+    CHECK(Silent(At(HapticEvent::Damage, .3f)));
+}
+
+void ParryGapSurvivesFrameRatesAndCompetingEvents()
+{
+    for (float rate : {30.f, 60.f, 120.f})
     {
         HapticCore core;
         core.SetIntensity(1.f);
-        CHECK(core.Trigger(events[index]));
-        CHECK(core.IsActive());
-        initial[index] = core.GetOutput();
-        CHECK(!Silent(initial[index]));
-        core.Tick(durations[index] - 0.005f);
-        CHECK(core.IsActive());
-        const auto tail = core.GetOutput();
-        CHECK(tail.leftLarge < initial[index].leftLarge);
-        CHECK(tail.rightSmall < initial[index].rightSmall);
-        core.Tick(0.006f);
-        CHECK(!core.IsActive());
+        CHECK(core.Trigger(HapticEvent::Parry));
+        int pulses = 0;
+        bool wasHigh = false;
+        for (int frame = 0; frame < 30; ++frame)
+        {
+            const bool high = Treble(core.GetOutput()) > .2f;
+            if (high && !wasHigh) ++pulses;
+            wasHigh = high;
+            core.Tick(1.f / rate);
+        }
+        CHECK(pulses == 2);
         CHECK(Silent(core.GetOutput()));
-        for (int previous = 0; previous < index; ++previous)
-            CHECK(!Same(initial[index], initial[previous]));
     }
-
-    HapticCore parry;
-    parry.SetIntensity(1.f);
-    CHECK(parry.Trigger(HapticEvent::Parry));
-    CHECK(Near(parry.GetOutput().rightSmall, 1.f));
-    parry.Tick(0.07f);
-    CHECK(Silent(parry.GetOutput()));
-    CHECK(parry.IsActive());
-    parry.Tick(0.025f);
-    CHECK(Near(parry.GetOutput().rightSmall, 0.85f));
-
-    HapticCore execute;
-    execute.SetIntensity(1.f);
-    CHECK(execute.Trigger(HapticEvent::Execute));
-    execute.Tick(0.2f);
-    CHECK(Near(execute.GetOutput().leftLarge, 0.1f));
-    execute.Tick(0.06f);
-    CHECK(Near(execute.GetOutput().leftLarge, 0.9f));
+    HapticCore core;
+    core.SetIntensity(1.f);
+    CHECK(core.Trigger(HapticEvent::Parry));
+    core.Tick(.05f);
+    CHECK(core.IsActive());
+    CHECK(Silent(core.GetOutput()));
+    for (auto event : {HapticEvent::Swing, HapticEvent::HeavySwing, HapticEvent::Dodge,
+        HapticEvent::Hit, HapticEvent::Block, HapticEvent::Parry})
+    {
+        CHECK(!core.Trigger(event));
+        CHECK(Silent(core.GetOutput()));
+    }
+    core.Tick(.015f);
+    CHECK(Silent(core.GetOutput()));
+    core.Tick(.025f);
+    CHECK(Treble(core.GetOutput()) > .75f);
+    core.Tick(.1f);
+    CHECK(!core.IsActive());
+    CHECK(Silent(core.GetOutput()));
+    core.Tick(.5f);
+    CHECK(Silent(core.GetOutput())); // No discarded movement feedback replays.
 }
 
-void PrioritiesAndRetriggering()
+void PrioritiesAndDuplicateCallbacks()
 {
     HapticCore core;
     CHECK(core.Trigger(HapticEvent::Swing));
+    CHECK(core.Trigger(HapticEvent::HeavySwing)); // A different equal-priority event can replace it.
+    CHECK(core.Trigger(HapticEvent::Hit));
     CHECK(core.Trigger(HapticEvent::Block));
-    const auto block = core.GetOutput();
-    CHECK(!core.Trigger(HapticEvent::Dodge));
-    CHECK(Same(block, core.GetOutput()));
+    CHECK(core.Trigger(HapticEvent::PerfectDodge));
     CHECK(core.Trigger(HapticEvent::Damage));
     CHECK(core.Trigger(HapticEvent::Parry));
-    CHECK(!core.Trigger(HapticEvent::Damage));
     CHECK(core.Trigger(HapticEvent::GuardBreak));
     CHECK(core.Trigger(HapticEvent::Execute));
-    core.Tick(0.3f);
+    core.Tick(.2f);
     const auto finisher = core.GetOutput();
-    for (auto event : {HapticEvent::Swing, HapticEvent::Dodge, HapticEvent::Block,
-        HapticEvent::Parry, HapticEvent::Damage, HapticEvent::GuardBreak})
+    for (auto event : Events)
     {
         CHECK(!core.Trigger(event));
         CHECK(Same(finisher, core.GetOutput()));
     }
-    core.Tick(0.43f);
+    core.Tick(.3f);
     CHECK(!core.IsActive());
-    CHECK(core.Trigger(HapticEvent::Swing));
-    const auto start = core.GetOutput();
-    core.Tick(0.08f);
-    CHECK(!Same(start, core.GetOutput()));
-    CHECK(core.Trigger(HapticEvent::Swing));
-    CHECK(Same(start, core.GetOutput()));
+
+    for (auto event : Events)
+    {
+        HapticCore spammed;
+        HapticCore once;
+        CHECK(spammed.Trigger(event));
+        CHECK(once.Trigger(event));
+        while (once.IsActive())
+        {
+            CHECK(!spammed.Trigger(event));
+            CHECK(Same(spammed.GetOutput(), once.GetOutput()));
+            spammed.Tick(.005f);
+            once.Tick(.005f);
+        }
+        CHECK(Silent(spammed.GetOutput()));
+        CHECK(!spammed.IsActive());
+        CHECK(spammed.Trigger(event)); // A fresh event after completion is accepted.
+    }
 }
 
 void StrengthIntensityAndBounds()
 {
     HapticCore core;
-    CHECK(Near(core.GetIntensity(), 0.7f));
-    core.SetIntensity(0.5f);
-    CHECK(core.Trigger(HapticEvent::Execute, 0.4f));
-    CHECK(Near(core.GetOutput().leftLarge, 0.2f));
+    CHECK(Near(core.GetIntensity(), .7f));
+    core.SetIntensity(.5f);
+    CHECK(core.Trigger(HapticEvent::Execute, .4f));
+    CHECK(Near(Bass(core.GetOutput()), .2f));
     core.SetIntensity(2.f);
     CHECK(Near(core.GetIntensity(), 1.f));
-    CHECK(Near(core.GetOutput().leftLarge, 0.4f));
-    CHECK(core.Trigger(HapticEvent::Execute, 10.f));
-    CHECK(Near(core.GetOutput().leftLarge, 1.f));
+    CHECK(Near(Bass(core.GetOutput()), .4f));
+    const auto before = core.GetOutput();
     CHECK(!core.Trigger(HapticEvent::Execute, -1.f));
     CHECK(!core.Trigger(HapticEvent::Execute, 0.f));
     CHECK(!core.Trigger(HapticEvent::Execute, std::numeric_limits<float>::quiet_NaN()));
-    CHECK(Near(core.GetOutput().leftLarge, 1.f));
-    core.SetIntensity(-1.f);
-    CHECK(Silent(core.GetOutput()));
-    CHECK(Near(core.GetIntensity(), 0.f));
-    core.SetIntensity(std::numeric_limits<float>::infinity());
-    CHECK(Silent(core.GetOutput()));
-    core.SetIntensity(std::numeric_limits<float>::quiet_NaN());
-    CHECK(Silent(core.GetOutput()));
-    core.SetIntensity(1.f);
-    CHECK(Near(core.GetOutput().leftLarge, 1.f));
+    CHECK(Same(before, core.GetOutput()));
 
-    for (auto event : {HapticEvent::Swing, HapticEvent::Dodge, HapticEvent::Block,
-        HapticEvent::Parry, HapticEvent::Damage, HapticEvent::GuardBreak, HapticEvent::Execute})
+    for (auto event : Events)
     {
         core.Stop();
         CHECK(core.Trigger(event, 2.f));
-        for (int frame = 0; frame < 190; ++frame)
+        for (int frame = 0; frame < 150; ++frame)
         {
             CHECK(Normalized(core.GetOutput()));
             core.Tick(1.f / 240.f);
         }
         CHECK(Silent(core.GetOutput()));
+        CHECK(!core.IsActive());
     }
 }
 
-void DisabledAndStoppedCannotResumeStaleRumble()
+void MutingDisablingAndStoppingCannotResumeStaleRumble()
 {
     HapticCore core;
     CHECK(core.IsEnabled());
@@ -174,50 +229,68 @@ void DisabledAndStoppedCannotResumeStaleRumble()
     core.SetEnabled(false);
     CHECK(!core.IsEnabled());
     CHECK(!core.IsActive());
-    CHECK(Silent(core.GetOutput()));
     CHECK(!core.Trigger(HapticEvent::Parry));
     core.SetEnabled(true);
     CHECK(Silent(core.GetOutput()));
-    CHECK(!core.IsActive());
     CHECK(core.Trigger(HapticEvent::Damage));
     core.Stop();
-    CHECK(Silent(core.GetOutput()));
+    core.Tick(.1f);
     CHECK(!core.IsActive());
-    core.Tick(0.1f);
     CHECK(Silent(core.GetOutput()));
+    for (float intensity : {0.f, -1.f, std::numeric_limits<float>::infinity(),
+        std::numeric_limits<float>::quiet_NaN()})
+    {
+        core.SetIntensity(1.f);
+        CHECK(core.Trigger(HapticEvent::Execute));
+        core.SetIntensity(intensity);
+        CHECK(Near(core.GetIntensity(), 0.f));
+        CHECK(!core.IsActive());
+        CHECK(Silent(core.GetOutput()));
+        CHECK(!core.Trigger(HapticEvent::Parry));
+        core.SetIntensity(1.f);
+        CHECK(Silent(core.GetOutput()));
+        CHECK(!core.IsActive());
+    }
     CHECK(core.Trigger(HapticEvent::Swing));
 }
 
 void FrameSizesAndInvalidInputs()
 {
-    HapticCore one;
-    HapticCore many;
-    CHECK(one.Trigger(HapticEvent::GuardBreak));
-    CHECK(many.Trigger(HapticEvent::GuardBreak));
-    one.Tick(0.25f);
-    for (int frame = 0; frame < 30; ++frame)
-        many.Tick(1.f / 120.f);
-    CHECK(Same(one.GetOutput(), many.GetOutput()));
-    const auto before = one.GetOutput();
-    one.Tick(-1.f);
-    one.Tick(0.f);
-    one.Tick(std::numeric_limits<float>::quiet_NaN());
-    one.Tick(std::numeric_limits<float>::infinity());
-    CHECK(Same(before, one.GetOutput()));
-    CHECK(!one.Trigger(static_cast<HapticEvent>(255)));
-    CHECK(Same(before, one.GetOutput()));
-    one.Tick(std::numeric_limits<float>::max());
-    CHECK(Silent(one.GetOutput()));
-    CHECK(!one.IsActive());
+    for (auto event : Events)
+    {
+        HapticCore one;
+        HapticCore many;
+        CHECK(one.Trigger(event));
+        CHECK(many.Trigger(event));
+        one.Tick(.1f);
+        for (int frame = 0; frame < 12; ++frame) many.Tick(1.f / 120.f);
+        CHECK(Same(one.GetOutput(), many.GetOutput()));
+        CHECK(one.IsActive() == many.IsActive());
+    }
+    HapticCore core;
+    CHECK(core.Trigger(HapticEvent::GuardBreak));
+    core.Tick(.1f);
+    const auto before = core.GetOutput();
+    core.Tick(-1.f);
+    core.Tick(0.f);
+    core.Tick(std::numeric_limits<float>::quiet_NaN());
+    core.Tick(std::numeric_limits<float>::infinity());
+    CHECK(Same(before, core.GetOutput()));
+    CHECK(!core.Trigger(static_cast<HapticEvent>(255)));
+    CHECK(Same(before, core.GetOutput()));
+    core.Tick(std::numeric_limits<float>::max());
+    CHECK(Silent(core.GetOutput()));
+    CHECK(!core.IsActive());
 }
 } // namespace
 
 int main()
 {
-    EventTimingAndDistinctPatterns();
-    PrioritiesAndRetriggering();
+    DistinctionSurvivesTwoMotorMapping();
+    ParryGapSurvivesFrameRatesAndCompetingEvents();
+    PrioritiesAndDuplicateCallbacks();
     StrengthIntensityAndBounds();
-    DisabledAndStoppedCannotResumeStaleRumble();
+    MutingDisablingAndStoppingCannotResumeStaleRumble();
     FrameSizesAndInvalidInputs();
     std::cout << "Haptic core: " << checks << " checks passed.\n";
 }

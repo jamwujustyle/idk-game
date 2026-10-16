@@ -18,6 +18,13 @@ bool IsAttacking(Action action)
 {
     return action == Action::Windup || action == Action::Active || action == Action::Recovery;
 }
+
+bool CanDefend(const FighterState& fighter)
+{
+    return fighter.action == Action::Idle || fighter.action == Action::Windup ||
+        fighter.action == Action::Recovery ||
+        (fighter.action == Action::Active && fighter.hitResolved);
+}
 } // namespace
 
 CombatCore::CombatCore()
@@ -62,23 +69,23 @@ void CombatCore::SetAction(FighterState& fighter, Action action, float duration)
 AttackSpec CombatCore::GetAttackSpec(Stance stance, AttackKind kind)
 {
     if (kind == AttackKind::Unblockable)
-        return {0.78f, 0.18f, 0.55f, 35.f, 35.f, 32.f, 240.f, true};
+        return {0.78f, 0.18f, 0.55f, 35.f, 35.f, 240.f, true};
 
     if (stance == Stance::Stone)
     {
         if (kind == AttackKind::Heavy)
-            return {0.54f, 0.16f, 0.48f, 32.f, 48.f, 30.f, 230.f, false};
-        return {0.28f, 0.13f, 0.36f, 20.f, 25.f, 18.f, 210.f, false};
+            return {0.54f, 0.16f, 0.48f, 32.f, 48.f, 230.f, false};
+        return {0.28f, 0.13f, 0.36f, 20.f, 25.f, 210.f, false};
     }
     if (stance == Stance::Gale)
     {
         if (kind == AttackKind::Heavy)
-            return {0.33f, 0.15f, 0.31f, 21.f, 22.f, 21.f, 245.f, false};
-        return {0.14f, 0.12f, 0.21f, 12.f, 12.f, 11.f, 225.f, false};
+            return {0.33f, 0.15f, 0.31f, 21.f, 22.f, 245.f, false};
+        return {0.14f, 0.12f, 0.21f, 12.f, 12.f, 225.f, false};
     }
     if (kind == AttackKind::Heavy)
-        return {0.43f, 0.14f, 0.40f, 26.f, 30.f, 25.f, 220.f, false};
-    return {0.19f, 0.11f, 0.25f, 15.f, 18.f, 14.f, 210.f, false};
+        return {0.43f, 0.14f, 0.40f, 26.f, 30.f, 220.f, false};
+    return {0.19f, 0.11f, 0.25f, 15.f, 18.f, 210.f, false};
 }
 
 bool CombatCore::TryAttack(FighterId id, AttackKind kind)
@@ -88,16 +95,12 @@ bool CombatCore::TryAttack(FighterId id, AttackKind kind)
         return false;
 
     auto spec = GetAttackSpec(fighter.stance, kind);
-    if (fighter.stamina + Epsilon < spec.staminaCost)
-        return false;
     if (fighter.counterTime > 0.f)
     {
         spec.damage *= 1.35f;
         spec.postureDamage *= 1.4f;
         spec.windup *= 0.75f;
     }
-    fighter.stamina = std::max(0.f, fighter.stamina - spec.staminaCost);
-    fighter.staminaRecoveryDelay = 0.65f;
     fighter.guarding = false;
     fighter.parryTime = 0.f;
     fighter.counterTime = 0.f;
@@ -125,28 +128,34 @@ void CombatCore::SetGuard(FighterId id, bool held, bool allowParry)
         fighter.parryTime = 0.f;
         return;
     }
-    if (fighter.action != Action::Idle || fighter.guarding)
+    if (fighter.guarding || Get(Opponent(id)).action == Action::Dead ||
+        (allowParry ? !CanDefend(fighter) : fighter.action != Action::Idle))
         return;
+    // A new physical press interrupts a cancellable attack. Automatic restoration
+    // of a held button cannot cancel an action or create a fresh parry window.
+    if (fighter.action != Action::Idle)
+    {
+        fighter.hitResolved = true;
+        SetAction(fighter, Action::Idle);
+    }
     fighter.guarding = true;
     if (allowParry && fighter.parryCooldown <= Epsilon)
     {
         fighter.parryTime = ParryWindow;
-        fighter.parryCooldown = 0.32f;
+        fighter.parryCooldown = ParryRetryDelay;
     }
 }
 
 bool CombatCore::TryDodge(FighterId id)
 {
     auto& fighter = Mutable(id);
-    const float cost = fighter.stance == Stance::Gale ? 18.f : 24.f;
-    if (fighter.action != Action::Idle || fighter.stamina + Epsilon < cost)
+    if (!CanDefend(fighter) || Get(Opponent(id)).action == Action::Dead)
         return false;
-    fighter.stamina = std::max(0.f, fighter.stamina - cost);
-    fighter.staminaRecoveryDelay = 0.55f;
+    fighter.hitResolved = true;
     fighter.guarding = false;
     fighter.parryTime = 0.f;
-    fighter.invulnerabilityTime = fighter.stance == Stance::Gale ? 0.26f : 0.22f;
-    SetAction(fighter, Action::Dodging, fighter.stance == Stance::Gale ? 0.38f : 0.44f);
+    fighter.invulnerabilityTime = fighter.stance == Stance::Gale ? 0.15f : 0.12f;
+    SetAction(fighter, Action::Dodging, fighter.stance == Stance::Gale ? 0.26f : 0.3f);
     return true;
 }
 
@@ -198,15 +207,19 @@ HitResult CombatCore::ResolveHit(FighterId attackerId, float distance, bool faci
 
     attacker.hitResolved = true;
     if (defender.invulnerabilityTime > 0.f)
+    {
+        // Reward evading a real incoming contact, not rolling outside its reach.
+        defender.counterTime = std::max(defender.counterTime, DodgeCounterWindow);
         return attacker.lastHit = HitResult::Dodged;
+    }
 
     if (defender.guarding && defender.action == Action::Idle && !attacker.spec.unblockable)
     {
         if (defender.parryTime > 0.f)
         {
             defender.parryTime = 0.f;
-            defender.counterTime = 1.1f;
-            defender.stamina = std::min(defender.maxStamina, defender.stamina + 12.f);
+            defender.parryCooldown = 0.f;
+            defender.counterTime = ParryCounterWindow;
             defender.posture = std::max(0.f, defender.posture - 12.f);
             const float posture = defender.stance == Stance::Stone ? 42.f : 34.f;
             const bool broken = ApplyPosture(attacker, posture);
@@ -217,11 +230,7 @@ HitResult CombatCore::ResolveHit(FighterId attackerId, float distance, bool faci
         }
 
         const float guardFactor = defender.stance == Stance::Stone ? 0.72f : 1.f;
-        const float guardCost = attacker.spec.staminaCost * 0.65f;
-        const bool exhausted = defender.stamina + Epsilon < guardCost;
-        defender.stamina = std::max(0.f, defender.stamina - guardCost);
-        defender.staminaRecoveryDelay = 0.65f;
-        const bool broken = ApplyPosture(defender, exhausted ? defender.maxPosture : attacker.spec.postureDamage * guardFactor);
+        const bool broken = ApplyPosture(defender, attacker.spec.postureDamage * guardFactor);
         return attacker.lastHit = broken ? HitResult::GuardBreak : HitResult::Blocked;
     }
 
@@ -254,7 +263,6 @@ bool CombatCore::TryExecute(FighterId attackerId, float distance, bool facing)
     Kill(defender);
     attacker.guarding = false;
     attacker.parryTime = 0.f;
-    attacker.stamina = attacker.maxStamina;
     attacker.posture = 0.f;
     SetAction(attacker, Action::Recovery, 0.6f);
     return true;
@@ -275,12 +283,9 @@ void CombatCore::TickFighter(FighterState& fighter, float seconds)
         if (timed)
             step = std::min(step, std::max(0.f, fighter.actionDuration - fighter.actionTime));
 
-        const float staminaTime = std::max(0.f, step - fighter.staminaRecoveryDelay);
         const float postureTime = std::max(0.f, step - fighter.postureRecoveryDelay);
-        if (fighter.action == Action::Idle)
+        if (fighter.action == Action::Idle && !fighter.guarding)
         {
-            const float regen = fighter.guarding ? 12.f : 26.f;
-            fighter.stamina = std::min(fighter.maxStamina, fighter.stamina + regen * staminaTime);
             const float healthFactor = 0.35f + 0.65f * fighter.health / fighter.maxHealth;
             fighter.posture = std::max(0.f, fighter.posture - 16.f * healthFactor * postureTime);
         }
@@ -290,7 +295,6 @@ void CombatCore::TickFighter(FighterState& fighter, float seconds)
         CountDown(fighter.counterTime, step);
         CountDown(fighter.decisionTime, step);
         CountDown(fighter.postureRecoveryDelay, step);
-        CountDown(fighter.staminaRecoveryDelay, step);
         if (IsAttacking(fighter.action))
             fighter.attackElapsed += step;
         fighter.actionTime += step;

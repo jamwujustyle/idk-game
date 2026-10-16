@@ -26,7 +26,6 @@ struct AttackSpec
     float recovery = 0.f;
     float damage = 0.f;
     float postureDamage = 0.f;
-    float staminaCost = 0.f;
     float range = 0.f;
     bool unblockable = false;
 };
@@ -37,8 +36,6 @@ struct FighterState
     float maxHealth = 100.f;
     float posture = 0.f;
     float maxPosture = 100.f;
-    float stamina = 100.f;
-    float maxStamina = 100.f;
     Stance stance = Stance::Flow;
     Action action = Action::Idle;
     AttackKind currentAttack = AttackKind::Light;
@@ -53,7 +50,6 @@ struct FighterState
     float counterTime = 0.f;
     float decisionTime = 0.f;
     float postureRecoveryDelay = 0.f;
-    float staminaRecoveryDelay = 0.f;
     std::uint64_t attackId = 0;
     bool guarding = false;
     bool hitResolved = false;
@@ -64,6 +60,9 @@ class CombatCore
 {
 public:
     static constexpr float ParryWindow = 0.18f;
+    static constexpr float ParryRetryDelay = 0.32f;
+    static constexpr float ParryCounterWindow = 1.1f;
+    static constexpr float DodgeCounterWindow = 0.65f;
     static constexpr float ExecutionRange = 240.f;
     static constexpr float GuardBreakDuration = 2.2f;
 
@@ -73,7 +72,8 @@ public:
     const FighterState& Get(FighterId id) const;
 
     bool TryAttack(FighterId id, AttackKind kind);
-    // A physical press may parry; restoring a held button after an interruption
+    // A physical press can cancel attack windup/recovery or a resolved strike.
+    // Restoring a held button after an interruption
     // should pass allowParry=false once idle, so automatic blocking gives no parry.
     void SetGuard(FighterId id, bool held, bool allowParry = true);
     bool TryDodge(FighterId id);

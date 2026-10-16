@@ -6,6 +6,8 @@
 #include "RoninGameMode.generated.h"
 
 class ARoninFighter;
+class UParticleSystem;
+class UParticleSystemComponent;
 class USoundBase;
 
 UCLASS()
@@ -15,6 +17,7 @@ class RONIN_API ARoninGameMode : public AGameModeBase
 public:
     ARoninGameMode();
     virtual void StartPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
     virtual void Tick(float DeltaSeconds) override;
 
     ronin::CombatCore Combat;
@@ -50,13 +53,26 @@ public:
     bool CanControl() const;
     bool HasDuelStarted() const { return bDuelStarted; }
     float GetRoundTime() const { return RoundTime; }
+    const UParticleSystem* GetContactSparkTemplate() const { return ContactSparks; }
     void Notify(const FString& Text, FLinearColor Color, float Duration = 1.25f);
 
 private:
     void Step(float DeltaSeconds);
     void ResolveAttack(ronin::FighterId Attacker);
     void PlayCue(FName Cue, FVector Location, float Volume = 1.f);
+    void InitializeContactSparks();
+    void SpawnContactSparks(FVector Location);
+    void UpdateContactSparks(float DeltaSeconds);
+    void ClearContactSparks();
     UPROPERTY() TMap<FName, TObjectPtr<USoundBase>> Sounds;
+    UPROPERTY() TObjectPtr<UParticleSystem> ContactSparkSource;
+    UPROPERTY(Transient) TObjectPtr<UParticleSystem> ContactSparks;
+    struct FContactSparkBurst
+    {
+        TWeakObjectPtr<UParticleSystemComponent> Component;
+        float Age = 0.f;
+    };
+    TArray<FContactSparkBurst> ContactSparkBursts;
     float Accumulator = 0.f;
     float HitStop = 0.f;
     float RoundTime = 0.f;

@@ -90,7 +90,12 @@ the game viewport and HUD, then five seconds without pending shader jobs,
 captures the rendered viewport, checks the new output file, and exits. It fails
 after a 300-second deadline by default; an optional second argument sets a
 10–1800 second deadline for first-use compilation. Capture runs cap rendering at
-30 fps while waiting. The opening duel gate keeps combat idle during capture.
+30 fps while waiting. The default `idle` scenario leaves the opening duel gate
+active. An optional third argument, `guard`, `attack`, or `close`, starts the duel
+after shaders settle and exercises that gameplay state before capturing. `attack`
+captures a real light attack during its active phase; `parry` times guard against
+the AI's first attack and captures the resulting contact; `close` places the opponent
+190 cm ahead to inspect camera occlusion.
 
 ```sh
 ./scripts/unreal.sh play -windowed -RenderOffscreen -ForceRes \
