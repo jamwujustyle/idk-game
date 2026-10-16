@@ -87,6 +87,14 @@ Unreal can clamp the requested resolution to display bounds. For an offscreen ca
 
 Interactive commands check NVIDIA/Vulkan first and set NVIDIA's offload environment variables. Verify the GPU selected in Unreal's log after the first launch. Both commands require the generated assets; neither silently rebuilds code. Find the controls in the [README](../README.md#controls).
 
+Linux controller ownership is configured in `Config/DefaultInput.ini`, under
+`[InputPlatformSettings_Linux InputPlatformSettings]`. The integer setting
+`input.DeviceMappingPolicy=1` selects Unreal's
+`PrimaryUserSharesKeyboardAndFirstGamepad` policy: keyboard, mouse, and the first
+gamepad share the primary player. Keep this explicit so device connection changes
+do not rely on a missing platform default. Restart the editor or game after
+changing this setting because Unreal caches the policy within the running process.
+
 To add **RONIN** to Ubuntu's applications search, run this explicitly as your normal user:
 
 ```sh
@@ -94,6 +102,14 @@ To add **RONIN** to Ubuntu's applications search, run this explicitly as your no
 ```
 
 It creates `~/.local/share/applications/ronin.desktop`, launching this checkout fullscreen without a terminal window. It records `UE_ROOT` if set when installed; otherwise the launcher uses `.tools/unreal`. The checkout and engine must remain available. Rerun the installer after moving either location. It does not install Unreal or rebuild the game.
+
+To add **Unreal Editor — RONIN** as a separate applications entry:
+
+```sh
+./scripts/install-launcher.sh --editor
+```
+
+Press **Super**, type **Unreal**, and select the editor entry. This shortcut opens the project with a 30 FPS cap, reduced viewport shadows/post-processing, 50% viewport resolution, and on-demand shader compilation. These settings keep asset browsing lighter and apply to that editor process; the game launcher retains its own settings. The entry is saved as `~/.local/share/applications/ronin-editor.desktop`. In the editor, use **Window → Fab → My Library** to import assets acquired through Fab.
 
 ## 5. Package and verify
 
