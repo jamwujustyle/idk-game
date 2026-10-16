@@ -1,0 +1,553 @@
+{
+  "provider": "Poly Haven",
+  "license": "CC0-1.0",
+  "license_url": "https://polyhaven.com/license",
+  "retrieved_at_utc": "2026-10-16T08:33:37.768763+00:00",
+  "download_bytes": 50980041,
+  "verification": "Each source file size and MD5 match the public provider metadata.",
+  "assets": [
+    {
+      "id": "monastery_stone_floor",
+      "source": "https://polyhaven.com/a/monastery_stone_floor",
+      "metadata_source": "https://api.polyhaven.com/files/monastery_stone_floor",
+      "files": [
+        {
+          "role": "Diffuse",
+          "format": "jpg",
+          "resolution": "2k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/monastery_stone_floor/monastery_stone_floor_diff_2k.jpg",
+          "size_bytes": 3021140,
+          "md5": "35420aa52b8257920b1d7566fb80ab4d",
+          "local_path": ".cache/environment/monastery_stone_floor/monastery_stone_floor_diff_2k.jpg"
+        },
+        {
+          "role": "nor_dx",
+          "format": "jpg",
+          "resolution": "2k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/monastery_stone_floor/monastery_stone_floor_nor_dx_2k.jpg",
+          "size_bytes": 4222391,
+          "md5": "5e81ae4d865115a26c5f776f6c712e64",
+          "local_path": ".cache/environment/monastery_stone_floor/monastery_stone_floor_nor_dx_2k.jpg"
+        },
+        {
+          "role": "arm",
+          "format": "jpg",
+          "resolution": "2k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/monastery_stone_floor/monastery_stone_floor_arm_2k.jpg",
+          "size_bytes": 2331525,
+          "md5": "43ddeddf503356eb6ddcabd73cb3c35d",
+          "local_path": ".cache/environment/monastery_stone_floor/monastery_stone_floor_arm_2k.jpg"
+        }
+      ]
+    },
+    {
+      "id": "japanese_cedar_planks",
+      "source": "https://polyhaven.com/a/japanese_cedar_planks",
+      "metadata_source": "https://api.polyhaven.com/files/japanese_cedar_planks",
+      "files": [
+        {
+          "role": "Diffuse",
+          "format": "jpg",
+          "resolution": "2k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_cedar_planks/japanese_cedar_planks_diff_2k.jpg",
+          "size_bytes": 2812544,
+          "md5": "5844b46d60be0dbc3e44b8f60179d19f",
+          "local_path": ".cache/environment/japanese_cedar_planks/japanese_cedar_planks_diff_2k.jpg"
+        },
+        {
+          "role": "nor_dx",
+          "format": "jpg",
+          "resolution": "2k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_cedar_planks/japanese_cedar_planks_nor_dx_2k.jpg",
+          "size_bytes": 3825900,
+          "md5": "1967d962f6e14db1855a5fdb910777dd",
+          "local_path": ".cache/environment/japanese_cedar_planks/japanese_cedar_planks_nor_dx_2k.jpg"
+        },
+        {
+          "role": "arm",
+          "format": "jpg",
+          "resolution": "2k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/japanese_cedar_planks/japanese_cedar_planks_arm_2k.jpg",
+          "size_bytes": 2782361,
+          "md5": "08f5a2ef7b878e65c30b6dc9688007a5",
+          "local_path": ".cache/environment/japanese_cedar_planks/japanese_cedar_planks_arm_2k.jpg"
+        }
+      ]
+    },
+    {
+      "id": "rock_moss_set_01",
+      "source": "https://polyhaven.com/a/rock_moss_set_01",
+      "metadata_source": "https://api.polyhaven.com/files/rock_moss_set_01",
+      "files": [
+        {
+          "role": "fbx",
+          "format": "fbx",
+          "resolution": "2k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/2k/rock_moss_set_01/rock_moss_set_01_2k.fbx",
+          "size_bytes": 2652988,
+          "md5": "e5f57a49dc1b6a000cce3cf6e094e0ed",
+          "local_path": ".cache/environment/rock_moss_set_01/rock_moss_set_01_2k.fbx"
+        },
+        {
+          "role": "Diffuse",
+          "format": "jpg",
+          "resolution": "2k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/rock_moss_set_01/rock_moss_set_01_diff_2k.jpg",
+          "size_bytes": 649415,
+          "md5": "d3e1292c9e34bd6b4a236698a1b41290",
+          "local_path": ".cache/environment/rock_moss_set_01/rock_moss_set_01_diff_2k.jpg"
+        },
+        {
+          "role": "nor_dx",
+          "format": "jpg",
+          "resolution": "2k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/rock_moss_set_01/rock_moss_set_01_nor_dx_2k.jpg",
+          "size_bytes": 833962,
+          "md5": "eecec091febc1d67a9749df1a9d58d51",
+          "local_path": ".cache/environment/rock_moss_set_01/rock_moss_set_01_nor_dx_2k.jpg"
+        },
+        {
+          "role": "arm",
+          "format": "jpg",
+          "resolution": "2k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/2k/rock_moss_set_01/rock_moss_set_01_arm_2k.jpg",
+          "size_bytes": 380871,
+          "md5": "576831f224e79a5ad2e159c2e76cf269",
+          "local_path": ".cache/environment/rock_moss_set_01/rock_moss_set_01_arm_2k.jpg"
+        }
+      ]
+    },
+    {
+      "id": "fir_sapling",
+      "source": "https://polyhaven.com/a/fir_sapling",
+      "metadata_source": "https://api.polyhaven.com/files/fir_sapling",
+      "files": [
+        {
+          "role": "fbx",
+          "format": "fbx",
+          "resolution": "1k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/fbx/1k/fir_sapling/fir_sapling_1k.fbx",
+          "size_bytes": 19037468,
+          "md5": "e89019c6c0e26796f36370603a34a4f1",
+          "local_path": ".cache/environment/fir_sapling/fir_sapling_1k.fbx"
+        },
+        {
+          "role": "branches_diff",
+          "format": "jpg",
+          "resolution": "1k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling/fir_sapling_branches_diff_1k.jpg",
+          "size_bytes": 776633,
+          "md5": "84f1d40b80a015d65c0ded042a10765b",
+          "local_path": ".cache/environment/fir_sapling/fir_sapling_branches_diff_1k.jpg"
+        },
+        {
+          "role": "branches_nor_dx",
+          "format": "jpg",
+          "resolution": "1k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling/fir_sapling_branches_nor_dx_1k.jpg",
+          "size_bytes": 1130471,
+          "md5": "64ba5512ea2c4d6b0d2aa21ddf83d456",
+          "local_path": ".cache/environment/fir_sapling/fir_sapling_branches_nor_dx_1k.jpg"
+        },
+        {
+          "role": "branches_arm",
+          "format": "jpg",
+          "resolution": "1k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling/fir_sapling_branches_arm_1k.jpg",
+          "size_bytes": 793567,
+          "md5": "29a9ff22b8f7f224069b1254db171c05",
+          "local_path": ".cache/environment/fir_sapling/fir_sapling_branches_arm_1k.jpg"
+        },
+        {
+          "role": "twigs_diff",
+          "format": "jpg",
+          "resolution": "1k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling/fir_sapling_twigs_diff_1k.jpg",
+          "size_bytes": 252678,
+          "md5": "cd218269e0b34bd1bdb48a8daf21be67",
+          "local_path": ".cache/environment/fir_sapling/fir_sapling_twigs_diff_1k.jpg"
+        },
+        {
+          "role": "twigs_nor_dx",
+          "format": "jpg",
+          "resolution": "1k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling/fir_sapling_twigs_nor_dx_1k.jpg",
+          "size_bytes": 500196,
+          "md5": "ff9fe804822cf1037e7bd07695a10603",
+          "local_path": ".cache/environment/fir_sapling/fir_sapling_twigs_nor_dx_1k.jpg"
+        },
+        {
+          "role": "twigs_arm",
+          "format": "jpg",
+          "resolution": "1k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/jpg/1k/fir_sapling/fir_sapling_twigs_arm_1k.jpg",
+          "size_bytes": 300249,
+          "md5": "cf97b5de863ebad9a48cb187ef3c3e74",
+          "local_path": ".cache/environment/fir_sapling/fir_sapling_twigs_arm_1k.jpg"
+        },
+        {
+          "role": "twigs_alpha",
+          "format": "png",
+          "resolution": "1k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/Models/png/1k/fir_sapling/fir_sapling_twigs_alpha_1k.png",
+          "size_bytes": 107682,
+          "md5": "177123c2b5eaeee068be559ff78e54d0",
+          "local_path": ".cache/environment/fir_sapling/fir_sapling_twigs_alpha_1k.png"
+        }
+      ]
+    },
+    {
+      "id": "overcast_soil_puresky",
+      "source": "https://polyhaven.com/a/overcast_soil_puresky",
+      "metadata_source": "https://api.polyhaven.com/files/overcast_soil_puresky",
+      "files": [
+        {
+          "role": "hdri",
+          "format": "hdr",
+          "resolution": "2k",
+          "url": "https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/2k/overcast_soil_puresky_2k.hdr",
+          "size_bytes": 4568000,
+          "md5": "877caf0680d7269037995f6567a67103",
+          "local_path": ".cache/environment/overcast_soil_puresky/overcast_soil_puresky_2k.hdr"
+        }
+      ]
+    }
+  ],
+  "unreal_import": {
+    "engine": "5.7.4-51494982+++UE5+Release-5.7",
+    "materials": {
+      "M_StoneFloor": "/Game/Environment/Materials/M_StoneFloor.M_StoneFloor",
+      "M_Cedar": "/Game/Environment/Materials/M_Cedar.M_Cedar",
+      "M_StoneEdge": "/Game/Environment/Materials/M_StoneEdge.M_StoneEdge",
+      "M_Rock": "/Game/Environment/Materials/M_Rock.M_Rock",
+      "M_FirBark": "/Game/Environment/Materials/M_FirBark.M_FirBark",
+      "M_FirNeedles": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles",
+      "M_Sky": "/Game/Environment/Materials/M_Sky.M_Sky"
+    },
+    "textures": {
+      "monastery_stone_floor": {
+        "Diffuse": "/Game/Environment/Textures/T_Stone_Diffuse.T_Stone_Diffuse",
+        "nor_dx": "/Game/Environment/Textures/T_Stone_nor_dx.T_Stone_nor_dx",
+        "arm": "/Game/Environment/Textures/T_Stone_arm.T_Stone_arm"
+      },
+      "japanese_cedar_planks": {
+        "Diffuse": "/Game/Environment/Textures/T_Cedar_Diffuse.T_Cedar_Diffuse",
+        "nor_dx": "/Game/Environment/Textures/T_Cedar_nor_dx.T_Cedar_nor_dx",
+        "arm": "/Game/Environment/Textures/T_Cedar_arm.T_Cedar_arm"
+      },
+      "rock_moss_set_01": {
+        "Diffuse": "/Game/Environment/Textures/T_Rock_Diffuse.T_Rock_Diffuse",
+        "nor_dx": "/Game/Environment/Textures/T_Rock_nor_dx.T_Rock_nor_dx",
+        "arm": "/Game/Environment/Textures/T_Rock_arm.T_Rock_arm"
+      },
+      "fir_sapling": {
+        "branches_diff": "/Game/Environment/Textures/T_Fir_branches_diff.T_Fir_branches_diff",
+        "branches_nor_dx": "/Game/Environment/Textures/T_Fir_branches_nor_dx.T_Fir_branches_nor_dx",
+        "branches_arm": "/Game/Environment/Textures/T_Fir_branches_arm.T_Fir_branches_arm",
+        "twigs_diff": "/Game/Environment/Textures/T_Fir_twigs_diff.T_Fir_twigs_diff",
+        "twigs_nor_dx": "/Game/Environment/Textures/T_Fir_twigs_nor_dx.T_Fir_twigs_nor_dx",
+        "twigs_arm": "/Game/Environment/Textures/T_Fir_twigs_arm.T_Fir_twigs_arm",
+        "twigs_alpha": "/Game/Environment/Textures/T_Fir_twigs_alpha.T_Fir_twigs_alpha"
+      },
+      "overcast_soil_puresky": {
+        "hdri": "/Game/Environment/Textures/T_OvercastSky.T_OvercastSky"
+      }
+    },
+    "meshes": [
+      {
+        "object_path": "/Game/Environment/Rocks/SM_Rock01.SM_Rock01",
+        "bounds_min_cm": [
+          -391.4021,
+          -382.3821,
+          -65.6569
+        ],
+        "bounds_max_cm": [
+          -167.6389,
+          -45.5017,
+          81.613
+        ],
+        "triangles_lod0": 11000,
+        "vertices_lod0": 6118,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 1,
+        "slots": [
+          {
+            "name": "rock_moss_set_01",
+            "imported_name": "rock_moss_set_01",
+            "material": "/Game/Environment/Materials/M_Rock.M_Rock"
+          }
+        ]
+      },
+      {
+        "object_path": "/Game/Environment/Rocks/SM_Rock02.SM_Rock02",
+        "bounds_min_cm": [
+          -127.3055,
+          -376.7196,
+          -46.562
+        ],
+        "bounds_max_cm": [
+          138.2326,
+          -50.3475,
+          79.6372
+        ],
+        "triangles_lod0": 10996,
+        "vertices_lod0": 6371,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 1,
+        "slots": [
+          {
+            "name": "rock_moss_set_01",
+            "imported_name": "rock_moss_set_01",
+            "material": "/Game/Environment/Materials/M_Rock.M_Rock"
+          }
+        ]
+      },
+      {
+        "object_path": "/Game/Environment/Rocks/SM_Rock03.SM_Rock03",
+        "bounds_min_cm": [
+          198.2,
+          -314.6401,
+          -41.0872
+        ],
+        "bounds_max_cm": [
+          409.0583,
+          -106.6815,
+          68.8822
+        ],
+        "triangles_lod0": 5000,
+        "vertices_lod0": 2741,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 1,
+        "slots": [
+          {
+            "name": "rock_moss_set_01",
+            "imported_name": "rock_moss_set_01",
+            "material": "/Game/Environment/Materials/M_Rock.M_Rock"
+          }
+        ]
+      },
+      {
+        "object_path": "/Game/Environment/Rocks/SM_Rock04.SM_Rock04",
+        "bounds_min_cm": [
+          -365.0279,
+          68.98,
+          -66.0971
+        ],
+        "bounds_max_cm": [
+          -152.265,
+          265.4541,
+          110.7349
+        ],
+        "triangles_lod0": 10589,
+        "vertices_lod0": 5691,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 1,
+        "slots": [
+          {
+            "name": "rock_moss_set_01",
+            "imported_name": "rock_moss_set_01",
+            "material": "/Game/Environment/Materials/M_Rock.M_Rock"
+          }
+        ]
+      },
+      {
+        "object_path": "/Game/Environment/Rocks/SM_Rock05.SM_Rock05",
+        "bounds_min_cm": [
+          -71.0668,
+          12.6279,
+          -57.2554
+        ],
+        "bounds_max_cm": [
+          110.6655,
+          312.4943,
+          63.2896
+        ],
+        "triangles_lod0": 16548,
+        "vertices_lod0": 8538,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 1,
+        "slots": [
+          {
+            "name": "rock_moss_set_01",
+            "imported_name": "rock_moss_set_01",
+            "material": "/Game/Environment/Materials/M_Rock.M_Rock"
+          }
+        ]
+      },
+      {
+        "object_path": "/Game/Environment/Rocks/SM_Rock06.SM_Rock06",
+        "bounds_min_cm": [
+          159.9223,
+          9.7072,
+          -52.8057
+        ],
+        "bounds_max_cm": [
+          372.5205,
+          285.4376,
+          73.3796
+        ],
+        "triangles_lod0": 8994,
+        "vertices_lod0": 4748,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 1,
+        "slots": [
+          {
+            "name": "rock_moss_set_01",
+            "imported_name": "rock_moss_set_01",
+            "material": "/Game/Environment/Materials/M_Rock.M_Rock"
+          }
+        ]
+      },
+      {
+        "object_path": "/Game/Environment/Firs/SM_Fir01.SM_Fir01",
+        "bounds_min_cm": [
+          -43.6957,
+          -42.6206,
+          -0.7902
+        ],
+        "bounds_max_cm": [
+          42.419,
+          39.603,
+          129.2836
+        ],
+        "triangles_lod0": 157402,
+        "vertices_lod0": 187306,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 2,
+        "slots": [
+          {
+            "name": "fir_sapling_branches",
+            "imported_name": "fir_sapling_branches",
+            "material": "/Game/Environment/Materials/M_FirBark.M_FirBark"
+          },
+          {
+            "name": "fir_sapling_twigs",
+            "imported_name": "fir_sapling_twigs",
+            "material": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles"
+          }
+        ]
+      },
+      {
+        "object_path": "/Game/Environment/Firs/SM_Fir02.SM_Fir02",
+        "bounds_min_cm": [
+          67.424,
+          -43.0383,
+          -0.001
+        ],
+        "bounds_max_cm": [
+          131.4151,
+          38.7178,
+          95.1584
+        ],
+        "triangles_lod0": 150876,
+        "vertices_lod0": 179580,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 2,
+        "slots": [
+          {
+            "name": "fir_sapling_branches",
+            "imported_name": "fir_sapling_branches",
+            "material": "/Game/Environment/Materials/M_FirBark.M_FirBark"
+          },
+          {
+            "name": "fir_sapling_twigs",
+            "imported_name": "fir_sapling_twigs",
+            "material": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles"
+          }
+        ]
+      },
+      {
+        "object_path": "/Game/Environment/Firs/SM_Fir03.SM_Fir03",
+        "bounds_min_cm": [
+          168.3582,
+          -31.9933,
+          -0.0073
+        ],
+        "bounds_max_cm": [
+          230.5771,
+          31.4072,
+          73.5627
+        ],
+        "triangles_lod0": 124743,
+        "vertices_lod0": 148413,
+        "lod_count": 1,
+        "uv_channels_lod0": 1,
+        "sections_lod0": 2,
+        "slots": [
+          {
+            "name": "fir_sapling_branches",
+            "imported_name": "fir_sapling_branches",
+            "material": "/Game/Environment/Materials/M_FirBark.M_FirBark"
+          },
+          {
+            "name": "fir_sapling_twigs",
+            "imported_name": "fir_sapling_twigs",
+            "material": "/Game/Environment/Materials/M_FirNeedles.M_FirNeedles"
+          }
+        ]
+      }
+    ],
+    "verification": "Imported with NullRHI; file integrity, asset types, mesh bounds, triangle counts and material slots verified. GPU appearance requires rendering.",
+    "source_triangles": {
+      "rock_moss_set_01": [
+        11000,
+        10996,
+        5000,
+        10589,
+        16548,
+        8994
+      ],
+      "fir_sapling": [
+        157402,
+        150876,
+        124743
+      ]
+    },
+    "material_provenance": {
+      "M_StoneFloor": {
+        "source": "monastery_stone_floor",
+        "mapping": "world aligned",
+        "texture_scale_cm": 180
+      },
+      "M_StoneEdge": {
+        "source": "monastery_stone_floor",
+        "mapping": "world aligned",
+        "texture_scale_cm": 250
+      },
+      "M_Cedar": {
+        "source": "japanese_cedar_planks",
+        "mapping": "world aligned",
+        "texture_scale_cm": 110
+      },
+      "M_Rock": {
+        "source": "rock_moss_set_01",
+        "mapping": "original mesh UV atlas"
+      },
+      "M_FirBark": {
+        "source": "fir_sapling",
+        "maps": "branches",
+        "mapping": "original mesh UVs"
+      },
+      "M_FirNeedles": {
+        "source": "fir_sapling",
+        "maps": "twigs",
+        "mapping": "original mesh UVs",
+        "masked": true,
+        "two_sided": true
+      },
+      "M_Sky": {
+        "source": "overcast_soil_puresky",
+        "mapping": "camera direction cube",
+        "sky_brightness": 0.35
+      }
+    }
+  }
+}

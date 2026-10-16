@@ -10,7 +10,7 @@ class UMaterialInterface;
 class USkyLightComponent;
 class UStaticMesh;
 
-/** Self-contained courtyard. The collision floor is 1900 cm square, with its top at Z = 0. */
+/** Courtyard using imported CC0 surfaces and scenery, with a flat 1900 cm combat floor. */
 UCLASS()
 class RONIN_API ARoninArena : public AActor
 {
@@ -24,24 +24,23 @@ protected:
 
 private:
     UMaterialInstanceDynamic* MakeMaterial(const FLinearColor& Color, float Roughness);
+    UMaterialInterface* LoadSurface(const TCHAR* Path, const FLinearColor& FallbackColor);
+    UMaterialInterface* TintSurface(UMaterialInterface* Parent, const FLinearColor& Tint);
+    void AddGeometry(UStaticMesh* Mesh, UMaterialInterface* Material, const FTransform& Transform);
     void AddShape(UStaticMesh* Mesh, UMaterialInterface* Material, const FVector& Position,
         const FVector& Size, const FRotator& Rotation = FRotator::ZeroRotator);
-    void AddBeam(UMaterialInterface* Material, const FVector& Start, const FVector& End, float Width);
+    void AddNaturalMesh(UStaticMesh* Mesh, const FVector& GroundPosition, float Size,
+        bool bSizeByHeight, float Yaw);
     void BuildCourtyard();
-    void BuildGate(float Y, UMaterialInterface* Wood, UMaterialInterface* Metal, UMaterialInterface* Stone);
-    void BuildTree(const FVector& Position, float Scale, int32 Seed, UMaterialInterface* Bark,
-        UMaterialInterface* Leaf, UMaterialInterface* LeafLight);
+    void BuildGate(float X, UMaterialInterface* Wood, UMaterialInterface* DarkWood, UMaterialInterface* Stone);
     void BuildLantern(const FVector& Position, UMaterialInterface* Stone,
-        UMaterialInterface* Metal, UMaterialInterface* Paper);
+        UMaterialInterface* Wood, UMaterialInterface* Paper);
 
     UPROPERTY()
     TObjectPtr<UStaticMesh> CubeMesh;
 
     UPROPERTY()
     TObjectPtr<UStaticMesh> CylinderMesh;
-
-    UPROPERTY()
-    TObjectPtr<UStaticMesh> ConeMesh;
 
     UPROPERTY()
     TObjectPtr<UStaticMesh> SphereMesh;
@@ -57,4 +56,8 @@ private:
 
     UPROPERTY(Transient)
     TArray<TObjectPtr<UInstancedStaticMeshComponent>> GeometryBatches;
+
+    // A null entry preserves the imported mesh's complete material-slot assignments.
+    UPROPERTY(Transient)
+    TArray<TObjectPtr<UMaterialInterface>> BatchOverrides;
 };

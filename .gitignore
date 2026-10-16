@@ -11,3 +11,5 @@ Builds/
 *.suo
 *.code-workspace
 __pycache__/
+# Fab character packs are acquired per developer; do not redistribute raw assets.
+Content/ParagonKwang/
