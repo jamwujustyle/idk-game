@@ -1,6 +1,6 @@
 {
   "purpose": "Selected original armored samurai reference and future humanoid modeling brief",
-  "status": "Selected 2D reference; a corresponding textured static model has been received and structurally audited. Rigging and Unreal character integration remain pending.",
+  "status": "Original reference, textured mesh and 32-joint rig with Walking/Running received and structurally audited. Unreal combat integration is in progress.",
   "selected_image": {
     "path": "assets/generated/ronin-character/reference-samurai-front-v2.png",
     "sha256": "f2fea1e89b62a4c8fe2822e4191d9eeafbb67138450ccd2332aad91a8b2a3e8d",
@@ -31,8 +31,8 @@
   "delivery_state": {
     "reference_image": true,
     "textured_character_mesh": true,
-    "rigged_character": false,
-    "animation_clips": false,
+    "rigged_character": true,
+    "animation_clips": true,
     "unreal_character_integration": false
   },
   "verification": {

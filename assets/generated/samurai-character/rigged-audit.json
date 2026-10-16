@@ -1,0 +1,100 @@
+{
+  "source": "assets/generated/samurai-character/meshy-6-lite-rigged-v1.glb",
+  "bytes": 19421680,
+  "sha256": "737a9ab1c49c7bf685aa9f2ce1db6753145859e7e0654fed87296d8803515efd",
+  "triangles": 288176,
+  "mesh_nodes": [
+    {
+      "node_index": 32,
+      "name": "Mesh_0",
+      "skin_index": 0,
+      "primitives": [
+        {
+          "vertices": 166055,
+          "triangles": 288176,
+          "material_index": 0,
+          "skinned": true,
+          "local_position_min": [
+            -0.4612908363342285,
+            -3.0384494920099314e-09,
+            -0.19074156880378723
+          ],
+          "local_position_max": [
+            0.46129095554351807,
+            1.700000286102295,
+            0.19074156880378723
+          ],
+          "zero_weight_vertices": 0,
+          "max_weight_sum_error": 1.4156103134155273e-07,
+          "max_joint_index": 31
+        }
+      ]
+    }
+  ],
+  "skins": [
+    {
+      "name": "SmartRigArmature",
+      "joint_count": 32,
+      "joint_names": [
+        "mixamorig:Hips",
+        "mixamorig:Spine",
+        "mixamorig:Spine1",
+        "mixamorig:Spine2",
+        "mixamorig:Neck",
+        "mixamorig:Head",
+        "mixamorig:HeadTop_End",
+        "headfront",
+        "mixamorig:LeftShoulder",
+        "mixamorig:LeftArm",
+        "mixamorig:LeftForeArm",
+        "mixamorig:LeftHand",
+        "Bone_029",
+        "Bone_025",
+        "Bone_024",
+        "mixamorig:RightShoulder",
+        "mixamorig:RightArm",
+        "mixamorig:RightForeArm",
+        "mixamorig:RightHand",
+        "Bone_030",
+        "Bone_020",
+        "Bone_019",
+        "mixamorig:LeftUpLeg",
+        "mixamorig:LeftLeg",
+        "mixamorig:LeftFoot",
+        "mixamorig:LeftToeBase",
+        "mixamorig:LeftToe_End",
+        "mixamorig:RightUpLeg",
+        "mixamorig:RightLeg",
+        "mixamorig:RightFoot",
+        "mixamorig:RightToeBase",
+        "mixamorig:RightToe_End"
+      ],
+      "inverse_bind_matrices": true
+    }
+  ],
+  "materials": [
+    "Material_0"
+  ],
+  "images": [
+    {
+      "name": "Image_2",
+      "embedded": true,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "Image_0",
+      "embedded": true,
+      "mime_type": "image/jpeg"
+    },
+    {
+      "name": "Image_1",
+      "embedded": true,
+      "mime_type": "image/jpeg"
+    }
+  ],
+  "animation_names": [
+    "Running",
+    "Walking"
+  ],
+  "verification": "Structural GLB audit only; silhouette, skin deformation and Unreal retargeting require visual/runtime checks."
+}

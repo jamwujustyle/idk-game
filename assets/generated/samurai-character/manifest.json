@@ -24,13 +24,22 @@
       "bytes": 15905932,
       "sha256": "aef8171435f1a111067ca79b19ea1da1bde932d868bdc42754a37ce096bd0ca5",
       "stage": "textured; no skin or animations"
+    },
+    {
+      "path": "assets/generated/samurai-character/meshy-6-lite-rigged-v1.glb",
+      "bytes": 19421680,
+      "sha256": "737a9ab1c49c7bf685aa9f2ce1db6753145859e7e0654fed87296d8803515efd",
+      "stage": "textured and skinned; 32 joints; Running and Walking clips"
     }
   ],
-  "selected_export": "assets/generated/samurai-character/meshy-6-lite-textured-v1.glb",
+  "selected_export": "assets/generated/samurai-character/meshy-6-lite-rigged-v1.glb",
   "verification": [
     "geometry-audit.json",
     "textured-audit.json",
-    "texture-audit.json"
+    "texture-audit.json",
+    "rigged-audit.json",
+    "rig-analysis.json",
+    "unreal-import-audit.json"
   ],
-  "status": "Textured static character received and structurally audited; skeleton, skin weights, retargeting and gameplay replacement pending."
+  "status": "Rigged original samurai imported and verified on fresh load in Unreal 5.7.4. Combat retargeting, runtime integration and rendered validation in progress."
 }
