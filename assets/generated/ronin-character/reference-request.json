@@ -1,0 +1,44 @@
+{
+  "purpose": "Selected original armored samurai reference and future humanoid modeling brief",
+  "status": "2D reference selected and locally verified; no character mesh, rig, animation, or Unreal integration has been produced from it",
+  "selected_image": {
+    "path": "assets/generated/ronin-character/reference-samurai-front-v2.png",
+    "sha256": "f2fea1e89b62a4c8fe2822e4191d9eeafbb67138450ccd2332aad91a8b2a3e8d",
+    "bytes": 2198410,
+    "dimensions_px": [
+      1024,
+      1536
+    ],
+    "generator": "built-in image_gen",
+    "status": "selected",
+    "use": "Original armored samurai visual reference for future 3D modeling; not a mesh or gameplay capture",
+    "review": "Full body front view with separated limbs, open hands, and bare head; dark lacquer lamellar cuirass, broad layered shoulder guards, hanging kusazuri plates, forearm and shin armor, muted oxblood lacing, and worn indigo textile."
+  },
+  "selected_prompt": "Create one original full-body reference of an adult Japanese samurai with natural human proportions, a weathered calm face, short facial hair, and tied-back black hair in a small topknot. Use practical worn dark lacquer lamellar armor: a fitted plated cuirass, broad layered shoulder guards, hanging segmented kusazuri skirt panels with clear leg separation, strapped forearm guards, knee plates, and shin guards. Muted oxblood-red lacing and brown cords bind the armor over worn navy-indigo patterned cloth, with loose trousers, calf wraps, and simple strapped sandals. Keep the design grounded and restrained, with aged metal edges and repaired fabric, no ornate gold fantasy armor. Show the entire body from head to toes in a near-front orthographic view, a relaxed symmetric A-pose, arms held away from the torso, open bare hands with separated fingers, and feet apart. Bare head, no helmet, no weapon, no scabbard, no held props. Neutral light gray studio background and soft even lighting reveal the material surfaces and silhouette. Original design and face, without copying any named game character; no text, logo, labels, or multiple views.",
+  "selected_prompt_role": "Faithful descriptive modeling/reproduction brief checked against the selected v2 image; not a claim to recover the original image tool request verbatim",
+  "superseded_image": {
+    "path": "assets/generated/ronin-character/reference-front-v1.png",
+    "sha256": "1b350d787f714966666abae7f5cac9589d3af3deed48612c0b5b6a9c64258512",
+    "bytes": 2140975,
+    "dimensions_px": [
+      1024,
+      1536
+    ],
+    "status": "superseded; do not use for character generation or modeling",
+    "reason": "The unarmored ronin direction was replaced by the selected armored samurai design",
+    "prompt": "Create one original full-body character reference image for a realistic 3D action-game humanoid asset. A lean adult Japanese male wandering ronin, around 35, weathered calm face, natural human proportions and anatomy, restrained practical late-medieval Japanese clothing. Plain faded indigo cross-collar cotton jacket with visible woven cloth, a short worn brown outer layer with simple repaired seams and split thigh-length hem, muted earth-brown waist sash, dark charcoal trousers that clearly separate the legs, cloth calf wraps and worn simple sandals. Small utilitarian dark iron forearm and shin plates tied with cords; no decorative gold, no fantasy bulk, no elaborate armor, no cape. Simple tied-back black hair with a small knot. Original design and face; do not copy any named game character. Full body fully visible from crown to toes, directly facing camera, symmetric relaxed A-pose with straight arms spread about 40 degrees away from torso, bare hands open with separated natural fingers, palms toward camera, feet shoulder-width apart and facing forward. No weapon, no scabbard, no held object, no props, no text, no labels, no logos, no multiple views. Neutral light gray seamless studio background, soft even neutral daylight without dramatic cast shadows, sharp material detail, realistic human head and hands, clear silhouette, minimal perspective from a near-orthographic front view. This is a practical model reference for conversion into a riggable mesh, not a promotional painting."
+  },
+  "delivery_state": {
+    "reference_image": true,
+    "textured_character_mesh": false,
+    "rigged_character": false,
+    "animation_clips": false,
+    "unreal_character_integration": false
+  },
+  "verification": {
+    "date": "2026-10-16",
+    "paths": "Both referenced PNG files exist at the recorded repository-relative paths",
+    "hashes": "SHA-256 calculated from file bytes; selected hash matches its prior recorded value",
+    "images": "Both 1024 x 1536 PNGs visually inspected; selected v2 is armored and v1 is superseded"
+  }
+}
