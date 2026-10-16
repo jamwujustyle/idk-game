@@ -111,6 +111,11 @@ PY
         require_executable "$EDITOR"
         require_content
         "$PROJECT_ROOT/scripts/check-environment.sh" --require-gpu
+        if [[ "$command_name" == editor ]]; then
+            # UE 5.7's native Wayland popup path can disconnect the whole window.
+            # Use X11/XWayland unless the caller explicitly selects another backend.
+            export SDL_VIDEO_DRIVER="${SDL_VIDEO_DRIVER:-${SDL_VIDEODRIVER:-x11}}"
+        fi
         launch_args=("$PROJECT" /Game/Maps/Arena -log)
         if [[ "$command_name" == play ]]; then
             has_window_mode=false

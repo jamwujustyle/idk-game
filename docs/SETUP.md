@@ -87,6 +87,8 @@ Unreal can clamp the requested resolution to display bounds. For an offscreen ca
 
 Interactive commands check NVIDIA/Vulkan first and set NVIDIA's offload environment variables. Verify the GPU selected in Unreal's log after the first launch. Both commands require the generated assets; neither silently rebuilds code. Find the controls in the [README](../README.md#controls).
 
+The `editor` command defaults SDL's window backend to `x11`, using XWayland on a Wayland desktop. Epic documents native Wayland menu/input issues in [UE 5.7's SDL3 integration](https://dev.epicgames.com/documentation/en-us/unreal-engine/updating-unreal-engine-on-linux-to-sdl3). This applies to both terminal and app-menu launches, without changing the desktop session. An explicitly supplied `SDL_VIDEO_DRIVER` (or legacy `SDL_VIDEODRIVER`) takes precedence. Confirm `Using SDL video driver 'x11'` in the editor log when diagnosing menus.
+
 Linux controller ownership is configured in `Config/DefaultInput.ini`, under
 `[InputPlatformSettings_Linux InputPlatformSettings]`. The integer setting
 `input.DeviceMappingPolicy=1` selects Unreal's
