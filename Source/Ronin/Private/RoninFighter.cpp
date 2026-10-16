@@ -1,19 +1,17 @@
 #include "RoninFighter.h"
+#include "RoninAnimInstance.h"
 #include "RoninGameMode.h"
 #include "Camera/CameraComponent.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
-#include "Components/SceneComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "Engine/StaticMesh.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Engine/SkeletalMesh.h"
 #include "Engine/World.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Materials/MaterialInstanceDynamic.h"
-#include "Materials/MaterialInterface.h"
 #include "Math/RotationMatrix.h"
 #include "UObject/ConstructorHelpers.h"
 
@@ -29,54 +27,20 @@ ARoninFighter::ARoninFighter()
     GetCharacterMovement()->GroundFriction = 8.f;
     GetCharacterMovement()->bRunPhysicsWithNoController = true;
 
-    Body = CreateDefaultSubobject<USceneComponent>(TEXT("Body"));
-    Body->SetupAttachment(RootComponent);
-    Body->SetRelativeLocation(FVector(0, 0, -88));
-    constexpr auto Cube = TEXT("/Engine/BasicShapes/Cube.Cube");
-    constexpr auto Sphere = TEXT("/Engine/BasicShapes/Sphere.Sphere");
-    constexpr auto Cone = TEXT("/Engine/BasicShapes/Cone.Cone");
-    constexpr auto Cylinder = TEXT("/Engine/BasicShapes/Cylinder.Cylinder");
-    ArmorParts.Add(MakePart(TEXT("Torso"), Body, Cube, FVector(0,0,111), FVector(.34f,.54f,.55f)));
-    ArmorParts.Add(MakePart(TEXT("Waist"), Body, Cube, FVector(0,0,78), FVector(.34f,.54f,.12f)));
-    ArmorParts.Add(MakePart(TEXT("Head"), Body, Sphere, FVector(0,0,157), FVector(.29f,.29f,.32f)));
-    ArmorParts.Add(MakePart(TEXT("Hat"), Body, Cone, FVector(0,0,174), FVector(.8f,.8f,.2f)));
-    MetalParts.Add(MakePart(TEXT("Faceplate"), Body, Cube, FVector(15,0,153), FVector(.045f,.24f,.13f)));
-    for (int32 I = 0; I < 4; ++I)
-    {
-        auto* Plate = MakePart(*FString::Printf(TEXT("ChestPlate%d"), I), Body, Cube,
-            FVector(19,0,92+I*12), FVector(.04f,.56f,.065f));
-        MetalParts.Add(Plate);
-    }
-    LeftLeg = MakePart(TEXT("LeftLeg"), Body, Cube, FVector(0,-16,36), FVector(.23f,.25f,.65f));
-    RightLeg = MakePart(TEXT("RightLeg"), Body, Cube, FVector(0,16,36), FVector(.23f,.25f,.65f));
-    ArmorParts.Add(LeftLeg); ArmorParts.Add(RightLeg);
-    ArmorParts.Add(MakePart(TEXT("LeftBoot"), LeftLeg, Cube, FVector(25,0,-40), FVector(1.45f,1.f,.22f)));
-    ArmorParts.Add(MakePart(TEXT("RightBoot"), RightLeg, Cube, FVector(25,0,-40), FVector(1.45f,1.f,.22f)));
-    LeftArm = MakePart(TEXT("LeftArm"), Body, Cube, FVector(6,-36,109), FVector(.22f,.22f,.5f));
-    RightArm = MakePart(TEXT("RightArm"), Body, Cube, FVector(7,36,109), FVector(.22f,.22f,.5f));
-    ArmorParts.Add(LeftArm); ArmorParts.Add(RightArm);
-    LeftForearm = MakePart(TEXT("LeftForearm"), Body, Cube, FVector::ZeroVector, FVector(.18f,.18f,.32f));
-    RightForearm = MakePart(TEXT("RightForearm"), Body, Cube, FVector::ZeroVector, FVector(.18f,.18f,.32f));
-    LeftHand = MakePart(TEXT("LeftHand"), Body, Sphere, FVector::ZeroVector, FVector(.11f));
-    RightHand = MakePart(TEXT("RightHand"), Body, Sphere, FVector::ZeroVector, FVector(.11f));
-    ArmorParts.Add(LeftForearm); ArmorParts.Add(RightForearm);
-    ArmorParts.Add(LeftHand); ArmorParts.Add(RightHand);
-    ArmorParts.Add(MakePart(TEXT("LeftShoulder"), Body, Cube, FVector(0,-35,132), FVector(.38f,.28f,.16f)));
-    ArmorParts.Add(MakePart(TEXT("RightShoulder"), Body, Cube, FVector(0,35,132), FVector(.38f,.28f,.16f)));
-    auto* Skirt = MakePart(TEXT("ArmorSkirt"), Body, Cone, FVector(0,0,73), FVector(.67f,.67f,.35f));
-    ArmorParts.Add(Skirt);
-    SwordPivot = CreateDefaultSubobject<USceneComponent>(TEXT("SwordPivot"));
-    SwordPivot->SetupAttachment(Body);
-    SwordPivot->SetRelativeLocation(FVector(34,8,116));
-    SwordPivot->SetRelativeRotation(FRotator(-18,-20,0));
-    Sword = MakePart(TEXT("Blade"), SwordPivot, Cube, FVector(62,0,0), FVector(1.05f,.035f,.065f));
-    MetalParts.Add(Sword);
-    MetalParts.Add(MakePart(TEXT("SwordTip"), SwordPivot, Cone, FVector(117,0,0), FVector(.06f,.06f,.14f)));
-    MetalParts.Last()->SetRelativeRotation(FRotator(-90,0,0));
-    MetalParts.Add(MakePart(TEXT("SwordGuard"), SwordPivot, Cylinder, FVector(6,0,0), FVector(.15f,.15f,.025f)));
-    MetalParts.Last()->SetRelativeRotation(FRotator(90,0,0));
-    ArmorParts.Add(MakePart(TEXT("SwordGrip"), SwordPivot, Cylinder, FVector(-5,0,0), FVector(.055f,.055f,.22f)));
-    ArmorParts.Last()->SetRelativeRotation(FRotator(90,0,0));
+    static ConstructorHelpers::FObjectFinder<USkeletalMesh> PlayerAsset(
+        TEXT("/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/Kwang_GDC.Kwang_GDC"));
+    static ConstructorHelpers::FObjectFinder<USkeletalMesh> EnemyAsset(
+        TEXT("/Game/ParagonKwang/Characters/Heroes/Kwang/Meshes/KwangRosewood.KwangRosewood"));
+    PlayerMesh = PlayerAsset.Object;
+    EnemyMesh = EnemyAsset.Object;
+    GetMesh()->SetSkeletalMesh(PlayerMesh);
+    GetMesh()->SetRelativeLocation(FVector(0, 0, -88));
+    GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    GetMesh()->SetGenerateOverlapEvents(false);
+    GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+    GetMesh()->SetAnimInstanceClass(URoninAnimInstance::StaticClass());
+
     CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
     CameraBoom->SetupAttachment(RootComponent);
     CameraBoom->TargetArmLength = 460.f;
@@ -89,83 +53,18 @@ ARoninFighter::ARoninFighter()
     Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     Camera->FieldOfView = 82.f;
     Camera->bConstrainAspectRatio = false;
-    UpdateArms();
-}
-
-UStaticMeshComponent* ARoninFighter::MakePart(FName Name, USceneComponent* Parent,
-    const TCHAR* MeshPath, FVector Location, FVector Scale)
-{
-    auto* Part = CreateDefaultSubobject<UStaticMeshComponent>(Name);
-    Part->SetupAttachment(Parent);
-    ConstructorHelpers::FObjectFinder<UStaticMesh> Mesh(MeshPath);
-    Part->SetStaticMesh(Mesh.Object);
-    Part->SetRelativeLocation(Location);
-    Part->SetRelativeScale3D(Scale);
-    Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-    Part->SetGenerateOverlapEvents(false);
-    return Part;
-}
-
-void ARoninFighter::UpdateArms()
-{
-    // All limb coordinates are local to Body. Two-segment arms keep both hands attached
-    // to the hilt as the sword changes stance, winds up and follows through.
-    const FTransform GripTransform = SwordPivot->GetRelativeTransform();
-    const FVector RightGrip = GripTransform.TransformPosition(FVector(0,0,0));
-    const FVector LeftGrip = GripTransform.TransformPosition(FVector(-12,0,0));
-
-    auto PoseSegment = [](UStaticMeshComponent* Part, const FVector& Start,
-        const FVector& End, float Thickness)
-    {
-        const FVector Direction = End - Start;
-        Part->SetRelativeLocation((Start + End) * 0.5);
-        Part->SetRelativeRotation(FRotationMatrix::MakeFromZ(Direction).Rotator());
-        Part->SetRelativeScale3D(FVector(Thickness / 100.0, Thickness / 100.0,
-            Direction.Size() / 100.0));
-    };
-    auto PoseArm = [&PoseSegment](UStaticMeshComponent* Upper, UStaticMeshComponent* Forearm,
-        UStaticMeshComponent* Hand, const FVector& Shoulder, const FVector& Grip, float Side)
-    {
-        const FVector Offset = Grip - Shoulder;
-        const double Distance = FMath::Max(Offset.Size(), 0.01);
-        const FVector Direction = Offset / Distance;
-        const double UpperLength = FMath::Max(32.0, Distance * 0.52);
-        const double LowerLength = FMath::Max(34.0, Distance * 0.52);
-        const double Along = (UpperLength * UpperLength - LowerLength * LowerLength
-            + Distance * Distance) / (2.0 * Distance);
-        const double BendHeight = FMath::Sqrt(FMath::Max(0.0, UpperLength * UpperLength - Along * Along));
-        const FVector Outward(0.0, Side, -0.35);
-        const FVector Bend = (Outward - Direction * FVector::DotProduct(Outward, Direction)).GetSafeNormal();
-        const FVector Elbow = Shoulder + Direction * Along + Bend * BendHeight;
-        PoseSegment(Upper, Shoulder, Elbow, 20.f);
-        PoseSegment(Forearm, Elbow, Grip, 17.f);
-        Hand->SetRelativeLocation(Grip);
-    };
-    PoseArm(RightArm, RightForearm, RightHand, FVector(6,31,132), RightGrip, 1.f);
-    PoseArm(LeftArm, LeftForearm, LeftHand, FVector(6,-31,132), LeftGrip, -1.f);
 }
 
 void ARoninFighter::BeginPlay()
 {
     Super::BeginPlay();
-    auto* Material = LoadObject<UMaterialInterface>(nullptr, TEXT("/Game/Materials/M_Combat.M_Combat"));
-    if (!Material) Material = LoadObject<UMaterialInterface>(nullptr, TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
-    if (!Material)
-    {
-        UE_LOG(LogTemp, Error, TEXT("Ronin fighter could not load its base material."));
-        return;
-    }
-    ArmorMaterial = UMaterialInstanceDynamic::Create(Material, this);
-    SteelMaterial = UMaterialInstanceDynamic::Create(Material, this);
-    ArmorColor = Identity == ronin::FighterId::Player ? FLinearColor(.035f,.13f,.16f) : FLinearColor(.3f,.035f,.026f);
-    ArmorMaterial->SetVectorParameterValue(TEXT("Color"), ArmorColor);
-    ArmorMaterial->SetScalarParameterValue(TEXT("Roughness"), .65f);
-    ArmorMaterial->SetScalarParameterValue(TEXT("Metallic"), 0.f);
-    SteelMaterial->SetVectorParameterValue(TEXT("Color"), FLinearColor(.5f,.6f,.64f));
-    SteelMaterial->SetScalarParameterValue(TEXT("Metallic"), .9f);
-    SteelMaterial->SetScalarParameterValue(TEXT("Roughness"), .23f);
-    for (UStaticMeshComponent* Part : ArmorParts) Part->SetMaterial(0, ArmorMaterial);
-    for (UStaticMeshComponent* Part : MetalParts) Part->SetMaterial(0, SteelMaterial);
+    GetMesh()->SetSkeletalMesh(Identity == ronin::FighterId::Enemy ? EnemyMesh : PlayerMesh);
+    // GameMode precedes Fighter; the skeletal pose must see this frame's combat and movement.
+    GetMesh()->AddTickPrerequisiteActor(this);
+    GetMesh()->AddTickPrerequisiteComponent(GetCharacterMovement());
+    if (!GetMesh()->GetSkeletalMeshAsset())
+        UE_LOG(LogTemp, Error, TEXT("Kwang is missing. Install the licensed Paragon: Kwang content before playing."));
+
 }
 
 ARoninGameMode* ARoninFighter::Game() const
@@ -173,9 +72,24 @@ ARoninGameMode* ARoninFighter::Game() const
     return Cast<ARoninGameMode>(UGameplayStatics::GetGameMode(this));
 }
 
+void ARoninFighter::GetAnimationState(FRoninAnimationState& OutState) const
+{
+    OutState.LocalVelocity = GetActorTransform().InverseTransformVectorNoScale(GetVelocity());
+    OutState.LocalDodgeDirection = GetActorTransform().InverseTransformVectorNoScale(DodgeDirection);
+    OutState.ResetSerial = AnimationResetSerial;
+    OutState.bFrozen = bFrozen;
+    if (const auto* G = Game())
+    {
+        OutState.Combat = G->Combat.Get(Identity);
+        OutState.bFrozen |= G->bCombatPaused;
+    }
+}
+
 void ARoninFighter::SetFrozen(bool bValue)
 {
     bFrozen = bValue;
+    // Still evaluate the explicit contact pose on the first hit-stop frame, with no clock advance.
+    GetMesh()->GlobalAnimRateScale = bFrozen ? 0.f : 1.f;
     if (bFrozen)
     {
         GetCharacterMovement()->StopMovementImmediately();
@@ -188,6 +102,7 @@ void ARoninFighter::Tick(float Dt)
 {
     Super::Tick(Dt);
     auto* G = Game();
+    GetMesh()->GlobalAnimRateScale = (!G || bFrozen || G->bCombatPaused) ? 0.f : 1.f;
     if (!G || bFrozen || G->bCombatPaused)
     {
         GetCharacterMovement()->StopMovementImmediately();
@@ -229,31 +144,6 @@ void ARoninFighter::Tick(float Dt)
         Rotation.Pitch = FMath::FInterpTo(Rotation.Pitch, -12.f, Dt, 4.f);
         Controller->SetControlRotation(Rotation);
     }
-    Gait += Dt * GetVelocity().Size2D() * .035f;
-    const float Walk = bCanMove ? FMath::Min(static_cast<float>(GetVelocity().Size2D())/250.f, 1.f) : 0.f;
-    LeftLeg->SetRelativeRotation(FRotator(FMath::Sin(Gait)*24.f*Walk, 0, 0));
-    RightLeg->SetRelativeRotation(FRotator(-FMath::Sin(Gait)*24.f*Walk, 0, 0));
-
-    FRotator BladePose(-18.f, -20.f, 0);
-    if (State.stance == ronin::Stance::Stone) BladePose = FRotator(58.f, 0, 0);
-    if (State.stance == ronin::Stance::Gale) BladePose = FRotator(-30.f, -65.f, 0);
-    if (State.guarding) BladePose = FRotator(65.f,-65.f,0);
-    const float Progress = State.actionDuration > 0.f ? FMath::Clamp(State.actionTime / State.actionDuration, 0.f, 1.f) : 0.f;
-    if (State.action == ronin::Action::Windup)
-        BladePose = FRotator(FMath::Lerp(20.f, 65.f, Progress), -80.f, 0);
-    if (State.action == ronin::Action::Active)
-        BladePose = FRotator(FMath::Lerp(65.f,-30.f,Progress), FMath::Lerp(-80.f,100.f,Progress),0);
-    if (State.action == ronin::Action::Recovery)
-        BladePose = FRotator(FMath::Lerp(-30.f,-18.f,Progress), FMath::Lerp(100.f,-20.f,Progress),0);
-    SwordPivot->SetRelativeRotation(BladePose);
-    UpdateArms();
-    const float Lean = State.action == ronin::Action::Dodging ? -24.f :
-        (State.action == ronin::Action::Staggered || State.action == ronin::Action::Broken ? 22.f : 0.f);
-    Body->SetRelativeRotation(FMath::RInterpTo(Body->GetRelativeRotation(), FRotator(bDead ? -85.f : Lean,0,0),Dt,10.f));
-    FlashTime = FMath::Max(0.f,FlashTime-Dt);
-    if (FlashTime <= 0.f && ArmorMaterial)
-        ArmorMaterial->SetVectorParameterValue(TEXT("Color"), State.spec.unblockable && State.action == ronin::Action::Windup
-            ? FLinearColor(.8f,.055f,.025f) : ArmorColor);
 }
 
 void ARoninFighter::ResetPose(FVector Location, FRotator Rotation)
@@ -262,13 +152,10 @@ void ARoninFighter::ResetPose(FVector Location, FRotator Rotation)
     GetCharacterMovement()->StopMovementImmediately();
     GetCharacterMovement()->MaxWalkSpeed = 390.f;
     ConsumeMovementInputVector();
-    Body->SetRelativeRotation(FRotator::ZeroRotator);
-    LeftLeg->SetRelativeRotation(FRotator::ZeroRotator);
-    RightLeg->SetRelativeRotation(FRotator::ZeroRotator);
-    SwordPivot->SetRelativeRotation(FRotator(-18,-20,0));
-    UpdateArms();
-    Gait = 0.f;
-    FlashTime = 0; MoveInput = FVector2D::ZeroVector; bFrozen = false;
+    ++AnimationResetSerial;
+    MoveInput = FVector2D::ZeroVector;
+    bFrozen = false;
+    GetMesh()->GlobalAnimRateScale = 1.f;
     if (Controller) Controller->SetControlRotation(FRotator(-12, Rotation.Yaw, 0));
 }
 
@@ -290,10 +177,9 @@ void ARoninFighter::AdvanceDodge(float SimulationDelta)
     }
 }
 
-void ARoninFighter::HitFlash(FLinearColor Color)
+void ARoninFighter::HitFlash(FLinearColor)
 {
-    FlashTime = .12f;
-    if (ArmorMaterial) ArmorMaterial->SetVectorParameterValue(TEXT("Color"),Color);
+    // HUD and contact VFX supply feedback while authored character materials stay intact.
 }
 
 void ARoninFighter::MoveForward(float Value)

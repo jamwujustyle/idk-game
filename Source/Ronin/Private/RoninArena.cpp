@@ -329,18 +329,26 @@ void ARoninArena::BuildCourtyard()
     }
     if (!Firs.IsEmpty())
     {
+        // Preserve the scan's sapling proportions and anchor its lowest point to
+        // the outer ground's top surface (-125 cm center + 70 cm half-height).
+        constexpr double OuterGroundTopZ = -55.0;
+        auto PlantSapling = [this, &Firs, &Random](int32 Index, const FVector& GroundPosition)
+        {
+            UStaticMesh* Fir = Firs[Index % Firs.Num()];
+            const double SourceHeight = Fir->GetBounds().BoxExtent.Z * 2.0;
+            const float Height = static_cast<float>(SourceHeight * Random.FRandRange(0.95f, 1.5f));
+            AddNaturalMesh(Fir, GroundPosition, Height, true, Random.FRandRange(0.0f, 360.0f));
+        };
         for (int32 Index = 0; Index < 24; ++Index)
         {
             const int32 Side = Index % 2 == 0 ? -1 : 1;
             const double X = -1700.0 + (Index / 2) * 450.0;
             const double Y = Side * Random.FRandRange(1680.0f, 2900.0f);
-            AddNaturalMesh(Firs[Index % Firs.Num()], FVector(X, Y, -65.0),
-                Random.FRandRange(310.0f, 570.0f), true, Random.FRandRange(0.0f, 360.0f));
+            PlantSapling(Index, FVector(X, Y, OuterGroundTopZ));
         }
         for (int32 Index = 0; Index < 9; ++Index)
         {
-            AddNaturalMesh(Firs[Index % Firs.Num()], FVector(2900.0, -3000.0 + Index * 750.0, 180.0),
-                Random.FRandRange(520.0f, 760.0f), true, Random.FRandRange(0.0f, 360.0f));
+            PlantSapling(Index, FVector(2900.0, -3000.0 + Index * 750.0, OuterGroundTopZ));
         }
     }
 }

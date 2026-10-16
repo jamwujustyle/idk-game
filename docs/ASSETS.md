@@ -62,3 +62,15 @@ The raw character pack is ignored by Git and is not redistributed in this public
 source repository. Keep its original asset paths so code references resolve.
 Distributable game builds should contain cooked assets required by gameplay;
 acquiring this pack does not make its source assets CC0.
+
+The player uses `Kwang_GDC` and the sentinel uses `KwangRosewood`, both on the
+original Kwang skeleton. `URoninAnimInstance` blends the authored cardinal jog
+clips, maps sword swings onto the combat system's windup/contact/recovery
+phases, and plays the separate recovery, stagger, and death clips. Capsule
+movement remains authoritative; animation root translation is removed.
+
+The pack has no dedicated guard or dodge roll. Guard adapts the upper body of
+`Ability_RMB`; evasions use the directional jog-start clips as steps. These
+adaptations need gameplay review. The native animation graph does not depend
+on the pack's example character or animation Blueprints. Cook only gameplay
+references, rather than adding the entire pack to `DirectoriesToAlwaysCook`.

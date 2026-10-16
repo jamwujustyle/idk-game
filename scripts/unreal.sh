@@ -52,6 +52,14 @@ require_content() {
     done
 }
 
+require_character() {
+    local mesh
+    for mesh in Kwang_GDC KwangRosewood; do
+        [[ -f "$PROJECT_ROOT/Content/ParagonKwang/Characters/Heroes/Kwang/Meshes/$mesh.uasset" ]] ||
+            die "Paragon: Kwang is missing. Open the editor, add the pack through Window → Fab, then retry. See docs/ASSETS.md."
+    done
+}
+
 case "$command_name" in
     setup)
         SDK_CONFIG="$ENGINE_ROOT/Engine/Config/Linux/Linux_SDK.json"
@@ -118,6 +126,7 @@ PY
         fi
         launch_args=("$PROJECT" /Game/Maps/Arena -log)
         if [[ "$command_name" == play ]]; then
+            require_character
             has_window_mode=false
             has_res_x=false
             has_res_y=false
@@ -139,6 +148,7 @@ PY
     package-linux)
         require_executable "$UAT"
         require_content
+        require_character
         # UAT forwards these flags to UBT for both editor/game compile steps.
         for argument in "$@"; do
             case "${argument,,}" in

@@ -21,20 +21,21 @@ public:
     UPROPERTY() TObjectPtr<ARoninFighter> PlayerFighter;
     UPROPERTY() TObjectPtr<ARoninFighter> EnemyFighter;
     bool bCombatPaused = false;
-    bool bShowHelp = true;
+    bool bShowHelp = false;
     bool bLockOn = true;
     bool bUsingGamepad = false;
     int32 Victories = 0;
     int32 PerfectParries = 0;
-    FString Feedback = TEXT("Hold your ground.");
+    FString Feedback;
     FLinearColor FeedbackColor = FLinearColor(0.88f, 0.83f, 0.68f);
-    float FeedbackTime = 4.f;
+    float FeedbackTime = 0.f;
     float ImpactFlash = 0.f;
     float DisplayedFPS = 0.f;
     FString QualityName = TEXT("HIGH");
     FString FrameCapName = TEXT("UNCAPPED");
     FString HapticsName = TEXT("70%");
 
+    void StartDuel();
     void RestartDuel();
     void LightAttack();
     void HeavyAttack();
@@ -47,6 +48,8 @@ public:
     void CycleFrameCap();
     void CycleHaptics();
     bool CanControl() const;
+    bool HasDuelStarted() const { return bDuelStarted; }
+    float GetRoundTime() const { return RoundTime; }
     void Notify(const FString& Text, FLinearColor Color, float Duration = 1.25f);
 
 private:
@@ -61,6 +64,7 @@ private:
     int32 FrameCapIndex = 0;
     int32 HapticsIndex = 2;
     bool bRoundScored = false;
+    bool bDuelStarted = false;
     bool bGuardHeld = false;
     float SmoothedFrameTime = 1.f/60.f;
 };

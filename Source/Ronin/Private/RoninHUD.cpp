@@ -34,6 +34,29 @@ void ARoninHUD::Bar(float X,float Y,float Width,float Height,float Fraction,FLin
     DrawRect(Color,X,Y,Width*FMath::Clamp(Fraction,0.f,1.f),Height);
 }
 
+void ARoninHUD::Statistics(const ARoninGameMode& Game,float X,float Y)
+{
+    Label(FString::Printf(TEXT("DUELS WON  %d     PARRIES  %d     %d FPS"),
+        Game.Victories,Game.PerfectParries,FMath::RoundToInt(Game.DisplayedFPS)),X,Y,.58f,Muted,true);
+}
+
+void ARoninHUD::Controls(const ARoninGameMode& Game,float X,float Y)
+{
+    const float S=Scale;
+    const bool bPad=Game.bUsingGamepad;
+    DrawRect(FLinearColor(.015f,.025f,.03f,.9f),X-22*S,Y-20*S,548*S,330*S);
+    Label(TEXT("CONTROLS"),X,Y,.8f,Gold);
+    Label(bPad ? TEXT("LS  MOVE     RS  CAMERA") : TEXT("WASD  MOVE     MOUSE  CAMERA"),X,Y+42*S,.65f,Ivory);
+    Label(bPad ? TEXT("RB  CUT     RT  HEAVY") : TEXT("LMB  CUT     E  HEAVY"),X,Y+72*S,.65f,Ivory);
+    Label(bPad ? TEXT("LB  PARRY / HOLD GUARD") : TEXT("RMB  PARRY / HOLD GUARD"),X,Y+102*S,.65f,Ivory);
+    Label(bPad ? TEXT("B  DODGE     Y  FINISH") : TEXT("SPACE  DODGE     F  FINISH"),X,Y+132*S,.65f,Ivory);
+    Label(bPad ? TEXT("D-PAD LEFT / UP / RIGHT  STANCE") : TEXT("1 / 2 / 3  FLOW / STONE / GALE"),X,Y+162*S,.65f,Ivory);
+    Label(bPad ? TEXT("RS CLICK  LOCK     VIEW  REMATCH") : TEXT("TAB  LOCK     R  REMATCH"),X,Y+192*S,.65f,Ivory);
+    Label(TEXT("Tap guard just before impact to parry."),X,Y+235*S,.6f,Muted);
+    Label(TEXT("Teal: stamina. Gold: posture."),X,Y+259*S,.55f,Muted);
+    if (Game.HasDuelStarted()) Statistics(Game,X+252*S,Y+287*S);
+}
+
 void ARoninHUD::DrawHUD()
 {
     Super::DrawHUD();
@@ -45,17 +68,51 @@ void ARoninHUD::DrawHUD()
     const auto& Player=G->Combat.Get(ronin::FighterId::Player);
     const auto& Enemy=G->Combat.Get(ronin::FighterId::Enemy);
     const bool bPad=G->bUsingGamepad;
-    const FString FinishKey=bPad ? TEXT("Y") : TEXT("F");
-    Label(TEXT("R O N I N"),Margin,32*S,1.45f,Ivory);
-    Label(TEXT("THE LAST COURTYARD"),Margin,65*S,.65f,Muted);
-    Label(FString::Printf(TEXT("DUELS WON  %d"),G->Victories),W-Margin-178*S,38*S,.7f,Muted);
-    Label(FString::Printf(TEXT("%d FPS"),FMath::RoundToInt(G->DisplayedFPS)),W-Margin-178*S,63*S,.55f,Muted);
-    Label(TEXT("COURTYARD SENTINEL"),W*.5f,42*S,.85f,Ivory,true);
-    Bar(W*.5f-225*S,74*S,450*S,8*S,Enemy.health/Enemy.maxHealth,Red);
-    Bar(W*.5f-160*S,92*S,320*S,5*S,Enemy.posture/Enemy.maxPosture,Gold);
-    Label(TEXT("POSTURE"),W*.5f,105*S,.55f,Muted,true);
+    const bool bDead=Player.action==ronin::Action::Dead, bWon=Enemy.action==ronin::Action::Dead;
+    const FString HelpHint=bPad ? TEXT("X  CONTROLS") : TEXT("H  CONTROLS");
 
-    if (G->EnemyFighter && Enemy.action!=ronin::Action::Dead && G->bLockOn)
+    if (!G->HasDuelStarted())
+    {
+        DrawRect(FLinearColor(.01f,.018f,.025f,.42f),0,0,W,H);
+        Label(TEXT("R O N I N"),W*.5f,H*.17f,2.5f,Ivory,true);
+        Label(TEXT("THE LAST COURTYARD"),W*.5f,H*.26f,.75f,Gold,true);
+        if (G->bShowHelp) Controls(*G,W*.5f-252*S,H*.34f);
+        else Label(TEXT("Read the blade. Find your opening."),W*.5f,H*.43f,.8f,Ivory,true);
+        Label(bPad ? TEXT("A  START DUEL") : TEXT("ENTER  START DUEL"),W*.5f,H*.73f,1.f,Gold,true);
+        Label(G->bShowHelp ? (bPad ? TEXT("X  HIDE CONTROLS") : TEXT("H  HIDE CONTROLS")) : HelpHint,
+            W*.5f,H*.84f,.65f,Muted,true);
+        return;
+    }
+
+    if (G->bCombatPaused || bDead || bWon)
+    {
+        DrawRect(FLinearColor(.01f,.018f,.025f,.85f),0,0,W,H);
+        Label(G->bCombatPaused ? TEXT("PAUSED") : bWon ? TEXT("DUEL WON") : TEXT("RISE AGAIN"),
+            W*.5f,H*.2f,1.9f,bDead && !G->bCombatPaused ? Red : Ivory,true);
+        if (G->bShowHelp)
+        {
+            Controls(*G,W*.5f-252*S,H*.33f);
+        }
+        else
+        {
+            Label(bPad ? TEXT("VIEW  REMATCH") : TEXT("R  REMATCH"),W*.5f,H*.36f,.9f,Gold,true);
+            if (G->bCombatPaused)
+            {
+                Label(bPad ? TEXT("MENU / B  RESUME") : TEXT("ESC / SPACE  RESUME"),W*.5f,H*.43f,.8f,Ivory,true);
+                Label((bPad ? TEXT("A  QUALITY  ") : TEXT("F2  QUALITY  "))+G->QualityName,W*.5f,H*.53f,.7f,Muted,true);
+                Label((bPad ? TEXT("Y  FRAME LIMIT  ") : TEXT("F3  FRAME LIMIT  "))+G->FrameCapName,W*.5f,H*.59f,.7f,Muted,true);
+                Label((bPad ? TEXT("D-DOWN  RUMBLE  ") : TEXT("F4  RUMBLE  "))+G->HapticsName,W*.5f,H*.65f,.7f,Muted,true);
+            }
+            Statistics(*G,W*.5f,H*.76f);
+        }
+        Label(G->bShowHelp ? (bPad ? TEXT("X  BACK") : TEXT("H  BACK")) : HelpHint,W*.5f,H*.87f,.65f,Muted,true);
+        return;
+    }
+
+    Label(TEXT("COURTYARD SENTINEL"),W*.5f,32*S,.7f,Ivory,true);
+    Bar(W*.5f-180*S,60*S,360*S,7*S,Enemy.health/Enemy.maxHealth,Red);
+    Bar(W*.5f-135*S,76*S,270*S,4*S,Enemy.posture/Enemy.maxPosture,Gold);
+    if (G->EnemyFighter && G->bLockOn)
     {
         FVector2D Screen;
         if (PlayerOwner && PlayerOwner->ProjectWorldLocationToScreen(G->EnemyFighter->GetActorLocation()+FVector(0,0,110),Screen))
@@ -68,61 +125,27 @@ void ARoninHUD::DrawHUD()
         }
     }
     if (Enemy.action==ronin::Action::Windup && Enemy.spec.unblockable)
-        Label(bPad ? TEXT("DODGE  /  B") : TEXT("DODGE  /  SPACE"),W*.5f,H*.34f,1.3f,Red,true);
+        Label(bPad ? TEXT("B  DODGE") : TEXT("SPACE  DODGE"),W*.5f,H*.34f,1.15f,Red,true);
     if (Enemy.action==ronin::Action::Broken)
-        Label(TEXT("FINISH  /  ")+FinishKey,W*.5f,H*.43f,1.3f,Gold,true);
+        Label(bPad ? TEXT("Y  FINISH") : TEXT("F  FINISH"),W*.5f,H*.43f,1.15f,Gold,true);
     else if (Player.counterTime>0.f)
         Label(TEXT("COUNTER WINDOW"),W*.5f,H*.65f,.7f,Teal,true);
     if (G->FeedbackTime>0.f)
-        Label(G->Feedback,W*.5f,H-230*S,.85f,G->FeedbackColor,true);
+        Label(G->Feedback,W*.5f,H-185*S,.75f,G->FeedbackColor,true);
 
-    Label(TEXT("VITALITY"),Margin,H-137*S,.58f,Muted);
-    Bar(Margin,H-115*S,265*S,11*S,Player.health/Player.maxHealth,Ivory);
-    Bar(Margin,H-92*S,265*S,5*S,Player.stamina/Player.maxStamina,Teal);
-    Bar(Margin,H-77*S,265*S,5*S,Player.posture/Player.maxPosture,Gold);
-    Label(TEXT("STAMINA / POSTURE"),Margin,H-61*S,.5f,Muted);
+    Label(TEXT("VITALITY"),Margin,H-112*S,.55f,Muted);
+    Bar(Margin,H-90*S,220*S,9*S,Player.health/Player.maxHealth,Ivory);
+    Bar(Margin,H-71*S,220*S,4*S,Player.stamina/Player.maxStamina,Teal);
+    Bar(Margin,H-58*S,220*S,4*S,Player.posture/Player.maxPosture,Gold);
     const TCHAR* Stances[]={TEXT("FLOW"),TEXT("STONE"),TEXT("GALE")};
     const TCHAR* Desc[]={TEXT("FAST PRESSURE"),TEXT("GUARD BREAK"),TEXT("MOBILE DEFENSE")};
     const int32 Current=static_cast<int32>(Player.stance);
-    for (int32 I=0; I<3; ++I)
-    {
-        const float X=W*.5f+(I-1)*150*S;
-        const bool Selected=I==Current;
-        if (Selected) DrawRect(Gold,X-48*S,H-119*S,96*S,2*S);
-        const TCHAR* PadKeys[]={TEXT("D-LEFT"),TEXT("D-UP"),TEXT("D-RIGHT")};
-        Label(bPad ? PadKeys[I] : FString::FromInt(I+1),X,H-104*S,.55f,Selected ? Gold : Muted,true);
-        Label(Stances[I],X,H-83*S,.88f,Selected ? Ivory : Muted,true);
-        if (Selected) Label(Desc[I],X,H-56*S,.48f,Muted,true);
-    }
-    Label(FString::Printf(TEXT("PARRIES  %d"),G->PerfectParries),W-Margin-155*S,H-110*S,.75f,Ivory);
-    Label(bPad ? TEXT("MENU  PAUSE    X  HELP") : TEXT("ESC  PAUSE    H  HELP"),W-Margin-260*S,H-57*S,.6f,Muted);
-
-    if (G->bShowHelp && !G->bCombatPaused)
-    {
-        const float X=Margin, Y=H*.34f;
-        DrawRect(FLinearColor(.015f,.025f,.03f,.7f),X-14*S,Y-15*S,274*S,210*S);
-        Label(TEXT("CONTROL THE EXCHANGE"),X,Y,.7f,Gold);
-        Label(bPad ? TEXT("LS  MOVE    RS  CAMERA") : TEXT("WASD  MOVE    MOUSE  CAMERA"),X,Y+36*S,.6f,Ivory);
-        Label(bPad ? TEXT("RB  CUT    RT  HEAVY") : TEXT("LMB  CUT    E  HEAVY"),X,Y+64*S,.6f,Ivory);
-        Label(bPad ? TEXT("LB  PARRY / HOLD GUARD") : TEXT("RMB  PARRY / HOLD GUARD"),X,Y+92*S,.6f,Ivory);
-        Label(bPad ? TEXT("B  DODGE    Y  FINISH") : TEXT("SPACE  DODGE    F  FINISH"),X,Y+120*S,.6f,Ivory);
-        Label(bPad ? TEXT("RS CLICK  LOCK    SELECT  RETRY") : TEXT("TAB  LOCK    R  RETRY"),X,Y+148*S,.6f,Ivory);
-        Label(TEXT("Tap guard just before impact."),X,Y+177*S,.55f,Muted);
-    }
-    const bool bDead=Player.action==ronin::Action::Dead, bWon=Enemy.action==ronin::Action::Dead;
-    if (bDead || bWon || G->bCombatPaused)
-    {
-        DrawRect(FLinearColor(.01f,.018f,.025f,.8f),0,0,W,H);
-        Label(G->bCombatPaused ? TEXT("A MOMENT OF STILLNESS") : bWon ? TEXT("THE COURTYARD IS YOURS") : TEXT("RISE AGAIN"),W*.5f,H*.34f,1.7f,bDead ? Red : Ivory,true);
-        Label(bPad ? TEXT("VIEW  -  REMATCH") : TEXT("R  -  INSTANT REMATCH"),W*.5f,H*.45f,.9f,Gold,true);
-        if (G->bCombatPaused)
-        {
-            Label(bPad ? TEXT("MENU  -  RETURN TO THE DUEL") : TEXT("ESC  -  RETURN TO THE DUEL"),W*.5f,H*.51f,.75f,Ivory,true);
-            Label((bPad ? TEXT("A  QUALITY: ") : TEXT("F2  QUALITY: "))+G->QualityName,W*.5f,H*.58f,.75f,Muted,true);
-            Label((bPad ? TEXT("Y  FRAME LIMIT: ") : TEXT("F3  FRAME LIMIT: "))+G->FrameCapName,W*.5f,H*.63f,.75f,Muted,true);
-            Label((bPad ? TEXT("D-DOWN  RUMBLE: ") : TEXT("F4  RUMBLE: "))+G->HapticsName,W*.5f,H*.68f,.75f,Muted,true);
-        }
-    }
+    DrawRect(Gold,W*.5f-34*S,H-109*S,68*S,2*S);
+    Label(Stances[Current],W*.5f,H-94*S,.9f,Ivory,true);
+    Label(Desc[Current],W*.5f,H-63*S,.5f,Muted,true);
+    Label(bPad ? TEXT("MENU  PAUSE    X  CONTROLS") : TEXT("ESC  PAUSE    H  CONTROLS"),
+        W-210*S,H-65*S,.55f,Muted,true);
+    if (G->bShowHelp) Controls(*G,Margin+22*S,H*.31f);
     if (G->ImpactFlash>0.f)
     {
         const float Alpha=G->ImpactFlash*1.1f;

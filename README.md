@@ -1,8 +1,8 @@
 # RONIN
 
-A compact Unreal Engine 5 C++ sword-combat prototype: a lone fighter, a stylized arena, and an opponent built around readable attacks, guard pressure, and timed counters.
+A compact Unreal Engine 5 C++ sword-combat prototype: a lone fighter, a stone courtyard, and an opponent built around readable attacks, guard pressure, and timed counters.
 
-**Status: both Unreal 5.7.4 Linux targets compile, asset setup passes, and all five engine integration tests pass.** Interactive Linux playtesting is being prepared. Packaging is optional for playing through the installed editor. See the [verification report](reports/2026-10-16-verification.md) for observed results and remaining checks.
+**Status: the Kwang character integration compiles in Unreal 5.7.4, and all six engine integration tests pass.** The updated scene still needs a rendered visual review and interactive Linux playtest. Packaging is optional for playing through the installed editor. See the [verification report](reports/2026-10-16-verification.md) for observed results and remaining checks.
 
 ## Start
 
@@ -17,10 +17,15 @@ Install the official Unreal Engine 5.7 Linux build and its native toolchain, the
 
 The bootstrap creates `/Game/Maps/Arena`, an opaque material with runtime color/roughness/metallic parameters, and five original synthesized sound effects. The game mode constructs the arena and fighters when play begins. Existing generated assets are preserved when bootstrap runs again.
 
+The fighters require the licensed **Paragon: Kwang** pack, installed separately through Fab. Its raw assets are not included in this repository. The courtyard's CC0 environment assets are included. See [asset sources and setup](docs/ASSETS.md).
+
 ## Controls
+
+The opening screen waits for **Enter** or **A** before starting the duel. Combat and enemy movement remain stopped while assets and shaders load. Press **H** or **X** to see controls; help starts hidden. During a duel, pause or help shows performance and duel statistics.
 
 | Action | Keyboard / mouse | Gamepad (Xbox-style labels) |
 | --- | --- | --- |
+| Start the first duel | Enter | A |
 | Move / camera | W A S D / mouse | Left / right stick |
 | Light attack | Left mouse | RB |
 | Heavy attack | E | RT |
@@ -29,7 +34,7 @@ The bootstrap creates `/Game/Maps/Arena`, an opaque material with runtime color/
 | Execute a vulnerable opponent | F | Y |
 | Flow / Stone / Gale stance | 1 / 2 / 3 | D-pad left / up / right |
 | Toggle target lock | Tab | Right-stick click |
-| Restart | R | Select / View |
+| Rematch after starting | R | Select / View |
 | Pause / resume | Escape | Start / Menu |
 | Cycle quality setting | F2 while paused | A while paused |
 | Cycle frame limit | F3 | Y while paused |
@@ -46,4 +51,4 @@ Xbox prompts appear after gamepad input. Rumble uses standard force feedback wit
 - `docs/SETUP.md`: installation and build/run instructions.
 - `docs/ENVIRONMENT.md`: dated observations from the development laptop.
 
-The first slice uses procedural geometry and original synthesized audio. It still needs combat tuning, visual review, and packaged-build verification. Multi-round progression is not implemented.
+The first slice combines Kwang skeletal characters, scanned environment assets, project-authored courtyard structures, and original synthesized audio. It still needs combat tuning, visual review, and packaged-build verification. Multi-round progression is not implemented.

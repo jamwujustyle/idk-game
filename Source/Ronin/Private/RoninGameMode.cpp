@@ -3,6 +3,7 @@
 #include "RoninFighter.h"
 #include "RoninHUD.h"
 #include "RoninPlayerController.h"
+#include "Components/InputComponent.h"
 #include "Engine/World.h"
 #include "Engine/GameInstance.h"
 #include "GameFramework/GameUserSettings.h"
@@ -54,6 +55,10 @@ void ARoninGameMode::StartPlay()
         PC->SetControlRotation(FRotator(-12,0,0));
         PC->SetInputMode(FInputModeGameOnly());
         PC->bShowMouseCursor = false;
+        EnableInput(PC);
+        // A also changes quality while paused. Starting an already active duel
+        // is a no-op, and this binding must leave that existing action reachable.
+        InputComponent->BindAction(TEXT("StartDuel"),IE_Pressed,this,&ARoninGameMode::StartDuel).bConsumeInput=false;
         AddTickPrerequisiteActor(PC);
     }
     if (PlayerFighter) PlayerFighter->AddTickPrerequisiteActor(this);
@@ -84,7 +89,7 @@ void ARoninGameMode::StartPlay()
 
 bool ARoninGameMode::CanControl() const
 {
-    return !bCombatPaused && PlayerFighter && EnemyFighter &&
+    return bDuelStarted && !bCombatPaused && PlayerFighter && EnemyFighter &&
         Combat.Get(FighterId::Player).action != Action::Dead && Combat.Get(FighterId::Enemy).action != Action::Dead;
 }
 
@@ -94,7 +99,9 @@ void ARoninGameMode::Tick(float Dt)
     SmoothedFrameTime=FMath::FInterpTo(SmoothedFrameTime,FMath::Max(Dt,.0001f),Dt,3.f);
     DisplayedFPS=1.f/SmoothedFrameTime;
     if (auto* PC=Cast<ARoninPlayerController>(UGameplayStatics::GetPlayerController(this,0))) bUsingGamepad=PC->bUsingGamepad;
-    if (bCombatPaused || !PlayerFighter || !EnemyFighter) return;
+    // Asset/shader startup may take arbitrarily long. No combat clock, AI
+    // decision, held guard, hit resolution or dodge advances before confirmation.
+    if (!bDuelStarted || bCombatPaused || !PlayerFighter || !EnemyFighter) return;
     FeedbackTime=FMath::Max(0.f,FeedbackTime-Dt);
     ImpactFlash=FMath::Max(0.f,ImpactFlash-Dt);
     if (HitStop>0.f)
@@ -221,6 +228,14 @@ void ARoninGameMode::ResolveAttack(FighterId Id)
     }
 }
 
+void ARoninGameMode::StartDuel()
+{
+    if (bDuelStarted || !PlayerFighter || !EnemyFighter) return;
+    bDuelStarted=true;
+    bShowHelp=false;
+    RestartDuel();
+}
+
 void ARoninGameMode::RestartDuel()
 {
     StopFeedback(this);
@@ -228,7 +243,8 @@ void ARoninGameMode::RestartDuel()
     bCombatPaused=false; ImpactFlash=0; bGuardHeld=false;
     if (PlayerFighter) PlayerFighter->ResetPose(FVector(-300,0,100),FRotator(0,0,0));
     if (EnemyFighter) EnemyFighter->ResetPose(FVector(300,0,100),FRotator(0,180,0));
-    Notify(TEXT("READ THE BLADE. CLAIM THE OPENING."),FLinearColor(.9f,.84f,.68f),3.f);
+    FeedbackTime=0.f;
+    if (bDuelStarted) Notify(TEXT("READ THE BLADE. FIND YOUR OPENING."),FLinearColor(.9f,.84f,.68f),2.5f);
 }
 void ARoninGameMode::LightAttack()
 {
@@ -269,6 +285,7 @@ void ARoninGameMode::ChangeStance(ronin::Stance Stance)
 }
 void ARoninGameMode::TogglePause()
 {
+    if (!bDuelStarted) return;
     bCombatPaused=!bCombatPaused;
     StopFeedback(this);
     Combat.SetGuard(FighterId::Player,false);
